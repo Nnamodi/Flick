@@ -1,0 +1,82 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+}
+
+android {
+    namespace 'com.roland.android.flick'
+    compileSdk defaultCompileSdkVersion
+
+    defaultConfig {
+        applicationId "com.roland.android.flick"
+        minSdk defaultMinSdkVersion
+        targetSdk defaultTargetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility javaCompileVersion
+        targetCompatibility javaCompileVersion
+    }
+    kotlinOptions {
+        jvmTarget = jvmTargetVersion
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion versions.compose
+    }
+    packaging {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+
+    // android-compose components
+    implementation androidx.appcompat
+    implementation androidx.composeActivity
+    implementation androidx.composeUi
+    implementation androidx.composeUiGraphics
+    implementation androidx.composeUiToolingPreview
+    implementation androidx.core
+    implementation androidx.lifecycle
+    implementation platform("androidx.compose:compose-bom:2023.03.00")
+
+    // hilt
+    implementation di.hiltAndroid
+    implementation di.hiltCompose
+    kapt di.kapt
+
+    // material design
+    implementation material.icons
+    implementation material.material3
+
+    // splash_screen
+    implementation androidx.splashScreen
+
+    // unit testing
+    testImplementation test.junit
+    androidTestImplementation androidTest.espressoCore
+    androidTestImplementation androidTest.composeUiTestJunit
+    androidTestImplementation platform("androidx.compose:compose-bom:2023.03.00")
+    debugImplementation androidTest.composeUiTestManifest
+    debugImplementation androidTest.composeUiTooling
+}

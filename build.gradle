@@ -1,0 +1,78 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext {
+        defaultCompileSdkVersion = 34
+        defaultMinSdkVersion = 21
+        defaultTargetSdkVersion = 33
+        javaCompileVersion = JavaVersion.VERSION_17
+        jvmTargetVersion = '17'
+        versions = [
+            activity_compose : "1.8.0",
+            appcompat : "1.6.1",
+            compose : "1.4.4",
+            compose_icon : "1.4.1",
+            core_ktx : "1.10.0",
+            coroutines : "1.6.4",
+            hilt : "2.46.1",
+            hilt_compose : "1.0.0",
+            lifecycle : "2.6.2",
+            material3 : "1.1.0",
+            media3 : "1.0.1",
+            mockito : "5.0.0",
+            okHttp : "4.11.0",
+            retrofit : "2.9.0",
+            moshi : "1.15.0",
+            splash_screen : '1.0.0',
+            espresso_core : "3.5.1",
+            junit : "4.13.2"
+        ]
+        androidx = [
+            appcompat : "androidx.appcompat:appcompat:${versions.appcompat}",
+            composeActivity : "androidx.activity:activity-compose:${versions.activity_compose}",
+            composeUi : "androidx.compose.ui:ui",
+            composeUiGraphics : "androidx.compose.ui:ui-graphics",
+            composeUiToolingPreview : "androidx.compose.ui:ui-tooling-preview",
+            core : "androidx.core:core-ktx:${versions.core_ktx}",
+            lifecycle : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
+            splashScreen : "androidx.core:core-splashscreen:${versions.splash_screen}"
+        ]
+        di = [
+            hiltAndroid : "com.google.dagger:hilt-android:${versions.hilt}",
+            hiltCompose : "androidx.hilt:hilt-navigation-compose:${versions.hilt_compose}",
+            kapt : "com.google.dagger:hilt-android-compiler:${versions.hilt}"
+        ]
+        material = [
+            icons : "androidx.compose.material:material-icons-extended:${versions.compose_icon}",
+            material3 : "androidx.compose.material3:material3"
+        ]
+        network = [
+            okHttp : "com.squareup.okhttp3:okhttp:${versions.okHttp}",
+            retrofit : "com.squareup.retrofit2:retrofit:${versions.retrofit}",
+            retrofitMoshi: "com.squareup.retrofit2:converter-moshi:${versions.retrofit}",
+            moshi : "com.squareup.moshi:moshi:${versions.moshi}",
+            moshiKotlin : "com.squareup.moshi:moshi-kotlin:${versions.moshi}"
+        ]
+        androidTest = [
+            espressoCore : "androidx.test.espresso:espresso-core:${versions.espresso_core}",
+            composeUiTestJunit : "androidx.compose.ui:ui-test-junit4",
+            composeUiTestManifest : "androidx.compose.ui:ui-test-manifest",
+            composeUiTooling : "androidx.compose.ui:ui-tooling"
+        ]
+        test = [
+            junit : "junit:junit:${versions.junit}",
+            coroutines : "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.coroutines}",
+            mockito : "org.mockito.kotlin:mockito-kotlin:${versions.mockito}"
+        ]
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+plugins {
+    id("com.android.application") version "8.1.2" apply false
+    id("com.android.library") version "8.1.2" apply false
+    id("com.google.dagger.hilt.android") version "2.44" apply false
+    id("org.jetbrains.kotlin.android") version "1.8.10" apply false
+}
