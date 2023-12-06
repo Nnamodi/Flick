@@ -1,0 +1,33 @@
+package com.roland.android.domain.entity
+
+data class Series(
+	val id: Int = 0,
+	val name: String = "",
+	val overview: String = "",
+	val backdropPath: String = "",
+	val adult: Boolean = false,
+	val createdBy: List<Cast> = emptyList(),
+	val firstAirDate: String = "",
+	val lastAirDate: String = "",
+	val genres: List<Genre> = emptyList(),
+	val homePage: String = "",
+	val inProduction: Boolean = false,
+	val languages: List<String> = emptyList(),
+	val lastEpisodeToAir: Episode = Episode(),
+	val nextEpisodeToAir: Episode = Episode(),
+	val networks: List<ProductionCompany> = emptyList(),
+	val numberOfEpisodes: Int = 0,
+	val numberOfSeasons: Int = 0,
+	val originCountry: List<String> = emptyList(),
+	val popularity: Double = 0.0,
+	val posterPath: String = "",
+	val productionCompanies: List<ProductionCompany> = emptyList(),
+	val productionCountries: List<ProductionCountry> = emptyList(),
+	val seasons: List<Season> = emptyList(),
+	val spokenLanguage: List<Language> = emptyList(),
+	val status: String = "",
+	val tagline: String = "",
+	val type: String = "",
+	val voteAverage: Double = 0.0,
+	val voteCount: Int = 0
+)
