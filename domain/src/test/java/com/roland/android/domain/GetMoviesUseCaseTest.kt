@@ -1,8 +1,15 @@
 package com.roland.android.domain
 
-import com.roland.android.domain.entity.Movie
-import com.roland.android.domain.entity.MovieList
+import com.roland.android.domain.SampleTestData.animeCollections
+import com.roland.android.domain.SampleTestData.bollywoodMovies
+import com.roland.android.domain.SampleTestData.genreList
+import com.roland.android.domain.SampleTestData.nowPlayingMovies
+import com.roland.android.domain.SampleTestData.popularMovies
+import com.roland.android.domain.SampleTestData.topRatedMovies
+import com.roland.android.domain.SampleTestData.trendingMovies
+import com.roland.android.domain.SampleTestData.upcomingMovies
 import com.roland.android.domain.repository.MovieRepository
+import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -16,29 +23,19 @@ import org.mockito.kotlin.whenever
 class GetMoviesUseCaseTest {
 
 	private val movieRepository = mock<MovieRepository>()
-	private val useCase = GetMoviesUseCase(mock(), movieRepository)
+	private val moviesUseCase = GetMoviesUseCase(mock(), movieRepository)
+	private val furtherMovieCollectionUseCase = GetFurtherMovieCollectionUseCase(mock(), movieRepository)
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
 	fun testProcess() = runTest {
-		val movie1 = Movie(id = 0, title = "Oppenhiemer")
-		val movie2 = Movie(id = 1, title = "Barbie")
-		val movie3 = Movie(id = 2, title = "The Burial")
-		val movie4 = Movie(id = 3, title = "Infinite")
-
-		val trendingMovies = MovieList(results = listOf(movie1, movie2), totalResults = 2)
-		val popularMovies = MovieList(results = listOf(movie1, movie2, movie3, movie4), totalResults = 4)
-		val nowPlayingMovies = MovieList(results = listOf(movie1, movie2, movie4), totalResults = 3)
-		val topRatedMovies = MovieList(results = listOf(movie1, movie4), totalResults = 2)
-		val upcomingMovies = MovieList(results = listOf(movie3), totalResults = 1)
-
 		whenever(movieRepository.fetchTrendingMovies()).thenReturn(flowOf(trendingMovies))
 		whenever(movieRepository.fetchPopularMovies()).thenReturn(flowOf(popularMovies))
 		whenever(movieRepository.fetchNowPlayingMovies()).thenReturn(flowOf(nowPlayingMovies))
 		whenever(movieRepository.fetchTopRatedMovies()).thenReturn(flowOf(topRatedMovies))
 		whenever(movieRepository.fetchUpcomingMovies()).thenReturn(flowOf(upcomingMovies))
 
-		val response = useCase.process(GetMoviesUseCase.Request).first()
+		val response = moviesUseCase.process(GetMoviesUseCase.Request).first()
 		assertEquals(
 			GetMoviesUseCase.Response(
 				trendingMovies,
@@ -46,6 +43,25 @@ class GetMoviesUseCaseTest {
 				nowPlayingMovies,
 				topRatedMovies,
 				upcomingMovies
+			),
+			response
+		)
+	}
+
+	@OptIn(ExperimentalCoroutinesApi::class)
+	@Test
+	fun testProcess2() = runTest {
+
+		whenever(movieRepository.fetchBollywoodMovies()).thenReturn(flowOf(bollywoodMovies))
+		whenever(movieRepository.fetchAnimeCollection()).thenReturn(flowOf(animeCollections))
+		whenever(movieRepository.fetchMovieGenres()).thenReturn(flowOf(genreList))
+
+		val response = furtherMovieCollectionUseCase.process(GetFurtherMovieCollectionUseCase.Request).first()
+		assertEquals(
+			GetFurtherMovieCollectionUseCase.Response(
+				bollywoodMovies,
+				animeCollections,
+				genreList
 			),
 			response
 		)

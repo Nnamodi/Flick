@@ -6,7 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.*
 import org.junit.Before
@@ -16,7 +16,7 @@ import org.mockito.Mockito.mock
 class UseCaseTest {
 
 	@OptIn(ExperimentalCoroutinesApi::class)
-	private val configuration = UseCase.Configuration(StandardTestDispatcher())
+	private val configuration = UseCase.Configuration(UnconfinedTestDispatcher())
 	private val request = mock<UseCase.Request>()
 	private val response = mock<UseCase.Response>()
 
