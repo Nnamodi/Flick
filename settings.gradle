@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "Flick"
 include ':app'
 include ':domain'
+include ':data-repository'
