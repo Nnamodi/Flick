@@ -51,7 +51,6 @@ class GetMoviesUseCaseTest {
 	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
 	fun testProcess2() = runTest {
-
 		whenever(movieRepository.fetchBollywoodMovies()).thenReturn(flowOf(bollywoodMovies))
 		whenever(movieRepository.fetchAnimeCollection()).thenReturn(flowOf(animeCollections))
 		whenever(movieRepository.fetchMovieGenres()).thenReturn(flowOf(genreList))
