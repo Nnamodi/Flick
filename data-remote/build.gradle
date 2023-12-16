@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace 'com.roland.android.data_repository'
+    namespace 'com.roland.android.data_remote'
     compileSdk defaultCompileSdkVersion
 
     defaultConfig {
@@ -41,7 +41,15 @@ dependencies {
     implementation di.hiltAndroid
     kapt di.kapt
 
+    // networking
+    implementation network.okHttp
+    implementation network.retrofit
+    implementation network.retrofitMoshi
+    implementation network.moshi
+    implementation network.moshiKotlin
+
     // other modules
+    implementation(project(path: ":data-repository"))
     implementation(project(path: ":domain"))
 
     // unit testing
