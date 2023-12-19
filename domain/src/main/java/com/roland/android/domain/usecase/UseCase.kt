@@ -1,6 +1,7 @@
 package com.roland.android.domain.usecase
 
 import com.roland.android.domain.entity.Result
+import com.roland.android.domain.entity.UseCaseException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -17,7 +18,7 @@ abstract class UseCase<I: UseCase.Request, O: UseCase.Response>(
 		}
 		.flowOn(configuration.dispatcher)
 		.catch {
-			emit(Result.Error(it))
+			emit(Result.Error(UseCaseException.processThrowable(it)))
 		}
 
 	internal abstract fun process(request: I): Flow<O>
