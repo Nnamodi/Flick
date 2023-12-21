@@ -1,5 +1,6 @@
 package com.roland.android.data_remote.di
 
+import com.roland.android.data_remote.BuildConfig
 import com.roland.android.data_remote.network.service.CastService
 import com.roland.android.data_remote.network.service.MovieService
 import com.roland.android.data_remote.network.service.TvShowService
@@ -10,6 +11,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -23,7 +25,15 @@ class NetworkModule {
 	fun providesOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
 		.readTimeout(60, TimeUnit.SECONDS)
 		.connectTimeout(60, TimeUnit.SECONDS)
-		.build()
+		.addInterceptor(
+			Interceptor { chain: Interceptor.Chain ->
+				val request = chain.request()
+					.newBuilder()
+					.header("Authorization", "Bearer ${BuildConfig.ACCESS_TOKEN}")
+					.build()
+				chain.proceed(request)
+			}
+		).build()
 
 	@Provides
 	fun providesMoshi(): Moshi = Moshi.Builder()

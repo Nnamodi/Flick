@@ -5,6 +5,13 @@ plugins {
     id 'dagger.hilt.android.plugin'
 }
 
+String getAccessToken() {
+    def properties = new Properties()
+    def tokenFile = project.rootProject.file("local.properties")
+    properties.load(tokenFile.newDataInputStream())
+    return properties["ACCESS_TOKEN"]
+}
+
 android {
     namespace 'com.roland.android.data_remote'
     compileSdk defaultCompileSdkVersion
@@ -16,8 +23,16 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    buildFeatures {
+        buildConfig true
+    }
+
     buildTypes {
+        debug {
+            buildConfigField "String", "ACCESS_TOKEN", getAccessToken()
+        }
         release {
+            buildConfigField "String", "ACCESS_TOKEN", getAccessToken()
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

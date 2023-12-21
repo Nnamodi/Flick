@@ -35,7 +35,6 @@ object Converters {
 		movieListModel.results.map { convertToMovie(it) },
 		movieListModel.totalPages,
 		movieListModel.totalResults
-
 	)
 
 	fun convertToMovieDetails(detailsModel: MovieDetailsModel) = MovieDetails(
