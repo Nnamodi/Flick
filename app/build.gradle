@@ -69,6 +69,11 @@ dependencies {
     implementation material.icons
     implementation material.material3
 
+    // other modules
+    implementation(project(path: ":data-remote"))
+    implementation(project(path: ":data-repository"))
+    implementation(project(path: ":domain"))
+
     // splash_screen
     implementation androidx.splashScreen
 
