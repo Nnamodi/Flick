@@ -3,6 +3,7 @@ package com.roland.android.data_remote.utils
 import com.roland.android.data_remote.network.model.CastModel
 import com.roland.android.data_remote.network.model.DatesModel
 import com.roland.android.data_remote.network.model.EpisodeModel
+import com.roland.android.data_remote.network.model.GenreListModel
 import com.roland.android.data_remote.network.model.GenreModel
 import com.roland.android.data_remote.network.model.LanguageModel
 import com.roland.android.data_remote.network.model.MovieCreditsModel
@@ -17,6 +18,7 @@ import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.Dates
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.Genre
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Language
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieCredits
@@ -143,6 +145,10 @@ object Converters {
 		castModel.biography,
 		castModel.birthDay,
 		castModel.deathDay
+	)
+
+	fun convertToGenreList(genreListModel: GenreListModel) = GenreList(
+		genreListModel.genres.map { convertToGenre(it) }
 	)
 
 	fun convertToGenre(genreModel: GenreModel) = Genre(

@@ -1,5 +1,6 @@
 package com.roland.android.flick.models
 
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.MovieList
 
 data class MoviesModel(
@@ -8,4 +9,10 @@ data class MoviesModel(
 	val nowPlayingMovies: MovieList,
 	val topRated: MovieList,
 	val upcomingMovies: MovieList
+)
+
+data class FurtherMoviesModel(
+	val bollywoodMovies: MovieList,
+	val animeCollection: MovieList,
+	val movieGenres: GenreList
 )

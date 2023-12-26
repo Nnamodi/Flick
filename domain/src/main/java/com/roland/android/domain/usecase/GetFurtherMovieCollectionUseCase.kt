@@ -1,6 +1,6 @@
 package com.roland.android.domain.usecase
 
-import com.roland.android.domain.entity.Genre
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.MovieList
 import com.roland.android.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
@@ -25,7 +25,7 @@ class GetFurtherMovieCollectionUseCase @Inject constructor(
 	data class Response(
 		val bollywoodMovies: MovieList,
 		val animeCollection: MovieList,
-		val movieGenres: List<Genre>
+		val movieGenres: GenreList
 	) : UseCase.Response
 
 }

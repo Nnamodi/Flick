@@ -1,7 +1,7 @@
 package com.roland.android.data_repository.repository
 
 import com.roland.android.data_repository.data_source.RemoteMovieSource
-import com.roland.android.domain.entity.Genre
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.MovieList
 import com.roland.android.domain.repository.MovieRepository
@@ -32,6 +32,6 @@ class MovieRepositoryImpl @Inject constructor(
 
 	override fun fetchMovieDetails(movieId: Int): Flow<MovieDetails> = remoteMovieSource.fetchMovieDetails(movieId)
 
-	override fun fetchMovieGenres(): Flow<List<Genre>> = remoteMovieSource.fetchMovieGenres()
+	override fun fetchMovieGenres(): Flow<GenreList> = remoteMovieSource.fetchMovieGenres()
 
 }

@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
 					color = MaterialTheme.colorScheme.background
 				) {
 					val viewModel: MoviesViewModel = hiltViewModel()
-					Greeting("${viewModel.movies}")
+					Greeting("${viewModel.furtherMovies}")
 				}
 			}
 		}

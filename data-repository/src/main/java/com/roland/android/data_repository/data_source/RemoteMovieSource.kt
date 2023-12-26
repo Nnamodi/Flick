@@ -1,6 +1,6 @@
 package com.roland.android.data_repository.data_source
 
-import com.roland.android.domain.entity.Genre
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.MovieList
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +27,6 @@ interface RemoteMovieSource {
 
 	fun fetchMovieDetails(movieId: Int): Flow<MovieDetails>
 
-	fun fetchMovieGenres(): Flow<List<Genre>>
+	fun fetchMovieGenres(): Flow<GenreList>
 
 }

@@ -1,6 +1,6 @@
 package com.roland.android.data_remote.network.service
 
-import com.roland.android.data_remote.network.model.GenreModel
+import com.roland.android.data_remote.network.model.GenreListModel
 import com.roland.android.data_remote.network.model.MovieDetailsModel
 import com.roland.android.data_remote.network.model.MovieListModel
 import retrofit2.http.GET
@@ -80,6 +80,6 @@ interface MovieService {
 	@GET("/3/genre/movie/list")
 	suspend fun fetchMovieGenres(
 		@Query("language") language: String = "en"
-	): List<GenreModel>
+	): GenreListModel
 
 }

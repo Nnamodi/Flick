@@ -58,6 +58,11 @@ data class MovieDetailsModel(
 	val originalCountry: List<String>? = null
 )
 
+data class GenreListModel(
+	@Json(name = "genres")
+	val genres: List<GenreModel>
+)
+
 data class GenreModel(
 	@Json(name = "id")
 	val id: Int = 0,

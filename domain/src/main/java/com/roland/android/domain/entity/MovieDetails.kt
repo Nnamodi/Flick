@@ -30,6 +30,10 @@ data class MovieDetails(
 	val originalCountry: List<String>? = null
 )
 
+data class GenreList(
+	val genres: List<Genre>
+)
+
 data class Genre(
 	val id: Int = 0,
 	val name: String = ""

@@ -2,6 +2,7 @@ package com.roland.android.data_remote.sample_data
 
 import com.roland.android.data_remote.network.model.CastModel
 import com.roland.android.data_remote.network.model.EpisodeModel
+import com.roland.android.data_remote.network.model.GenreListModel
 import com.roland.android.data_remote.network.model.GenreModel
 import com.roland.android.data_remote.network.model.MovieCreditsModel
 import com.roland.android.data_remote.network.model.MovieDetailsModel
@@ -46,7 +47,7 @@ object RemoteSampleData {
 	val remoteEpisodeDetails = EpisodeModel(episodeNumber = 1)
 
 	// Other
-	val remoteGenreList = listOf(GenreModel(name = "Action"), GenreModel(name = "Animation"), GenreModel(name = "Comedy"))
+	val remoteGenreList = GenreListModel(listOf(GenreModel(name = "Action"), GenreModel(name = "Animation"), GenreModel(name = "Comedy")))
 	val remoteMovieCredits = MovieCreditsModel(casts = listOf(CastModel(name = "Jack"), CastModel(name = "Downey"), CastModel(name = "William")))
 	val remoteMovieCast = remoteMovieCredits.casts[0]
 

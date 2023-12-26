@@ -1,11 +1,11 @@
 package com.roland.android.data_remote.data_source
 
 import com.roland.android.data_remote.network.service.MovieService
-import com.roland.android.data_remote.utils.Converters.convertToGenre
+import com.roland.android.data_remote.utils.Converters.convertToGenreList
 import com.roland.android.data_remote.utils.Converters.convertToMovieDetails
 import com.roland.android.data_remote.utils.Converters.convertToMovieList
 import com.roland.android.data_repository.data_source.RemoteMovieSource
-import com.roland.android.domain.entity.Genre
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.MovieList
 import com.roland.android.domain.entity.UseCaseException
@@ -99,12 +99,10 @@ class RemoteMovieSourceImpl @Inject constructor(
 		throw UseCaseException.MovieException(it)
 	}
 
-	override fun fetchMovieGenres(): Flow<List<Genre>> = flow {
+	override fun fetchMovieGenres(): Flow<GenreList> = flow {
 		emit(movieService.fetchMovieGenres())
-	}.map { genreModels ->
-		genreModels.map {
-			convertToGenre(it)
-		}
+	}.map { genreListModel ->
+		convertToGenreList(genreListModel)
 	}.catch {
 		throw UseCaseException.MovieException(it)
 	}

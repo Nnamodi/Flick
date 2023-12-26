@@ -4,6 +4,7 @@ import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.Dates
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.Genre
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieCredits
 import com.roland.android.domain.entity.MovieDetails
@@ -47,7 +48,7 @@ object ExpectedSampleData {
 	val episodeDetails = Episode(episodeNumber = 1)
 
 	// Other
-	val genreList = listOf(Genre(name = "Action"), Genre(name = "Animation"), Genre(name = "Comedy"))
+	val genreList = GenreList(listOf(Genre(name = "Action"), Genre(name = "Animation"), Genre(name = "Comedy")))
 	val movieCredits = MovieCredits(casts = listOf(Cast(name = "Jack"), Cast(name = "Downey"), Cast(name = "William")))
 	val movieCast = movieCredits.casts[0]
 
