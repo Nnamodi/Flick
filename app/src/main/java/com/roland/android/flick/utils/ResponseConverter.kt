@@ -2,8 +2,10 @@ package com.roland.android.flick.utils
 
 import com.roland.android.domain.entity.Result
 import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
+import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.flick.models.FurtherMoviesModel
+import com.roland.android.flick.models.MovieDetailsModel
 import com.roland.android.flick.models.MoviesModel
 import com.roland.android.flick.state.UiState
 import javax.inject.Inject
@@ -44,6 +46,26 @@ class ResponseConverter @Inject constructor() {
 						result.data.bollywoodMovies,
 						result.data.animeCollection,
 						result.data.movieGenres
+					)
+				)
+			}
+		}
+	}
+
+	fun convertMovieDetailsData(
+		result: Result<GetMovieDetailsUseCase.Response>
+	): UiState<MovieDetailsModel> {
+		return when (result) {
+			is Result.Error -> {
+				UiState.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				UiState.Success(
+					MovieDetailsModel(
+						result.data.recommendedMovies,
+						result.data.similarMovies,
+						result.data.movieDetails,
+						result.data.movieCasts
 					)
 				)
 			}

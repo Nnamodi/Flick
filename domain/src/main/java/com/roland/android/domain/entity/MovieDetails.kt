@@ -43,7 +43,7 @@ data class ProductionCompany(
 	val id: Int = 0,
 	val name: String = "",
 	val originCountry: String = "",
-	val logoPath: String = ""
+	val logoPath: String? = null
 )
 
 data class ProductionCountry(

@@ -12,7 +12,7 @@ data class MovieModel(
 	@Json(name = "genre_ids")
 	val genreIds: List<Int> = emptyList(),
 	@Json(name = "backdrop_path")
-	val backdropPath: String = "",
+	val backdropPath: String? = null,
 	@Json(name = "poster_path")
 	val posterPath: String = "",
 	@Json(name = "language")

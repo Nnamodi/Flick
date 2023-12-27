@@ -7,10 +7,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
+import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.flick.models.FurtherMoviesModel
+import com.roland.android.flick.models.MovieDetailsModel
 import com.roland.android.flick.models.MoviesModel
 import com.roland.android.flick.state.UiState
+import com.roland.android.flick.utils.NavigationActions
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +25,7 @@ import javax.inject.Inject
 class MoviesViewModel @Inject constructor(
 	private val moviesUseCase: GetMoviesUseCase,
 	private val furtherMovieUseCase: GetFurtherMovieCollectionUseCase,
+	private val movieDetailsUseCase: GetMovieDetailsUseCase,
 	private val converter: ResponseConverter
 ) : ViewModel() {
 
@@ -30,6 +34,9 @@ class MoviesViewModel @Inject constructor(
 
 	private val furtherMoviesFlow = MutableStateFlow<UiState<FurtherMoviesModel>?>(null)
 	var furtherMovies by mutableStateOf(furtherMoviesFlow.value ?: UiState.Loading); private set
+
+	private val movieDetailsFlow = MutableStateFlow<UiState<MovieDetailsModel>?>(null)
+	var movieDetails by mutableStateOf(movieDetailsFlow.value ?: UiState.Loading); private set
 
 	init {
 		loadMovies()
@@ -45,6 +52,12 @@ class MoviesViewModel @Inject constructor(
 			furtherMoviesFlow.collect {
 				furtherMovies = it ?: UiState.Loading
 				Log.i("MoviesInfo", "Fetched more collections: $furtherMovies")
+			}
+		}
+		viewModelScope.launch {
+			movieDetailsFlow.collect {
+				movieDetails = it ?: UiState.Loading
+				Log.i("MoviesInfo", "Fetched movie details: $movieDetails")
 			}
 		}
 	}
@@ -65,6 +78,22 @@ class MoviesViewModel @Inject constructor(
 				.map { converter.convertFurtherMoviesData(it) }
 				.collect {
 					furtherMoviesFlow.value = it
+				}
+		}
+	}
+
+	fun navigationActions(action: NavigationActions) {
+		when (action) {
+			is NavigationActions.GetMovieDetails -> getMovieDetails(action.movieId)
+		}
+	}
+
+	private fun getMovieDetails(movieId: Int) {
+		viewModelScope.launch {
+			movieDetailsUseCase.execute(GetMovieDetailsUseCase.Request(movieId))
+				.map { converter.convertMovieDetailsData(it) }
+				.collect {
+					movieDetailsFlow.value = it
 				}
 		}
 	}
