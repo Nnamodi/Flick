@@ -36,6 +36,6 @@ data class MovieModel(
 	val tvName: String? = null,
 	@Json(name = "first_air_date")
 	val firstAirDate: String? = null,
-	@Json(name = "original_country")
-	val originalCountry: List<String>? = null
+	@Json(name = "origin_country")
+	val originCountry: List<String>? = null
 )

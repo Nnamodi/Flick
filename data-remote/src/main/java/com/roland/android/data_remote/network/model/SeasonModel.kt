@@ -10,7 +10,7 @@ data class SeasonModel(
 	@Json(name = "overview")
 	val overview: String = "",
 	@Json(name = "air_date")
-	val airDate: String = "",
+	val airDate: String? = null,
 	@Json(name = "season_number")
 	val seasonNumber: Int = 0,
 	@Json(name = "episode_count")
@@ -18,7 +18,7 @@ data class SeasonModel(
 	@Json(name = "episodes")
 	val episodes: List<EpisodeModel>? = null,
 	@Json(name = "poster_path")
-	val posterPath: String = "",
+	val posterPath: String? = null,
 	@Json(name = "vote_average")
 	val voteAverage: Double = 0.0,
 )

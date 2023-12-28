@@ -173,7 +173,7 @@ object Converters {
 		movieModel.releaseDate,
 		movieModel.tvName,
 		movieModel.firstAirDate,
-		movieModel.originalCountry
+		movieModel.originCountry
 	)
 
 	private fun convertToDates(datesModel: DatesModel?) = Dates(

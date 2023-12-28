@@ -1,7 +1,7 @@
 package com.roland.android.data_repository.data_source
 
 import com.roland.android.domain.entity.Episode
-import com.roland.android.domain.entity.Genre
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.MovieList
 import com.roland.android.domain.entity.Season
 import com.roland.android.domain.entity.Series
@@ -34,6 +34,6 @@ interface RemoteTvShowSource {
 		episodeNumber: Int
 	): Flow<Episode>
 
-	fun fetchTvShowGenres(): Flow<List<Genre>>
+	fun fetchTvShowGenres(): Flow<GenreList>
 
 }

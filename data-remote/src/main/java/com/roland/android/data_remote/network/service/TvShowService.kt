@@ -1,7 +1,7 @@
 package com.roland.android.data_remote.network.service
 
 import com.roland.android.data_remote.network.model.EpisodeModel
-import com.roland.android.data_remote.network.model.GenreModel
+import com.roland.android.data_remote.network.model.GenreListModel
 import com.roland.android.data_remote.network.model.MovieListModel
 import com.roland.android.data_remote.network.model.SeasonModel
 import com.roland.android.data_remote.network.model.SeriesModel
@@ -73,6 +73,6 @@ interface TvShowService {
 	@GET("/3/genre/tv/list")
 	suspend fun fetchTvShowGenres(
 		@Query("language") language: String = "en"
-	): List<GenreModel>
+	): GenreListModel
 
 }

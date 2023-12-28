@@ -10,7 +10,7 @@ data class Episode(
 	val productionCode: String = "",
 	val seasonNumber: Int = 0,
 	val showId: Int = 0,
-	val stillPath: String = "",
+	val stillPath: String? = null,
 	val voteAverage: Double = 0.0,
 	val voteCount: Int = 0
 )

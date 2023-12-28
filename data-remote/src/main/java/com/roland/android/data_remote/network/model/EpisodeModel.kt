@@ -22,7 +22,7 @@ data class EpisodeModel(
 	@Json(name = "show_id")
 	val showId: Int = 0,
 	@Json(name = "still_path")
-	val stillPath: String = "",
+	val stillPath: String? = null,
 	@Json(name = "vote_average")
 	val voteAverage: Double = 0.0,
 	@Json(name = "vote_count")

@@ -2,13 +2,13 @@ package com.roland.android.data_remote.data_source
 
 import com.roland.android.data_remote.network.service.TvShowService
 import com.roland.android.data_remote.utils.Converters.convertToEpisode
-import com.roland.android.data_remote.utils.Converters.convertToGenre
+import com.roland.android.data_remote.utils.Converters.convertToGenreList
 import com.roland.android.data_remote.utils.Converters.convertToMovieList
 import com.roland.android.data_remote.utils.Converters.convertToSeason
 import com.roland.android.data_remote.utils.Converters.convertToShowDetails
 import com.roland.android.data_repository.data_source.RemoteTvShowSource
 import com.roland.android.domain.entity.Episode
-import com.roland.android.domain.entity.Genre
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.MovieList
 import com.roland.android.domain.entity.Season
 import com.roland.android.domain.entity.Series
@@ -102,12 +102,10 @@ class RemoteTvShowSourceImpl @Inject constructor(
 		throw UseCaseException.TvShowException(it)
 	}
 
-	override fun fetchTvShowGenres(): Flow<List<Genre>> = flow {
+	override fun fetchTvShowGenres(): Flow<GenreList> = flow {
 		emit(tvShowService.fetchTvShowGenres())
-	}.map { genreModelList ->
-		genreModelList.map {
-			convertToGenre(it)
-		}
+	}.map { genreListModel ->
+		convertToGenreList(genreListModel)
 	}.catch {
 		throw UseCaseException.TvShowException(it)
 	}

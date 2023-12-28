@@ -1,6 +1,6 @@
 package com.roland.android.domain.usecase
 
-import com.roland.android.domain.entity.Genre
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.MovieList
 import com.roland.android.domain.repository.TvShowRepository
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +29,7 @@ class GetTvShowUseCase @Inject constructor(
 		val popularShows: MovieList,
 		val showsAiringToday: MovieList,
 		val showsSoonToAir: MovieList,
-		val genres: List<Genre>
+		val genres: GenreList
 	) : UseCase.Response
 
 }
