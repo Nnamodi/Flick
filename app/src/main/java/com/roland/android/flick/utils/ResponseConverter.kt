@@ -1,30 +1,34 @@
 package com.roland.android.flick.utils
 
 import com.roland.android.domain.entity.Result
+import com.roland.android.domain.usecase.GetCastDetailsUseCase
 import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
 import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
+import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
+import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.MovieDetailsModel
 import com.roland.android.flick.models.MoviesModel
+import com.roland.android.flick.models.SeasonDetailsModel
 import com.roland.android.flick.models.TvShowDetailsModel
 import com.roland.android.flick.models.TvShowsModel
-import com.roland.android.flick.state.UiState
+import com.roland.android.flick.state.State
 import javax.inject.Inject
 
 class ResponseConverter @Inject constructor() {
 
 	fun convertMoviesData(
 		result: Result<GetMoviesUseCase.Response>
-	): UiState<MoviesModel> {
+	): State<MoviesModel> {
 		return when (result) {
 			is Result.Error -> {
-				UiState.Error(result.exception.localizedMessage.orEmpty())
+				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
-				UiState.Success(
+				State.Success(
 					MoviesModel(
 						result.data.trendingMovies,
 						result.data.popularMovies,
@@ -39,13 +43,13 @@ class ResponseConverter @Inject constructor() {
 
 	fun convertFurtherMoviesData(
 		result: Result<GetFurtherMovieCollectionUseCase.Response>
-	): UiState<FurtherMoviesModel> {
+	): State<FurtherMoviesModel> {
 		return when (result) {
 			is Result.Error -> {
-				UiState.Error(result.exception.localizedMessage.orEmpty())
+				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
-				UiState.Success(
+				State.Success(
 					FurtherMoviesModel(
 						result.data.bollywoodMovies,
 						result.data.animeCollection,
@@ -58,13 +62,13 @@ class ResponseConverter @Inject constructor() {
 
 	fun convertMovieDetailsData(
 		result: Result<GetMovieDetailsUseCase.Response>
-	): UiState<MovieDetailsModel> {
+	): State<MovieDetailsModel> {
 		return when (result) {
 			is Result.Error -> {
-				UiState.Error(result.exception.localizedMessage.orEmpty())
+				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
-				UiState.Success(
+				State.Success(
 					MovieDetailsModel(
 						result.data.recommendedMovies,
 						result.data.similarMovies,
@@ -78,13 +82,13 @@ class ResponseConverter @Inject constructor() {
 
 	fun convertTvShowsData(
 		result: Result<GetTvShowUseCase.Response>
-	): UiState<TvShowsModel> {
+	): State<TvShowsModel> {
 		return when (result) {
 			is Result.Error -> {
-				UiState.Error(result.exception.localizedMessage.orEmpty())
+				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
-				UiState.Success(
+				State.Success(
 					TvShowsModel(
 						result.data.topRatedShows,
 						result.data.popularShows,
@@ -99,13 +103,13 @@ class ResponseConverter @Inject constructor() {
 
 	fun convertTvShowDetailsData(
 		result: Result<GetTvShowDetailsUseCase.Response>
-	): UiState<TvShowDetailsModel> {
+	): State<TvShowDetailsModel> {
 		return when (result) {
 			is Result.Error -> {
-				UiState.Error(result.exception.localizedMessage.orEmpty())
+				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
-				UiState.Success(
+				State.Success(
 					TvShowDetailsModel(
 						result.data.recommendedShows,
 						result.data.similarShows,
@@ -113,6 +117,38 @@ class ResponseConverter @Inject constructor() {
 						result.data.showCasts
 					)
 				)
+			}
+		}
+	}
+
+	fun convertSeasonDetailsData(
+		result: Result<GetSeasonDetailsUseCase.Response>
+	): State<SeasonDetailsModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					SeasonDetailsModel(
+						result.data.season,
+						result.data.episode,
+						result.data.showCasts
+					)
+				)
+			}
+		}
+	}
+
+	fun convertCastDetailsData(
+		result: Result<GetCastDetailsUseCase.Response>
+	): State<CastDetailsModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(CastDetailsModel(result.data.cast))
 			}
 		}
 	}

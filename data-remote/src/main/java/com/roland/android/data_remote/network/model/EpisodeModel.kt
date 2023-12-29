@@ -10,7 +10,7 @@ data class EpisodeModel(
 	@Json(name = "overview")
 	val overview: String = "",
 	@Json(name = "air_date")
-	val airDate: String = "",
+	val airDate: String? = null,
 	@Json(name = "episode_number")
 	val episodeNumber: Int = 0,
 	@Json(name = "episode_type")

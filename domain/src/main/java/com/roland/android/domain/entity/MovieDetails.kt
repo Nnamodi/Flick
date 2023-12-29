@@ -31,7 +31,7 @@ data class MovieDetails(
 )
 
 data class GenreList(
-	val genres: List<Genre>
+	val genres: List<Genre> = emptyList()
 )
 
 data class Genre(

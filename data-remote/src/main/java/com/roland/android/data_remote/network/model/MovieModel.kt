@@ -14,7 +14,7 @@ data class MovieModel(
 	@Json(name = "backdrop_path")
 	val backdropPath: String? = null,
 	@Json(name = "poster_path")
-	val posterPath: String = "",
+	val posterPath: String? = null,
 	@Json(name = "language")
 	val language: String = "",
 	@Json(name = "popularity")

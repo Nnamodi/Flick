@@ -31,8 +31,8 @@ class MainActivity : ComponentActivity() {
 				) {
 					val moviesViewModel: MoviesViewModel = hiltViewModel()
 					val tvShowsViewModel: TvShowsViewModel = hiltViewModel()
-					Greeting("${moviesViewModel.furtherMovies}")
-					Greeting("${tvShowsViewModel.tvShows}")
+					Greeting("${moviesViewModel.moviesUiState}")
+					Greeting("${tvShowsViewModel.itemDetailsUiState}")
 				}
 			}
 		}
