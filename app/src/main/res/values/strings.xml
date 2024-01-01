@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Flick</string>
+    <string name="trending_movies">Trending</string>
+    <string name="most_popular_movies">Most Popular</string>
+    <string name="see_all">See All</string>
+    <string name="top_rated_movies">Top Rated</string>
 </resources>

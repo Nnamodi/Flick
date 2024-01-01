@@ -9,6 +9,7 @@ buildscript {
         versions = [
             activity_compose : "1.8.0",
             appcompat : "1.6.1",
+            coil : "2.3.0",
             compose : "1.4.4",
             compose_icon : "1.4.1",
             core_ktx : "1.10.0",
@@ -35,6 +36,9 @@ buildscript {
             core : "androidx.core:core-ktx:${versions.core_ktx}",
             lifecycle : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
             splashScreen : "androidx.core:core-splashscreen:${versions.splash_screen}"
+        ]
+        coil = [
+            compose : "io.coil-kt:coil-compose:${versions.coil}"
         ]
         di = [
             hiltAndroid : "com.google.dagger:hilt-android:${versions.hilt}",
