@@ -51,10 +51,12 @@ interface MovieService {
 	@GET("/3/discover/movie")
 	suspend fun fetchBollywoodMovies(
 		@Query("include_adult") includeAdult: Boolean = false,
-		@Query("language") language: String = "en_US",
+		@Query("language") language: String = "hi_IN",
 		@Query("page") page: Int = 1,
 		@Query("sort_by") sortBy: String = "popularity.desc",
-		@Query("region") region: String = "IN"
+		@Query("region") region: String = "IN",
+		@Query("watch_region") watchRegion: String = "IN",
+		@Query("with_original_language") originalLang: String = "hi"
 	): MovieListModel
 
 	@GET("/3/movie/{movie_id}/recommendations")

@@ -3,7 +3,9 @@ package com.roland.android.flick.ui.screens
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
@@ -16,13 +18,21 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieList
 import com.roland.android.flick.R
+import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.MoviesModel
 import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.HomeTopBar
@@ -35,13 +45,15 @@ import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-	moviesState: State<MoviesModel>?
+	moviesState: State<MoviesModel>?,
+	furtherMoviesState: State<FurtherMoviesModel>?
 ) {
 	Scaffold(
 		topBar = { HomeTopBar() }
 	) { paddingValues ->
-		CommonScreen(state = moviesState) { data ->
+		CommonScreen(moviesState, furtherMoviesState) { data1, data2 ->
 			val pagerState = rememberPagerState()
+			var horizontalPaddingValue by remember { mutableStateOf(PADDING_WIDTH) }
 
 			Column(
 				modifier = Modifier
@@ -50,38 +62,68 @@ fun HomeScreen(
 			) {
 				Text(
 					text = stringResource(R.string.trending_movies),
-					modifier = Modifier.padding(start = PADDING_WIDTH, bottom = 24.dp)
+					modifier = Modifier.padding(start = PADDING_WIDTH, bottom = 20.dp),
+					fontWeight = FontWeight.Bold
 				)
 				HorizontalPager(
-					pageCount = 10,
+					pageCount = 20,
 					state = pagerState,
-					contentPadding = PaddingValues(horizontal = PADDING_WIDTH),
+					contentPadding = PaddingValues(
+						start = horizontalPaddingValue,
+						end = PADDING_WIDTH
+					),
 					modifier = Modifier
 						.fillMaxWidth()
 						.padding(bottom = 16.dp),
 					pageSpacing = 14.dp,
 					flingBehavior = PagerDefaults.flingBehavior(
-						pagerState,
-						PagerSnapDistance.atMost(3)
+						state = pagerState,
+						pagerSnapDistance = PagerSnapDistance.atMost(3)
 					),
 					pageSize = PageSize.Fixed(POSTER_WIDTH_LARGE)
 				) { page ->
-					val trendingMovies = data.trendingMovies.results.take(10)
+					val trendingMovies = data1.trendingMovies.results.take(20)
 
 					LargeItemPoster(movie = trendingMovies[page], onClick = {})
 				}
 
 				HorizontalPosters(
-					movieList = data.popularMovies,
+					movieList = data1.popularMovies,
 					header = stringResource(R.string.most_popular_movies),
 					seeAll = {}
 				)
 
 				HorizontalPosters(
-					movieList = data.topRated,
+					movieList = data1.topRated,
 					header = stringResource(R.string.top_rated_movies),
 					seeAll = {}
 				)
+
+				HorizontalPosters(
+					movieList = data2.animeCollection,
+					header = stringResource(R.string.anime_collection),
+					seeAll = {}
+				)
+
+				HorizontalPosters(
+					movieList = data2.bollywoodMovies,
+					header = stringResource(R.string.bollywood_movies),
+					seeAll = {}
+				)
+
+				HorizontalPosters(
+					movieList = data1.nowPlayingMovies,
+					header = stringResource(R.string.in_theatres),
+					seeAll = {}
+				)
+
+				Spacer(Modifier.height(50.dp))
+			}
+
+			LaunchedEffect(pagerState) {
+				snapshotFlow { pagerState.currentPage }.collect { page ->
+					horizontalPaddingValue = if (page == 0) PADDING_WIDTH else 40.dp
+				}
 			}
 		}
 	}
@@ -93,6 +135,7 @@ fun HomeScreenPreview() {
 	FlickTheme {
 		val movies = MovieList(results = listOf(Movie(), Movie(), Movie()))
 		val moviesState = State.Success(MoviesModel(trendingMovies = movies))
-		HomeScreen(moviesState = moviesState)
+		val furtherMoviesState = State.Success(FurtherMoviesModel(animeCollection = movies))
+		HomeScreen(moviesState, furtherMoviesState)
 	}
 }

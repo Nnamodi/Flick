@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.roland.android.domain.entity.Movie
@@ -46,14 +47,15 @@ fun HorizontalPosters(
 		) {
 			Text(
 				text = header,
-				modifier = Modifier.padding(PADDING_WIDTH, 16.dp)
+				modifier = Modifier.padding(PADDING_WIDTH, 16.dp),
+				fontWeight = FontWeight.Bold
 			)
 			Spacer(Modifier.weight(1f))
 			Text(
 				text = stringResource(R.string.see_all),
 				modifier = Modifier
-					.clip(MaterialTheme.shapes.small)
 					.padding(PADDING_WIDTH, 10.dp)
+					.clip(MaterialTheme.shapes.small)
 					.clickable { seeAll() }
 					.padding(6.dp),
 				color = Color.Gray
@@ -63,7 +65,7 @@ fun HorizontalPosters(
 			contentPadding = PaddingValues(horizontal = PADDING_WIDTH)
 		) {
 			itemsIndexed(
-				items = movieList.results.take(15),
+				items = movieList.results.take(20),
 				key = { _, movie -> movie.id}
 			) { _, movie ->
 				MediumItemPoster(

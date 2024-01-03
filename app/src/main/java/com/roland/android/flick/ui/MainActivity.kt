@@ -22,7 +22,10 @@ class MainActivity : ComponentActivity() {
 					modifier = Modifier.fillMaxSize()
 				) {
 					val homeViewModel: HomeViewModel = hiltViewModel()
-					HomeScreen(moviesState = homeViewModel.moviesFlow)
+					HomeScreen(
+						moviesState = homeViewModel.moviesFlow,
+						furtherMoviesState = homeViewModel.furtherMoviesFlow
+					)
 				}
 			}
 		}

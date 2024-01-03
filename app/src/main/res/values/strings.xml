@@ -4,4 +4,7 @@
     <string name="most_popular_movies">Most Popular</string>
     <string name="see_all">See All</string>
     <string name="top_rated_movies">Top Rated</string>
+    <string name="anime_collection">Anime</string>
+    <string name="bollywood_movies">Bollywood</string>
+    <string name="in_theatres">In Theatres</string>
 </resources>
