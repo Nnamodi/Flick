@@ -7,4 +7,6 @@
     <string name="anime_collection">Anime</string>
     <string name="bollywood_movies">Bollywood</string>
     <string name="in_theatres">In Theatres</string>
+    <string name="movies">Movies</string>
+    <string name="series">Series</string>
 </resources>

@@ -7,16 +7,18 @@ import com.roland.android.flick.models.MoviesModel
 import com.roland.android.flick.models.SeasonDetailsModel
 import com.roland.android.flick.models.TvShowDetailsModel
 import com.roland.android.flick.models.TvShowsModel
+import com.roland.android.flick.utils.Constants.MOVIES
 
-data class MoviesUiState(
-	val movies: State<out MoviesModel> = State.Loading,
-	val furtherMovies: State<out FurtherMoviesModel> = State.Loading,
-	val tvShows: State<out TvShowsModel> = State.Loading
+data class HomeUiState(
+	val movies: State<MoviesModel>? = null,
+	val furtherMovies: State<FurtherMoviesModel>? = null,
+	val tvShows: State<TvShowsModel>? = null,
+	val selectedCategory: String = MOVIES
 )
 
 data class ItemDetailsUiState(
-	val movieDetails: State<out MovieDetailsModel> = State.Loading,
-	val tvShowDetails: State<out TvShowDetailsModel> = State.Loading,
-	val seasonDetails: State<out SeasonDetailsModel> = State.Loading,
-	val castDetails: State<out CastDetailsModel> = State.Loading
+	val movieDetails: State<MovieDetailsModel>,
+	val tvShowDetails: State<TvShowDetailsModel>,
+	val seasonDetails: State<SeasonDetailsModel>,
+	val castDetails: State<CastDetailsModel>
 )

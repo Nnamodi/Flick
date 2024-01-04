@@ -8,13 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
-import com.roland.android.flick.models.FurtherMoviesModel
-import com.roland.android.flick.models.MoviesModel
-import com.roland.android.flick.state.State
+import com.roland.android.domain.usecase.GetTvShowUseCase
+import com.roland.android.flick.state.HomeUiState
+import com.roland.android.flick.utils.HomeScreenActions
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,29 +23,22 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
 	private val moviesUseCase: GetMoviesUseCase,
 	private val furtherMovieUseCase: GetFurtherMovieCollectionUseCase,
+	private val tvShowsUseCase: GetTvShowUseCase,
 	private val converter: ResponseConverter,
 ) : ViewModel() {
 
-	private val _moviesFlow = MutableStateFlow<State<MoviesModel>?>(null)
-	var moviesFlow by mutableStateOf(_moviesFlow.value); private set
-
-	private val _furtherMoviesFlow = MutableStateFlow<State<FurtherMoviesModel>?>(null)
-	var furtherMoviesFlow by mutableStateOf(_furtherMoviesFlow.value); private set
+	private val _homeUiState = MutableStateFlow(HomeUiState())
+	var homeUiState by mutableStateOf(_homeUiState.value); private set
 
 	init {
 		loadMovies()
 		loadFurtherMovieCollections()
+		loadTvShows()
 
 		viewModelScope.launch {
-			_moviesFlow.collect {
-				moviesFlow = it
-				Log.i("MoviesInfo", "Fetched movies: $moviesFlow")
-			}
-		}
-		viewModelScope.launch {
-			_furtherMoviesFlow.collect {
-				furtherMoviesFlow = it
-				Log.i("MoviesInfo", "Fetched more movie collections: $furtherMoviesFlow")
+			_homeUiState.collect {
+				homeUiState = it
+				Log.i("MoviesInfo", "Fetched movies: $homeUiState")
 			}
 		}
 	}
@@ -54,8 +48,7 @@ class HomeViewModel @Inject constructor(
 			moviesUseCase.execute(GetMoviesUseCase.Request)
 				.map { converter.convertMoviesData(it) }
 				.collect { data ->
-//					moviesState.update { it.copy(movies = data) }
-					_moviesFlow.value = data
+					_homeUiState.update { it.copy(movies = data) }
 				}
 		}
 	}
@@ -65,9 +58,30 @@ class HomeViewModel @Inject constructor(
 			furtherMovieUseCase.execute(GetFurtherMovieCollectionUseCase.Request)
 				.map { converter.convertFurtherMoviesData(it) }
 				.collect { data ->
-//					moviesState.update { it.copy(furtherMovies = data) }
-					_furtherMoviesFlow.value = data
+					_homeUiState.update { it.copy(furtherMovies = data) }
 				}
+		}
+	}
+
+	private fun loadTvShows() {
+		viewModelScope.launch {
+			tvShowsUseCase.execute(GetTvShowUseCase.Request)
+				.map { converter.convertTvShowsData(it) }
+				.collect { data ->
+					_homeUiState.update { it.copy(tvShows = data) }
+				}
+		}
+	}
+
+	fun homeScreenAction(action: HomeScreenActions) {
+		when (action) {
+			is HomeScreenActions.ToggleCategory -> toggleCategory(action.category)
+		}
+	}
+
+	private fun toggleCategory(category: String) {
+		_homeUiState.update {
+			it.copy(selectedCategory = category)
 		}
 	}
 

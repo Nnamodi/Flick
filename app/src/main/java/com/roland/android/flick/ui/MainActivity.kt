@@ -23,8 +23,8 @@ class MainActivity : ComponentActivity() {
 				) {
 					val homeViewModel: HomeViewModel = hiltViewModel()
 					HomeScreen(
-						moviesState = homeViewModel.moviesFlow,
-						furtherMoviesState = homeViewModel.furtherMoviesFlow
+						uiState = homeViewModel.homeUiState,
+						action = homeViewModel::homeScreenAction
 					)
 				}
 			}

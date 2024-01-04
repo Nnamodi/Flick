@@ -34,24 +34,29 @@ import com.roland.android.domain.entity.MovieList
 import com.roland.android.flick.R
 import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.MoviesModel
+import com.roland.android.flick.state.HomeUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.HomeTopBar
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.LargeItemPoster
+import com.roland.android.flick.ui.components.ToggleButton
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
+import com.roland.android.flick.utils.HomeScreenActions
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-	moviesState: State<MoviesModel>?,
-	furtherMoviesState: State<FurtherMoviesModel>?
+	uiState: HomeUiState,
+	action: (HomeScreenActions) -> Unit
 ) {
+	val (movies, furtherMovies, _, selectedCategory) = uiState
+
 	Scaffold(
 		topBar = { HomeTopBar() }
 	) { paddingValues ->
-		CommonScreen(moviesState, furtherMoviesState) { data1, data2 ->
+		CommonScreen(movies, furtherMovies) { data1, data2 ->
 			val pagerState = rememberPagerState()
 			var horizontalPaddingValue by remember { mutableStateOf(PADDING_WIDTH) }
 
@@ -60,6 +65,10 @@ fun HomeScreen(
 					.padding(paddingValues)
 					.verticalScroll(rememberScrollState())
 			) {
+				ToggleButton(
+					selectedOption = selectedCategory,
+					onClick = action
+				)
 				Text(
 					text = stringResource(R.string.trending_movies),
 					modifier = Modifier.padding(start = PADDING_WIDTH, bottom = 20.dp),
@@ -133,9 +142,10 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
 	FlickTheme {
-		val movies = MovieList(results = listOf(Movie(), Movie(), Movie()))
-		val moviesState = State.Success(MoviesModel(trendingMovies = movies))
-		val furtherMoviesState = State.Success(FurtherMoviesModel(animeCollection = movies))
-		HomeScreen(moviesState, furtherMoviesState)
+		val movieList = MovieList(results = listOf(Movie(), Movie(), Movie()))
+		val movies = State.Success(MoviesModel(trendingMovies = movieList))
+		val furtherMovies = State.Success(FurtherMoviesModel(animeCollection = movieList))
+		val uiState = HomeUiState(movies, furtherMovies)
+		HomeScreen(uiState) {}
 	}
 }

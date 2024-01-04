@@ -21,9 +21,6 @@ fun <T: Any>CommonScreen(
 		null -> {
 			loadingScreen()
 		}
-		is State.Loading -> {
-			loadingScreen()
-		}
 		is State.Error -> {
 			ErrorScreen(state.errorMessage)
 		}
@@ -42,9 +39,6 @@ fun <T: Any, R: Any>CommonScreen(
 ) {
 	when {
 		state1 == null || state2 == null -> {
-			loadingScreen()
-		}
-		state1 is State.Loading || state2 is State.Loading -> {
 			loadingScreen()
 		}
 		state1 is State.Error -> {
