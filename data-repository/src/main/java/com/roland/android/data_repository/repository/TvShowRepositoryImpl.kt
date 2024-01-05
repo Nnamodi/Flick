@@ -14,6 +14,8 @@ class TvShowRepositoryImpl @Inject constructor(
 	private val remoteTvShowSource: RemoteTvShowSource
 ) : TvShowRepository {
 
+	override fun fetchTrendingShows(): Flow<MovieList> = remoteTvShowSource.fetchTrendingShows()
+
 	override fun fetchTopRatedShows(): Flow<MovieList> = remoteTvShowSource.fetchTopRatedShows()
 
 	override fun fetchPopularShows(): Flow<MovieList> = remoteTvShowSource.fetchPopularShows()
@@ -21,6 +23,10 @@ class TvShowRepositoryImpl @Inject constructor(
 	override fun fetchShowsAiringToday(): Flow<MovieList> = remoteTvShowSource.fetchShowsAiringToday()
 
 	override fun fetchShowsSoonToAir(): Flow<MovieList> = remoteTvShowSource.fetchShowsSoonToAir()
+
+	override fun fetchAnimeShows(): Flow<MovieList> = remoteTvShowSource.fetchAnimeShows()
+
+	override fun fetchBollywoodShows(): Flow<MovieList> = remoteTvShowSource.fetchBollywoodShows()
 
 	override fun fetchRecommendedTvShows(seriesId: Int): Flow<MovieList> = remoteTvShowSource.fetchRecommendedTvShows(seriesId)
 

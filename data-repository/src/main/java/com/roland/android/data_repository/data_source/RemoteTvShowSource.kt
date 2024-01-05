@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface RemoteTvShowSource {
 
+	fun fetchTrendingShows(): Flow<MovieList>
+
 	fun fetchTopRatedShows(): Flow<MovieList>
 
 	fun fetchPopularShows(): Flow<MovieList>
@@ -16,6 +18,10 @@ interface RemoteTvShowSource {
 	fun fetchShowsAiringToday(): Flow<MovieList>
 
 	fun fetchShowsSoonToAir(): Flow<MovieList>
+
+	fun fetchAnimeShows(): Flow<MovieList>
+
+	fun fetchBollywoodShows(): Flow<MovieList>
 
 	fun fetchRecommendedTvShows(seriesId: Int): Flow<MovieList>
 

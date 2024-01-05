@@ -23,6 +23,14 @@ class RemoteTvShowSourceImpl @Inject constructor(
 	private val tvShowService: TvShowService
 ) : RemoteTvShowSource {
 
+	override fun fetchTrendingShows(): Flow<MovieList> = flow {
+		emit(tvShowService.fetchTrendingShows())
+	}.map { showListModel ->
+		convertToMovieList(showListModel)
+	}.catch {
+		throw UseCaseException.TvShowException(it)
+	}
+
 	override fun fetchTopRatedShows(): Flow<MovieList> = flow {
 		emit(tvShowService.fetchTopRatedShows())
 	}.map { showListModel ->
@@ -49,6 +57,22 @@ class RemoteTvShowSourceImpl @Inject constructor(
 
 	override fun fetchShowsSoonToAir(): Flow<MovieList> = flow {
 		emit(tvShowService.fetchShowsSoonToAir())
+	}.map { showListModel ->
+		convertToMovieList(showListModel)
+	}.catch {
+		throw UseCaseException.TvShowException(it)
+	}
+
+	override fun fetchAnimeShows(): Flow<MovieList> = flow {
+		emit(tvShowService.fetchAnimeShows())
+	}.map { showListModel ->
+		convertToMovieList(showListModel)
+	}.catch {
+		throw UseCaseException.TvShowException(it)
+	}
+
+	override fun fetchBollywoodShows(): Flow<MovieList> = flow {
+		emit(tvShowService.fetchBollywoodShows())
 	}.map { showListModel ->
 		convertToMovieList(showListModel)
 	}.catch {

@@ -7,17 +7,17 @@ import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.MovieList
 
 data class MoviesModel(
-	val trendingMovies: MovieList = MovieList(),
-	val popularMovies: MovieList = MovieList(),
-	val nowPlayingMovies: MovieList = MovieList(),
+	val trending: MovieList = MovieList(),
+	val popular: MovieList = MovieList(),
+	val nowPlaying: MovieList = MovieList(),
 	val topRated: MovieList = MovieList(),
-	val upcomingMovies: MovieList = MovieList()
+	val upcoming: MovieList = MovieList()
 )
 
 data class FurtherMoviesModel(
-	val bollywoodMovies: MovieList = MovieList(),
-	val animeCollection: MovieList = MovieList(),
-	val movieGenres: GenreList = GenreList()
+	val bollywood: MovieList = MovieList(),
+	val anime: MovieList = MovieList(),
+	val genres: GenreList = GenreList()
 )
 
 data class MovieDetailsModel(

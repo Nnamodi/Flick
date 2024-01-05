@@ -11,6 +11,12 @@ import retrofit2.http.Query
 
 interface TvShowService {
 
+	@GET("/3/trending/tv/{time_window}")
+	suspend fun fetchTrendingShows(
+		@Path("time_window") timeWindow: String = "day", // day, week
+		@Query("language") language: String = "en_US"
+	): MovieListModel
+
 	@GET("/3/tv/top_rated")
 	suspend fun fetchTopRatedShows(
 		@Query("language") language: String = "en_US",
@@ -33,6 +39,26 @@ interface TvShowService {
 	suspend fun fetchShowsSoonToAir(
 		@Query("language") language: String = "en_US",
 		@Query("page") page: Int = 1
+	): MovieListModel
+
+	@GET("/3/discover/tv")
+	suspend fun fetchAnimeShows(
+		@Query("include_adult") includeAdult: Boolean = false,
+		@Query("language") language: String = "en_US",
+		@Query("page") page: Int = 1,
+		@Query("sort_by") sortBy: String = "popularity.desc",
+		@Query("with_genres") genre: String = "16"
+	): MovieListModel
+
+	@GET("/3/discover/tv")
+	suspend fun fetchBollywoodShows(
+		@Query("include_adult") includeAdult: Boolean = false,
+		@Query("language") language: String = "hi_IN",
+		@Query("page") page: Int = 1,
+		@Query("sort_by") sortBy: String = "popularity.desc",
+		@Query("region") region: String = "IN",
+		@Query("watch_region") watchRegion: String = "IN",
+		@Query("with_original_language") originalLang: String = "hi"
 	): MovieListModel
 
 	@GET("/3/tv/{series_id}/recommendations")

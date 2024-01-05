@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +42,7 @@ import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.LargeItemPoster
 import com.roland.android.flick.ui.components.ToggleButton
 import com.roland.android.flick.ui.theme.FlickTheme
+import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.HomeScreenActions
@@ -51,12 +53,12 @@ fun HomeScreen(
 	uiState: HomeUiState,
 	action: (HomeScreenActions) -> Unit
 ) {
-	val (movies, furtherMovies, _, selectedCategory) = uiState
+	val (movies, furtherMovies, shows, furtherShows, selectedCategory) = uiState
 
 	Scaffold(
 		topBar = { HomeTopBar() }
 	) { paddingValues ->
-		CommonScreen(movies, furtherMovies) { data1, data2 ->
+		CommonScreen(movies, furtherMovies, shows, furtherShows) { movieData1, movieData2, showData1, showData2 ->
 			val pagerState = rememberPagerState()
 			var horizontalPaddingValue by remember { mutableStateOf(PADDING_WIDTH) }
 
@@ -91,37 +93,42 @@ fun HomeScreen(
 					),
 					pageSize = PageSize.Fixed(POSTER_WIDTH_LARGE)
 				) { page ->
-					val trendingMovies = data1.trendingMovies.results.take(20)
+					val trendingMovies = (if (selectedCategory == MOVIES)
+						movieData1.trending.results else showData1.trending.results
+					).take(20)
 
-					LargeItemPoster(movie = trendingMovies[page], onClick = {})
+					LargeItemPoster(
+						movie = trendingMovies[page],
+						onClick = {}
+					)
 				}
 
 				HorizontalPosters(
-					movieList = data1.popularMovies,
+					movieList = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
 					header = stringResource(R.string.most_popular_movies),
 					seeAll = {}
 				)
 
 				HorizontalPosters(
-					movieList = data1.topRated,
+					movieList = if (selectedCategory == MOVIES) movieData1.topRated else showData1.topRated,
 					header = stringResource(R.string.top_rated_movies),
 					seeAll = {}
 				)
 
 				HorizontalPosters(
-					movieList = data2.animeCollection,
+					movieList = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
 					header = stringResource(R.string.anime_collection),
 					seeAll = {}
 				)
 
 				HorizontalPosters(
-					movieList = data2.bollywoodMovies,
+					movieList = if (selectedCategory == MOVIES) movieData2.bollywood else showData2.bollywood,
 					header = stringResource(R.string.bollywood_movies),
 					seeAll = {}
 				)
 
 				HorizontalPosters(
-					movieList = data1.nowPlayingMovies,
+					movieList = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
 					header = stringResource(R.string.in_theatres),
 					seeAll = {}
 				)
@@ -143,8 +150,8 @@ fun HomeScreen(
 fun HomeScreenPreview() {
 	FlickTheme {
 		val movieList = MovieList(results = listOf(Movie(), Movie(), Movie()))
-		val movies = State.Success(MoviesModel(trendingMovies = movieList))
-		val furtherMovies = State.Success(FurtherMoviesModel(animeCollection = movieList))
+		val movies = State.Success(MoviesModel(trending = movieList))
+		val furtherMovies = State.Success(FurtherMoviesModel(anime = movieList))
 		val uiState = HomeUiState(movies, furtherMovies)
 		HomeScreen(uiState) {}
 	}

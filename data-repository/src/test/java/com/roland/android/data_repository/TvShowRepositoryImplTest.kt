@@ -1,5 +1,7 @@
 package com.roland.android.data_repository
 
+import com.roland.android.data_repository.SampleTestData.animeShows
+import com.roland.android.data_repository.SampleTestData.bollywoodShows
 import com.roland.android.data_repository.SampleTestData.episodeDetails
 import com.roland.android.data_repository.SampleTestData.popularShows
 import com.roland.android.data_repository.SampleTestData.recommendedShows
@@ -9,6 +11,7 @@ import com.roland.android.data_repository.SampleTestData.showsAiringToday
 import com.roland.android.data_repository.SampleTestData.showsSoonToAir
 import com.roland.android.data_repository.SampleTestData.similarShows
 import com.roland.android.data_repository.SampleTestData.topRatedShows
+import com.roland.android.data_repository.SampleTestData.trendingShows
 import com.roland.android.data_repository.data_source.RemoteTvShowSource
 import com.roland.android.data_repository.repository.TvShowRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,20 +31,26 @@ class TvShowRepositoryImplTest {
 	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
 	fun testFetchTvShows() = runTest {
-		whenever(remoteTvShowSource.fetchTopRatedShows()).thenReturn(flowOf(topRatedShows))
+		whenever(remoteTvShowSource.fetchTrendingShows()).thenReturn(flowOf(trendingShows))
 		whenever(remoteTvShowSource.fetchPopularShows()).thenReturn(flowOf(popularShows))
 		whenever(remoteTvShowSource.fetchShowsAiringToday()).thenReturn(flowOf(showsAiringToday))
+		whenever(remoteTvShowSource.fetchTopRatedShows()).thenReturn(flowOf(topRatedShows))
 		whenever(remoteTvShowSource.fetchShowsSoonToAir()).thenReturn(flowOf(showsSoonToAir))
+		whenever(remoteTvShowSource.fetchBollywoodShows()).thenReturn(flowOf(bollywoodShows))
+		whenever(remoteTvShowSource.fetchAnimeShows()).thenReturn(flowOf(animeShows))
 		whenever(remoteTvShowSource.fetchRecommendedTvShows(0)).thenReturn(flowOf(recommendedShows))
 		whenever(remoteTvShowSource.fetchSimilarTvShows(0)).thenReturn(flowOf(similarShows))
 		whenever(remoteTvShowSource.fetchTvShowDetails(0)).thenReturn(flowOf(showDetails))
 		whenever(remoteTvShowSource.fetchSeasonDetails(0, 0)).thenReturn(flowOf(seasonDetails))
 		whenever(remoteTvShowSource.fetchEpisodeDetails(0, 0, 0)).thenReturn(flowOf(episodeDetails))
 
-		val topRated = tvShowRepositoryImpl.fetchTopRatedShows().first()
+		val trending = tvShowRepositoryImpl.fetchTrendingShows().first()
 		val popular = tvShowRepositoryImpl.fetchPopularShows().first()
 		val airingToday = tvShowRepositoryImpl.fetchShowsAiringToday().first()
+		val topRated = tvShowRepositoryImpl.fetchTopRatedShows().first()
 		val soonToAir = tvShowRepositoryImpl.fetchShowsSoonToAir().first()
+		val bollywood = tvShowRepositoryImpl.fetchBollywoodShows().first()
+		val anime = tvShowRepositoryImpl.fetchAnimeShows().first()
 		val recommended = tvShowRepositoryImpl.fetchRecommendedTvShows(0).first()
 		val similar = tvShowRepositoryImpl.fetchSimilarTvShows(0).first()
 		val show = tvShowRepositoryImpl.fetchTvShowDetails(0).first()
@@ -49,10 +58,13 @@ class TvShowRepositoryImplTest {
 		val episode = tvShowRepositoryImpl.fetchEpisodeDetails(0, 0, 0).first()
 
 		val fetchedShowData = listOf(
-			topRated,
+			trending,
 			popular,
 			airingToday,
+			topRated,
 			soonToAir,
+			bollywood,
+			anime,
 			recommended,
 			similar,
 			show,
@@ -60,10 +72,13 @@ class TvShowRepositoryImplTest {
 			episode
 		)
 		val sampleShowData = listOf(
-			topRatedShows,
+			trendingShows,
 			popularShows,
 			showsAiringToday,
+			topRatedShows,
 			showsSoonToAir,
+			bollywoodShows,
+			animeShows,
 			recommendedShows,
 			similarShows,
 			showDetails,

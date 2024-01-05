@@ -2,6 +2,7 @@ package com.roland.android.flick.state
 
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.FurtherMoviesModel
+import com.roland.android.flick.models.FurtherTvShowsModel
 import com.roland.android.flick.models.MovieDetailsModel
 import com.roland.android.flick.models.MoviesModel
 import com.roland.android.flick.models.SeasonDetailsModel
@@ -13,6 +14,7 @@ data class HomeUiState(
 	val movies: State<MoviesModel>? = null,
 	val furtherMovies: State<FurtherMoviesModel>? = null,
 	val tvShows: State<TvShowsModel>? = null,
+	val furtherTvShows: State<FurtherTvShowsModel>? = null,
 	val selectedCategory: String = MOVIES
 )
 

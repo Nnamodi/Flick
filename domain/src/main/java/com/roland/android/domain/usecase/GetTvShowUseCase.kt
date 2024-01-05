@@ -1,6 +1,5 @@
 package com.roland.android.domain.usecase
 
-import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.MovieList
 import com.roland.android.domain.repository.TvShowRepository
 import kotlinx.coroutines.flow.Flow
@@ -13,23 +12,23 @@ class GetTvShowUseCase @Inject constructor(
 ) : UseCase<GetTvShowUseCase.Request, GetTvShowUseCase.Response>(configuration) {
 
 	override fun process(request: Request): Flow<Response> = combine(
-		tvShowRepository.fetchTopRatedShows(),
+		tvShowRepository.fetchTrendingShows(),
 		tvShowRepository.fetchPopularShows(),
 		tvShowRepository.fetchShowsAiringToday(),
-		tvShowRepository.fetchShowsSoonToAir(),
-		tvShowRepository.fetchTvShowGenres()
-	) { topRated, popular, airingToday, soonToAir, genres ->
-		Response(topRated, popular, airingToday, soonToAir, genres)
+		tvShowRepository.fetchTopRatedShows(),
+		tvShowRepository.fetchShowsSoonToAir()
+	) { trending, popular, airingToday, topRated, soonToAir ->
+		Response(trending, popular, airingToday, topRated, soonToAir)
 	}
 
 	object Request : UseCase.Request
 
 	data class Response(
-		val topRatedShows: MovieList,
+		val trendingShows: MovieList,
 		val popularShows: MovieList,
 		val showsAiringToday: MovieList,
-		val showsSoonToAir: MovieList,
-		val genres: GenreList
+		val topRatedShows: MovieList,
+		val showsSoonToAir: MovieList
 	) : UseCase.Response
 
 }

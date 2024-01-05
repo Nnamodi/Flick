@@ -1,12 +1,12 @@
 package com.roland.android.flick.viewModel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
+import com.roland.android.domain.usecase.GetFurtherTvShowUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.flick.state.HomeUiState
@@ -22,8 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
 	private val moviesUseCase: GetMoviesUseCase,
-	private val furtherMovieUseCase: GetFurtherMovieCollectionUseCase,
+	private val furtherMoviesUseCase: GetFurtherMovieCollectionUseCase,
 	private val tvShowsUseCase: GetTvShowUseCase,
+	private val furtherTvShowsUseCase: GetFurtherTvShowUseCase,
 	private val converter: ResponseConverter,
 ) : ViewModel() {
 
@@ -34,11 +35,11 @@ class HomeViewModel @Inject constructor(
 		loadMovies()
 		loadFurtherMovieCollections()
 		loadTvShows()
+		loadFurtherTvShows()
 
 		viewModelScope.launch {
 			_homeUiState.collect {
 				homeUiState = it
-				Log.i("MoviesInfo", "Fetched movies: $homeUiState")
 			}
 		}
 	}
@@ -55,7 +56,7 @@ class HomeViewModel @Inject constructor(
 
 	private fun loadFurtherMovieCollections() {
 		viewModelScope.launch {
-			furtherMovieUseCase.execute(GetFurtherMovieCollectionUseCase.Request)
+			furtherMoviesUseCase.execute(GetFurtherMovieCollectionUseCase.Request)
 				.map { converter.convertFurtherMoviesData(it) }
 				.collect { data ->
 					_homeUiState.update { it.copy(furtherMovies = data) }
@@ -69,6 +70,16 @@ class HomeViewModel @Inject constructor(
 				.map { converter.convertTvShowsData(it) }
 				.collect { data ->
 					_homeUiState.update { it.copy(tvShows = data) }
+				}
+		}
+	}
+
+	private fun loadFurtherTvShows() {
+		viewModelScope.launch {
+			furtherTvShowsUseCase.execute(GetFurtherTvShowUseCase.Request)
+				.map { converter.convertFurtherTvShowsData(it) }
+				.collect { data ->
+					_homeUiState.update { it.copy(furtherTvShows = data) }
 				}
 		}
 	}

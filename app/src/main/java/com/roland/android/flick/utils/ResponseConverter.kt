@@ -3,6 +3,7 @@ package com.roland.android.flick.utils
 import com.roland.android.domain.entity.Result
 import com.roland.android.domain.usecase.GetCastDetailsUseCase
 import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
+import com.roland.android.domain.usecase.GetFurtherTvShowUseCase
 import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
@@ -10,6 +11,7 @@ import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.FurtherMoviesModel
+import com.roland.android.flick.models.FurtherTvShowsModel
 import com.roland.android.flick.models.MovieDetailsModel
 import com.roland.android.flick.models.MoviesModel
 import com.roland.android.flick.models.SeasonDetailsModel
@@ -90,10 +92,29 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					TvShowsModel(
+						result.data.trendingShows,
 						result.data.topRatedShows,
 						result.data.popularShows,
 						result.data.showsAiringToday,
-						result.data.showsSoonToAir,
+						result.data.showsSoonToAir
+					)
+				)
+			}
+		}
+	}
+
+	fun convertFurtherTvShowsData(
+		result: Result<GetFurtherTvShowUseCase.Response>
+	): State<FurtherTvShowsModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					FurtherTvShowsModel(
+						result.data.bollywoodShows,
+						result.data.animeShows,
 						result.data.genres
 					)
 				)

@@ -8,10 +8,16 @@ import com.roland.android.domain.entity.Season
 import com.roland.android.domain.entity.Series
 
 data class TvShowsModel(
-	val topRatedShows: MovieList = MovieList(),
-	val popularShows: MovieList = MovieList(),
-	val showsAiringToday: MovieList = MovieList(),
-	val showsSoonToAir: MovieList = MovieList(),
+	val trending: MovieList = MovieList(),
+	val popular: MovieList = MovieList(),
+	val airingToday: MovieList = MovieList(),
+	val topRated: MovieList = MovieList(),
+	val soonToAir: MovieList = MovieList()
+)
+
+data class FurtherTvShowsModel(
+	val bollywood: MovieList = MovieList(),
+	val anime: MovieList = MovieList(),
 	val genres: GenreList = GenreList()
 )
 

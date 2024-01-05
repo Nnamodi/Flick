@@ -3,6 +3,7 @@ package com.roland.android.data_repository
 import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.Genre
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieCredits
 import com.roland.android.domain.entity.MovieDetails
@@ -35,10 +36,13 @@ object SampleTestData {
 	private val show3 = Movie(id = 2, title = "Money Heist")
 	private val show4 = Movie(id = 3, title = "911")
 
-	val topRatedShows = MovieList(results = listOf(show1, show2), totalResults = 2)
+	val trendingShows = MovieList(results = listOf(show2, show3, show4), totalResults = 3)
 	val popularShows = MovieList(results = listOf(show1, show2, show3, show4), totalResults = 4)
 	val showsAiringToday = MovieList(results = listOf(show1, show2, show4), totalResults = 3)
+	val topRatedShows = MovieList(results = listOf(show1, show2), totalResults = 2)
 	val showsSoonToAir = MovieList(results = listOf(show1, show4), totalResults = 2)
+	val bollywoodShows = MovieList(results = listOf(show1, show2, show3, show4), totalResults = 4)
+	val animeShows = MovieList(results = listOf(show1, show3, show4), totalResults = 3)
 	val recommendedShows = MovieList(results = listOf(show2, show3), totalResults = 2)
 	val similarShows = MovieList(results = listOf(show2, show3, show4), totalResults = 3)
 	val showDetails = Series(name = "24 hours")
@@ -46,7 +50,7 @@ object SampleTestData {
 	val episodeDetails = Episode(episodeNumber = 1)
 
 	// Other
-	val genreList = listOf(Genre(name = "Action"), Genre(name = "Animation"), Genre(name = "Comedy"))
+	val genreList = GenreList(listOf(Genre(name = "Action"), Genre(name = "Animation"), Genre(name = "Comedy")))
 	val movieCredits = MovieCredits(casts = listOf(Cast(name = "Jack"), Cast(name = "Downey"), Cast(name = "William")))
 	val movieCast = movieCredits.casts[0]
 
