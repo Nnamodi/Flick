@@ -1,15 +1,21 @@
 package com.roland.android.flick.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.StarRate
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieList
@@ -30,11 +37,13 @@ import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W500
+import com.roland.android.flick.utils.ValueFormatting.roundOff
 
 @Composable
 fun HorizontalPosters(
 	movieList: MovieList,
 	header: String,
+	onItemClick: (Movie) -> Unit,
 	seeAll: () -> Unit
 ) {
 	Column(
@@ -70,7 +79,7 @@ fun HorizontalPosters(
 			) { _, movie ->
 				MediumItemPoster(
 					movie = movie,
-					onClick = {}
+					onClick = onItemClick
 				)
 			}
 		}
@@ -81,45 +90,88 @@ fun HorizontalPosters(
 fun LargeItemPoster(
 	movie: Movie,
 	modifier: Modifier = Modifier,
-	onClick: (Int) -> Unit
+	onClick: (Movie) -> Unit
 ) {
 	Poster(
 		model = TMDB_POSTER_IMAGE_BASE_URL_W500 + movie.posterPath,
 		contentDescription = movie.title ?: movie.tvName,
+		voteAverage = movie.voteAverage,
 		modifier = modifier.size(POSTER_WIDTH_LARGE, 370.dp),
-		onClick = { onClick(movie.id) },
-	)
+		posterType = PosterType.Large
+	) { onClick(movie) }
 }
 
 @Composable
 fun MediumItemPoster(
 	movie: Movie,
 	modifier: Modifier = Modifier,
-	onClick: (Int) -> Unit
+	onClick: (Movie) -> Unit
 ) {
 	Poster(
 		model = TMDB_POSTER_IMAGE_BASE_URL_W342 + movie.posterPath,
 		contentDescription = movie.title ?: movie.tvName,
+		voteAverage = movie.voteAverage,
 		modifier = modifier
 			.size(POSTER_WIDTH_MEDIUM, 180.dp)
-			.padding(end = 12.dp),
-		onClick = { onClick(movie.id) },
-	)
+			.padding(end = 12.dp)
+	) { onClick(movie) }
 }
 
 @Composable
-private fun Poster(
+fun Poster(
 	model: String,
 	contentDescription: String?,
+	voteAverage: Double,
 	modifier: Modifier = Modifier,
+	posterType: PosterType = PosterType.Medium,
 	onClick: () -> Unit
 ) {
-	AsyncImage(
-		model = model,
-		contentDescription = contentDescription,
+	Box(
 		modifier = modifier
 			.clip(MaterialTheme.shapes.large)
-			.clickable { onClick() },
-		contentScale = ContentScale.Crop
-	)
+			.clickable { onClick() }
+	) {
+		AsyncImage(
+			model = model,
+			contentDescription = contentDescription,
+			modifier = Modifier.fillMaxSize(),
+			contentScale = ContentScale.Crop
+		)
+		Row {
+			Spacer(Modifier.weight(1f))
+			Row(
+				modifier = Modifier
+					.padding(6.dp)
+					.clip(MaterialTheme.shapes.large)
+					.background(Color.Black.copy(alpha = 0.5f)),
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				if (posterType == PosterType.BottomSheet) {
+					Icon(
+						imageVector = Icons.Rounded.StarRate,
+						contentDescription = null,
+						modifier = Modifier.padding(start = 8.dp, top = 2.dp, bottom = 2.dp),
+						tint = MaterialTheme.colorScheme.surfaceTint
+					)
+				}
+				Text(
+					text = voteAverage.roundOff(),
+					modifier = Modifier.padding(
+						start = if (posterType == PosterType.BottomSheet) 4.dp else 10.dp,
+						top = 2.dp,
+						end = 10.dp,
+						bottom = 2.dp
+					),
+					color = Color.White,
+					fontSize = if (posterType == PosterType.Large) 16.sp else 14.sp
+				)
+			}
+		}
+	}
+}
+
+enum class PosterType {
+	Medium,
+	Large,
+	BottomSheet
 }

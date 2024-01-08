@@ -3,10 +3,8 @@ package com.roland.android.flick.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -35,14 +33,10 @@ import com.roland.android.flick.utils.HomeScreenActions
 @Composable
 fun ToggleButton(
 	selectedOption: String,
+	modifier: Modifier = Modifier,
 	onClick: (HomeScreenActions) -> Unit
 ) {
-	Row(
-		modifier = Modifier
-			.padding(bottom = 6.dp)
-			.fillMaxWidth(),
-		horizontalArrangement = Arrangement.Center
-	) {
+	Row(modifier) {
 		Box(
 			modifier = Modifier
 				.clip(
@@ -63,7 +57,7 @@ fun ToggleButton(
 				.clickable { onClick(HomeScreenActions.ToggleCategory(MOVIES)) },
 			contentAlignment = Alignment.Center
 		) {
-			ToggleButtonText(
+			ToggleButtonItem(
 				text = stringResource(R.string.movies),
 				textColor = rememberBorderColor(selectedOption == MOVIES)
 			)
@@ -88,7 +82,7 @@ fun ToggleButton(
 				.clickable { onClick(HomeScreenActions.ToggleCategory(SERIES)) },
 			contentAlignment = Alignment.Center
 		) {
-			ToggleButtonText(
+			ToggleButtonItem(
 				text = stringResource(R.string.series),
 				textColor = rememberBorderColor(selectedOption == SERIES)
 			)
@@ -97,7 +91,7 @@ fun ToggleButton(
 }
 
 @Composable
-private fun ToggleButtonText(text: String, textColor: Color) {
+private fun ToggleButtonItem(text: String, textColor: Color) {
 	Text(
 		text = text,
 		modifier = Modifier.padding(20.dp, 6.dp),

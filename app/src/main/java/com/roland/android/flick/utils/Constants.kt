@@ -6,6 +6,7 @@ object Constants {
 
 	const val TMDB_POSTER_IMAGE_BASE_URL_W342 = "https://image.tmdb.org/t/p/w342"
 	const val TMDB_POSTER_IMAGE_BASE_URL_W500 = "https://image.tmdb.org/t/p/w500"
+	const val TMDB_POSTER_IMAGE_BASE_URL_W780 = "https://image.tmdb.org/t/p/w780"
 
 	const val MOVIES = "movies"
 	const val SERIES = "series"

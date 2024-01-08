@@ -14,7 +14,6 @@ import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.roland.android.domain.entity.Movie
@@ -41,19 +41,21 @@ import com.roland.android.flick.ui.components.HomeTopBar
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.LargeItemPoster
 import com.roland.android.flick.ui.components.ToggleButton
+import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.HomeScreenActions
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
 	uiState: HomeUiState,
 	action: (HomeScreenActions) -> Unit
 ) {
 	val (movies, furtherMovies, shows, furtherShows, selectedCategory) = uiState
+	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 
 	Scaffold(
 		topBar = { HomeTopBar() }
@@ -65,16 +67,21 @@ fun HomeScreen(
 			Column(
 				modifier = Modifier
 					.padding(paddingValues)
-					.verticalScroll(rememberScrollState())
+					.verticalScroll(rememberScrollState()),
+				horizontalAlignment = Alignment.CenterHorizontally
 			) {
 				ToggleButton(
 					selectedOption = selectedCategory,
+					modifier = Modifier.padding(bottom = 6.dp),
 					onClick = action
 				)
 				Text(
 					text = stringResource(R.string.trending_movies),
-					modifier = Modifier.padding(start = PADDING_WIDTH, bottom = 20.dp),
-					fontWeight = FontWeight.Bold
+					modifier = Modifier
+						.fillMaxWidth()
+						.padding(start = PADDING_WIDTH, bottom = 20.dp),
+					fontWeight = FontWeight.Bold,
+					textAlign = TextAlign.Start
 				)
 				HorizontalPager(
 					pageCount = 20,
@@ -99,37 +106,42 @@ fun HomeScreen(
 
 					LargeItemPoster(
 						movie = trendingMovies[page],
-						onClick = {}
+						onClick = { clickedMovieItem.value = it }
 					)
 				}
 
 				HorizontalPosters(
-					movieList = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
-					header = stringResource(R.string.most_popular_movies),
+					movieList = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
+					header = stringResource(if (selectedCategory == MOVIES) R.string.in_theatres else R.string.new_releases),
+					onItemClick = { clickedMovieItem.value = it },
 					seeAll = {}
 				)
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData1.topRated else showData1.topRated,
 					header = stringResource(R.string.top_rated_movies),
+					onItemClick = { clickedMovieItem.value = it },
 					seeAll = {}
 				)
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
 					header = stringResource(R.string.anime_collection),
+					onItemClick = { clickedMovieItem.value = it },
 					seeAll = {}
 				)
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData2.bollywood else showData2.bollywood,
 					header = stringResource(R.string.bollywood_movies),
+					onItemClick = { clickedMovieItem.value = it },
 					seeAll = {}
 				)
 
 				HorizontalPosters(
-					movieList = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
-					header = stringResource(R.string.in_theatres),
+					movieList = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
+					header = stringResource(R.string.most_popular_movies),
+					onItemClick = { clickedMovieItem.value = it },
 					seeAll = {}
 				)
 
@@ -142,6 +154,14 @@ fun HomeScreen(
 				}
 			}
 		}
+	}
+
+	if (clickedMovieItem.value != null) {
+		MovieDetailsSheet(
+			movie = clickedMovieItem.value!!,
+			viewMore = {},
+			closeSheet = { clickedMovieItem.value = null }
+		)
 	}
 }
 

@@ -47,7 +47,7 @@ buildscript {
         ]
         material = [
             icons : "androidx.compose.material:material-icons-extended:${versions.compose_icon}",
-            material3 : "androidx.compose.material3:material3"
+            material3 : "androidx.compose.material3:material3:${versions.material3}"
         ]
         network = [
             okHttp : "com.squareup.okhttp3:okhttp:${versions.okHttp}",
