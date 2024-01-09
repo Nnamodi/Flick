@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.StarRate
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,7 +38,7 @@ import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W500
-import com.roland.android.flick.utils.ValueFormatting.roundOff
+import com.roland.android.flick.utils.Extensions.roundOff
 
 @Composable
 fun HorizontalPosters(
@@ -49,21 +50,19 @@ fun HorizontalPosters(
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()
-			.padding(bottom = 12.dp)) {
+			.padding(bottom = 12.dp)
+	) {
 		Row(
-			modifier = Modifier.fillMaxWidth(),
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(PADDING_WIDTH),
 			verticalAlignment = Alignment.CenterVertically
 		) {
-			Text(
-				text = header,
-				modifier = Modifier.padding(PADDING_WIDTH, 16.dp),
-				fontWeight = FontWeight.Bold
-			)
+			Header(header)
 			Spacer(Modifier.weight(1f))
 			Text(
-				text = stringResource(R.string.see_all),
+				text = stringResource(R.string.more),
 				modifier = Modifier
-					.padding(PADDING_WIDTH, 10.dp)
 					.clip(MaterialTheme.shapes.small)
 					.clickable { seeAll() }
 					.padding(6.dp),
@@ -71,7 +70,10 @@ fun HorizontalPosters(
 			)
 		}
 		LazyRow(
-			contentPadding = PaddingValues(horizontal = PADDING_WIDTH)
+			contentPadding = PaddingValues(
+				start = PADDING_WIDTH,
+				end = PADDING_WIDTH - 12.dp
+			)
 		) {
 			itemsIndexed(
 				items = movieList.results.take(20),
@@ -129,7 +131,7 @@ fun Poster(
 	Box(
 		modifier = modifier
 			.clip(MaterialTheme.shapes.large)
-			.clickable { onClick() }
+			.clickable(posterType != PosterType.BottomSheet) { onClick() }
 	) {
 		AsyncImage(
 			model = model,
@@ -174,4 +176,28 @@ enum class PosterType {
 	Medium,
 	Large,
 	BottomSheet
+}
+
+@Composable
+fun Header(
+	header: String,
+	modifier: Modifier = Modifier
+) {
+	Row(
+		modifier = modifier,
+		verticalAlignment = Alignment.CenterVertically
+	) {
+		Divider(
+			modifier = Modifier
+				.size(4.dp, 18.dp)
+				.clip(MaterialTheme.shapes.medium),
+			color = MaterialTheme.colorScheme.surfaceTint
+		)
+		Text(
+			text = header,
+			modifier = Modifier.padding(start = 4.dp),
+			fontWeight = FontWeight.Bold,
+			fontSize = 16.sp
+		)
+	}
 }

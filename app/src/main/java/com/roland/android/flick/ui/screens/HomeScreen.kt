@@ -1,8 +1,11 @@
 package com.roland.android.flick.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,7 +18,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,8 +28,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.roland.android.domain.entity.Movie
@@ -40,6 +40,7 @@ import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.HomeTopBar
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.LargeItemPoster
+import com.roland.android.flick.ui.components.Header
 import com.roland.android.flick.ui.components.ToggleButton
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
@@ -48,6 +49,7 @@ import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.HomeScreenActions
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
@@ -59,30 +61,29 @@ fun HomeScreen(
 
 	Scaffold(
 		topBar = { HomeTopBar() }
-	) { paddingValues ->
+	) { _ ->
 		CommonScreen(movies, furtherMovies, shows, furtherShows) { movieData1, movieData2, showData1, showData2 ->
 			val pagerState = rememberPagerState()
 			var horizontalPaddingValue by remember { mutableStateOf(PADDING_WIDTH) }
 
 			Column(
-				modifier = Modifier
-					.padding(paddingValues)
-					.verticalScroll(rememberScrollState()),
+				modifier = Modifier.verticalScroll(rememberScrollState()),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
+				Spacer(Modifier.height(64.dp))
 				ToggleButton(
 					selectedOption = selectedCategory,
 					modifier = Modifier.padding(bottom = 6.dp),
 					onClick = action
 				)
-				Text(
-					text = stringResource(R.string.trending_movies),
+				Row(
 					modifier = Modifier
 						.fillMaxWidth()
-						.padding(start = PADDING_WIDTH, bottom = 20.dp),
-					fontWeight = FontWeight.Bold,
-					textAlign = TextAlign.Start
-				)
+						.padding(PADDING_WIDTH),
+					horizontalArrangement = Arrangement.Start
+				) {
+					Header(stringResource(R.string.trending_movies))
+				}
 				HorizontalPager(
 					pageCount = 20,
 					state = pagerState,
@@ -117,8 +118,11 @@ fun HomeScreen(
 					seeAll = {}
 				)
 
+				val topRatedShows = showData1.topRated.copy(
+					results = showData1.topRated.results.sortedByDescending { it.voteAverage }
+				)
 				HorizontalPosters(
-					movieList = if (selectedCategory == MOVIES) movieData1.topRated else showData1.topRated,
+					movieList = if (selectedCategory == MOVIES) movieData1.topRated else topRatedShows,
 					header = stringResource(R.string.top_rated_movies),
 					onItemClick = { clickedMovieItem.value = it },
 					seeAll = {}
@@ -148,20 +152,23 @@ fun HomeScreen(
 				Spacer(Modifier.height(50.dp))
 			}
 
+			if (clickedMovieItem.value != null) {
+				val clickedItemIsMovie = clickedMovieItem.value!!.title != null
+
+				MovieDetailsSheet(
+					movie = clickedMovieItem.value!!,
+					genreList = if (clickedItemIsMovie) movieData2.genres else showData2.genres,
+					viewMore = {},
+					closeSheet = { clickedMovieItem.value = null }
+				)
+			}
+
 			LaunchedEffect(pagerState) {
 				snapshotFlow { pagerState.currentPage }.collect { page ->
 					horizontalPaddingValue = if (page == 0) PADDING_WIDTH else 40.dp
 				}
 			}
 		}
-	}
-
-	if (clickedMovieItem.value != null) {
-		MovieDetailsSheet(
-			movie = clickedMovieItem.value!!,
-			viewMore = {},
-			closeSheet = { clickedMovieItem.value = null }
-		)
 	}
 }
 
