@@ -20,6 +20,7 @@ buildscript {
             material3 : "1.1.0",
             media3 : "1.0.1",
             mockito : "5.0.0",
+            navigation : "2.5.3",
             okHttp : "4.11.0",
             retrofit : "2.9.0",
             moshi : "1.15.0",
@@ -37,8 +38,9 @@ buildscript {
             lifecycle : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
             splashScreen : "androidx.core:core-splashscreen:${versions.splash_screen}"
         ]
-        coil = [
-            compose : "io.coil-kt:coil-compose:${versions.coil}"
+        compose = [
+            coil : "io.coil-kt:coil-compose:${versions.coil}",
+            navigation : "androidx.navigation:navigation-compose:${versions.navigation}"
         ]
         di = [
             hiltAndroid : "com.google.dagger:hilt-android:${versions.hilt}",

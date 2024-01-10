@@ -82,7 +82,7 @@ fun HomeScreen(
 						.padding(PADDING_WIDTH),
 					horizontalArrangement = Arrangement.Start
 				) {
-					Header(stringResource(R.string.trending_movies))
+					Header(stringResource(R.string.trending))
 				}
 				HorizontalPager(
 					pageCount = 20,
@@ -123,7 +123,7 @@ fun HomeScreen(
 				)
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData1.topRated else topRatedShows,
-					header = stringResource(R.string.top_rated_movies),
+					header = stringResource(R.string.top_rated),
 					onItemClick = { clickedMovieItem.value = it },
 					seeAll = {}
 				)
@@ -137,14 +137,14 @@ fun HomeScreen(
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData2.bollywood else showData2.bollywood,
-					header = stringResource(R.string.bollywood_movies),
+					header = stringResource(R.string.bollywood),
 					onItemClick = { clickedMovieItem.value = it },
 					seeAll = {}
 				)
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
-					header = stringResource(R.string.most_popular_movies),
+					header = stringResource(R.string.most_popular),
 					onItemClick = { clickedMovieItem.value = it },
 					seeAll = {}
 				)

@@ -31,6 +31,27 @@ fun <T: Any>CommonScreen(
 }
 
 @Composable
+fun <T: Any, R: Any>CommonScreen(
+	state1: State<T>?,
+	state2: State<R>?,
+	loadingScreen: @Composable () -> Unit = { LoadingScreen() },
+	successScreen: @Composable (T, R) -> Unit,
+) {
+	when {
+		state1 == null && state2 == null -> {
+			loadingScreen()
+		}
+		state1 is State.Error && state2 is State.Error -> {
+			val errorMessage = state1.errorMessage.ifEmpty { state2.errorMessage }
+			ErrorScreen(errorMessage)
+		}
+		state1 is State.Success && state2 is State.Success -> {
+			successScreen(state1.data, state2.data)
+		}
+	}
+}
+
+@Composable
 fun <T: Any, R: Any, B: Any, S: Any>CommonScreen(
 	state1: State<T>?,
 	state2: State<R>?,

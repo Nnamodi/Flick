@@ -20,6 +20,12 @@ data class FurtherMoviesModel(
 	val genres: GenreList = GenreList()
 )
 
+data class MovieListModel(
+	val movieList: MovieList = MovieList(),
+	val movieGenres: GenreList = GenreList(),
+	val seriesGenres: GenreList = GenreList()
+)
+
 data class MovieDetailsModel(
 	val recommendedMovies: MovieList = MovieList(),
 	val similarMovies: MovieList = MovieList(),

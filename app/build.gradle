@@ -61,7 +61,7 @@ dependencies {
     implementation platform("androidx.compose:compose-bom:2023.03.00")
 
     // coil
-    implementation coil.compose
+    implementation compose.coil
 
     // hilt
     implementation di.hiltAndroid
@@ -71,6 +71,9 @@ dependencies {
     // material design
     implementation material.icons
     implementation material.material3
+
+    // navigation
+    implementation compose.navigation
 
     // other modules
     implementation(project(path: ":data-remote"))

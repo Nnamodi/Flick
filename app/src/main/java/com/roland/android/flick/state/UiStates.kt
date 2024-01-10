@@ -4,6 +4,7 @@ import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.FurtherTvShowsModel
 import com.roland.android.flick.models.MovieDetailsModel
+import com.roland.android.flick.models.MovieListModel
 import com.roland.android.flick.models.MoviesModel
 import com.roland.android.flick.models.SeasonDetailsModel
 import com.roland.android.flick.models.TvShowDetailsModel
@@ -18,9 +19,13 @@ data class HomeUiState(
 	val selectedCategory: String = MOVIES
 )
 
-data class ItemDetailsUiState(
-	val movieDetails: State<MovieDetailsModel>,
-	val tvShowDetails: State<TvShowDetailsModel>,
-	val seasonDetails: State<SeasonDetailsModel>,
-	val castDetails: State<CastDetailsModel>
+data class MovieDetailsUiState(
+	val movieDetails: State<MovieDetailsModel>? = null,
+	val tvShowDetails: State<TvShowDetailsModel>? = null,
+	val seasonDetails: State<SeasonDetailsModel>? = null,
+	val castDetails: State<CastDetailsModel>? = null
+)
+
+data class MovieListUiState(
+	val movieData: State<MovieListModel>? = null
 )

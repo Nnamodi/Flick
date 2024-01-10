@@ -30,3 +30,28 @@ fun HomeTopBar() {
 		)
 	)
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MovieListTopBar(
+	title: String,
+	navigateUp: () -> Unit
+) {
+	TopAppBar(
+		title = { Text(title) },
+		navigationIcon = {
+			IconButton(onClick = navigateUp) {
+				Icon(Icons.Rounded.ArrowBackIos, stringResource(R.string.back))
+			}
+		}
+	)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MovieDetailsTopBar() {
+	TopAppBar(
+		title = {},
+		colors = TopAppBarDefaults.topAppBarColors(Color.Transparent)
+	)
+}

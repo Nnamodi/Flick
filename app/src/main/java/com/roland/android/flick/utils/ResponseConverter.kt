@@ -5,6 +5,7 @@ import com.roland.android.domain.usecase.GetCastDetailsUseCase
 import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
 import com.roland.android.domain.usecase.GetFurtherTvShowUseCase
 import com.roland.android.domain.usecase.GetMovieDetailsUseCase
+import com.roland.android.domain.usecase.GetMovieListUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
@@ -13,6 +14,7 @@ import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.FurtherTvShowsModel
 import com.roland.android.flick.models.MovieDetailsModel
+import com.roland.android.flick.models.MovieListModel
 import com.roland.android.flick.models.MoviesModel
 import com.roland.android.flick.models.SeasonDetailsModel
 import com.roland.android.flick.models.TvShowDetailsModel
@@ -118,6 +120,19 @@ class ResponseConverter @Inject constructor() {
 						result.data.genres
 					)
 				)
+			}
+		}
+	}
+
+	fun convertMovieListData(
+		result: Result<GetMovieListUseCase.Response>
+	): State<MovieListModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(MovieListModel(result.data.result))
 			}
 		}
 	}

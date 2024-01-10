@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Flick</string>
-    <string name="trending_movies">Trending</string>
-    <string name="most_popular_movies">Most Popular</string>
-    <string name="top_rated_movies">Top Rated</string>
+    <string name="trending">Trending</string>
+    <string name="most_popular">Most Popular</string>
+    <string name="top_rated">Top Rated</string>
     <string name="anime_collection">Anime</string>
-    <string name="bollywood_movies">Bollywood</string>
+    <string name="bollywood">Bollywood</string>
     <string name="in_theatres">In Theatres</string>
     <string name="new_releases">New Releases</string>
     <string name="movies">Movies</string>
@@ -15,4 +15,16 @@
     <string name="first_air_date">A %s series</string>
     <string name="anime_first_air_date">A %s anime series</string>
     <string name="back">Back</string>
+    <string name="trending_movies">Trending Movies</string>
+    <string name="trending_series">Trending Series</string>
+    <string name="movies_in_theatres">Movies in Theatres</string>
+    <string name="newly_released_series">Newly Released Series</string>
+    <string name="top_rated_movies">Top Rated Movies</string>
+    <string name="top_rated_series">Top Rated Series</string>
+    <string name="anime">Anime</string>
+    <string name="anime_series">Anime Series</string>
+    <string name="bollywood_movies">Bollywood Movies</string>
+    <string name="bollywood_series">Bollywood Series</string>
+    <string name="popular_movies">Popular Movies</string>
+    <string name="popular_series">Popular Series</string>
 </resources>
