@@ -6,10 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.roland.android.flick.ui.screens.HomeScreen
+import androidx.navigation.compose.rememberNavController
+import com.roland.android.flick.ui.navigation.AppRoute
+import com.roland.android.flick.ui.navigation.NavActions
 import com.roland.android.flick.ui.theme.FlickTheme
-import com.roland.android.flick.viewModel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,10 +21,12 @@ class MainActivity : ComponentActivity() {
 				Surface(
 					modifier = Modifier.fillMaxSize()
 				) {
-					val homeViewModel: HomeViewModel = hiltViewModel()
-					HomeScreen(
-						uiState = homeViewModel.homeUiState,
-						action = homeViewModel::homeScreenAction
+					val navController = rememberNavController()
+					val navActions = NavActions(navController)
+
+					AppRoute(
+						navActions = navActions,
+						navController = navController
 					)
 				}
 			}

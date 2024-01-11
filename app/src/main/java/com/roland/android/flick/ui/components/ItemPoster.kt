@@ -45,7 +45,7 @@ fun HorizontalPosters(
 	movieList: MovieList,
 	header: String,
 	onItemClick: (Movie) -> Unit,
-	seeAll: () -> Unit
+	seeMore: () -> Unit
 ) {
 	Column(
 		modifier = Modifier
@@ -64,7 +64,7 @@ fun HorizontalPosters(
 				text = stringResource(R.string.more),
 				modifier = Modifier
 					.clip(MaterialTheme.shapes.small)
-					.clickable { seeAll() }
+					.clickable { seeMore() }
 					.padding(6.dp),
 				color = Color.Gray
 			)
@@ -81,6 +81,7 @@ fun HorizontalPosters(
 			) { _, movie ->
 				MediumItemPoster(
 					movie = movie,
+					modifier = Modifier.padding(end = 12.dp),
 					onClick = onItemClick
 				)
 			}
@@ -113,9 +114,7 @@ fun MediumItemPoster(
 		model = TMDB_POSTER_IMAGE_BASE_URL_W342 + movie.posterPath,
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
-		modifier = modifier
-			.size(POSTER_WIDTH_MEDIUM, 180.dp)
-			.padding(end = 12.dp)
+		modifier = modifier.size(POSTER_WIDTH_MEDIUM, 180.dp)
 	) { onClick(movie) }
 }
 

@@ -32,6 +32,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieList
+import com.roland.android.domain.usecase.Category
+import com.roland.android.domain.usecase.Category.ANIME
+import com.roland.android.domain.usecase.Category.ANIME_SERIES
+import com.roland.android.domain.usecase.Category.BOLLYWOOD_MOVIES
+import com.roland.android.domain.usecase.Category.BOLLYWOOD_SERIES
+import com.roland.android.domain.usecase.Category.IN_THEATRES
+import com.roland.android.domain.usecase.Category.NEW_RELEASES
+import com.roland.android.domain.usecase.Category.POPULAR_MOVIES
+import com.roland.android.domain.usecase.Category.POPULAR_SERIES
+import com.roland.android.domain.usecase.Category.TOP_RATED_MOVIES
+import com.roland.android.domain.usecase.Category.TOP_RATED_SERIES
 import com.roland.android.flick.R
 import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.MoviesModel
@@ -54,7 +65,8 @@ import com.roland.android.flick.utils.HomeScreenActions
 @Composable
 fun HomeScreen(
 	uiState: HomeUiState,
-	action: (HomeScreenActions) -> Unit
+	action: (HomeScreenActions) -> Unit,
+	seeMore: (Category) -> Unit
 ) {
 	val (movies, furtherMovies, shows, furtherShows, selectedCategory) = uiState
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
@@ -115,7 +127,7 @@ fun HomeScreen(
 					movieList = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
 					header = stringResource(if (selectedCategory == MOVIES) R.string.in_theatres else R.string.new_releases),
 					onItemClick = { clickedMovieItem.value = it },
-					seeAll = {}
+					seeMore = { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
 				)
 
 				val topRatedShows = showData1.topRated.copy(
@@ -125,28 +137,28 @@ fun HomeScreen(
 					movieList = if (selectedCategory == MOVIES) movieData1.topRated else topRatedShows,
 					header = stringResource(R.string.top_rated),
 					onItemClick = { clickedMovieItem.value = it },
-					seeAll = {}
+					seeMore = { seeMore(if (selectedCategory == MOVIES) TOP_RATED_MOVIES else TOP_RATED_SERIES) }
 				)
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
 					header = stringResource(R.string.anime_collection),
 					onItemClick = { clickedMovieItem.value = it },
-					seeAll = {}
+					seeMore = { seeMore(if (selectedCategory == MOVIES) ANIME else ANIME_SERIES) }
 				)
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData2.bollywood else showData2.bollywood,
 					header = stringResource(R.string.bollywood),
 					onItemClick = { clickedMovieItem.value = it },
-					seeAll = {}
+					seeMore = { seeMore(if (selectedCategory == MOVIES) BOLLYWOOD_MOVIES else BOLLYWOOD_SERIES) }
 				)
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
 					header = stringResource(R.string.most_popular),
 					onItemClick = { clickedMovieItem.value = it },
-					seeAll = {}
+					seeMore = { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
 				)
 
 				Spacer(Modifier.height(50.dp))
@@ -180,6 +192,6 @@ fun HomeScreenPreview() {
 		val movies = State.Success(MoviesModel(trending = movieList))
 		val furtherMovies = State.Success(FurtherMoviesModel(anime = movieList))
 		val uiState = HomeUiState(movies, furtherMovies)
-		HomeScreen(uiState) {}
+		HomeScreen(uiState, {}) {}
 	}
 }
