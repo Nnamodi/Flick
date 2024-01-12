@@ -132,7 +132,13 @@ class ResponseConverter @Inject constructor() {
 				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
-				State.Success(MovieListModel(result.data.result))
+				State.Success(
+					MovieListModel(
+						result.data.result,
+						result.data.movieGenre,
+						result.data.seriesGenre
+					)
+				)
 			}
 		}
 	}

@@ -57,25 +57,25 @@ fun <T: Any, R: Any, B: Any, S: Any>CommonScreen(
 	state2: State<R>?,
 	state3: State<B>?,
 	state4: State<S>?,
-	loadingScreen: @Composable () -> Unit = { LoadingScreen() },
-	successScreen: @Composable (T, R, B, S) -> Unit,
+	loadingScreen: @Composable (String?) -> Unit,
+	successScreen: @Composable (T, R, B, S) -> Unit
 ) {
 	when {
 		(state1 == null) || (state2 == null) ||
 				(state3 == null) || (state4 == null) -> {
-			loadingScreen()
+			loadingScreen(null)
 		}
 		state1 is State.Error -> {
-			ErrorScreen(state1.errorMessage)
+			loadingScreen(state1.errorMessage)
 		}
 		state2 is State.Error -> {
-			ErrorScreen(state2.errorMessage)
+			loadingScreen(state2.errorMessage)
 		}
 		state3 is State.Error -> {
-			ErrorScreen(state3.errorMessage)
+			loadingScreen(state3.errorMessage)
 		}
 		state4 is State.Error -> {
-			ErrorScreen(state4.errorMessage)
+			loadingScreen(state4.errorMessage)
 		}
 		(state1 is State.Success) && (state2 is State.Success) &&
 				(state3 is State.Success) && (state4 is State.Success) -> {

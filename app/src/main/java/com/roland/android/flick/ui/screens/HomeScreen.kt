@@ -18,11 +18,18 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration.Indefinite
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -48,17 +55,19 @@ import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.MoviesModel
 import com.roland.android.flick.state.HomeUiState
 import com.roland.android.flick.state.State
+import com.roland.android.flick.ui.components.Header
 import com.roland.android.flick.ui.components.HomeTopBar
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.LargeItemPoster
-import com.roland.android.flick.ui.components.Header
 import com.roland.android.flick.ui.components.ToggleButton
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
+import com.roland.android.flick.ui.shimmer.HomeLoadingUi
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.HomeScreenActions
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalFoundationApi::class)
@@ -69,12 +78,35 @@ fun HomeScreen(
 	seeMore: (Category) -> Unit
 ) {
 	val (movies, furtherMovies, shows, furtherShows, selectedCategory) = uiState
+	val snackbarHostState = remember { SnackbarHostState() }
+	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
+	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 
 	Scaffold(
-		topBar = { HomeTopBar() }
+		topBar = { HomeTopBar() },
+		snackbarHost = {
+			SnackbarHost(snackbarHostState) { data ->
+				errorMessage.value?.let {
+					Snackbar(Modifier.padding(16.dp)) {
+						Text(data.visuals.message)
+					}
+				}
+			}
+		}
 	) { _ ->
-		CommonScreen(movies, furtherMovies, shows, furtherShows) { movieData1, movieData2, showData1, showData2 ->
+		CommonScreen(
+			movies, furtherMovies, shows, furtherShows,
+			loadingScreen = { error ->
+				HomeLoadingUi(error == null)
+				errorMessage.value = error
+				error?.let {
+					scope.launch {
+						snackbarHostState.showSnackbar(it, duration = Indefinite)
+					}
+				}
+			}
+		) { movieData1, movieData2, showData1, showData2 ->
 			val pagerState = rememberPagerState()
 			var horizontalPaddingValue by remember { mutableStateOf(PADDING_WIDTH) }
 
