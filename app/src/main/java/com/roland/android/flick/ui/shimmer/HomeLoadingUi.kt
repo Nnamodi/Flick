@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.shimmer
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,9 +25,9 @@ import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 
 @Composable
-fun HomeLoadingUi(isLoading: Boolean) {
+fun HomeLoadingUi(scrollState: ScrollState, isLoading: Boolean) {
 	Column(
-		modifier = Modifier.verticalScroll(rememberScrollState()),
+		modifier = Modifier.verticalScroll(scrollState),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		Spacer(Modifier.height(64.dp))
@@ -68,6 +69,6 @@ fun HomeLoadingUi(isLoading: Boolean) {
 @Composable
 fun HomeLoadingUiPreview() {
 	FlickTheme {
-		HomeLoadingUi(true)
+		HomeLoadingUi(rememberScrollState(), true)
 	}
 }

@@ -10,19 +10,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.roland.android.flick.state.State
+import com.roland.android.flick.utils.Extensions.refine
 
 @Composable
 fun <T: Any>CommonScreen(
 	state: State<T>?,
-	loadingScreen: @Composable () -> Unit = { LoadingScreen() },
+	loadingScreen: @Composable (String?) -> Unit,
 	successScreen: @Composable (T) -> Unit,
 ) {
 	when (state) {
 		null -> {
-			loadingScreen()
+			loadingScreen(null)
 		}
 		is State.Error -> {
-			ErrorScreen(state.errorMessage)
+			loadingScreen(state.errorMessage.refine())
 		}
 		is State.Success -> {
 			successScreen(state.data)
@@ -66,16 +67,16 @@ fun <T: Any, R: Any, B: Any, S: Any>CommonScreen(
 			loadingScreen(null)
 		}
 		state1 is State.Error -> {
-			loadingScreen(state1.errorMessage)
+			loadingScreen(state1.errorMessage.refine())
 		}
 		state2 is State.Error -> {
-			loadingScreen(state2.errorMessage)
+			loadingScreen(state2.errorMessage.refine())
 		}
 		state3 is State.Error -> {
-			loadingScreen(state3.errorMessage)
+			loadingScreen(state3.errorMessage.refine())
 		}
 		state4 is State.Error -> {
-			loadingScreen(state4.errorMessage)
+			loadingScreen(state4.errorMessage.refine())
 		}
 		(state1 is State.Success) && (state2 is State.Success) &&
 				(state3 is State.Success) && (state4 is State.Success) -> {

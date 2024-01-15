@@ -82,6 +82,7 @@ fun HomeScreen(
 	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
+	val scrollState = rememberScrollState()
 
 	Scaffold(
 		topBar = { HomeTopBar() },
@@ -98,7 +99,7 @@ fun HomeScreen(
 		CommonScreen(
 			movies, furtherMovies, shows, furtherShows,
 			loadingScreen = { error ->
-				HomeLoadingUi(error == null)
+				HomeLoadingUi(scrollState, error == null)
 				errorMessage.value = error
 				error?.let {
 					scope.launch {
@@ -111,7 +112,7 @@ fun HomeScreen(
 			var horizontalPaddingValue by remember { mutableStateOf(PADDING_WIDTH) }
 
 			Column(
-				modifier = Modifier.verticalScroll(rememberScrollState()),
+				modifier = Modifier.verticalScroll(scrollState),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
 				Spacer(Modifier.height(64.dp))

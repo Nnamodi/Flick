@@ -5,10 +5,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration.Indefinite
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -17,7 +25,9 @@ import com.roland.android.flick.state.MovieListUiState
 import com.roland.android.flick.ui.components.MediumItemPoster
 import com.roland.android.flick.ui.components.MovieListTopBar
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
+import com.roland.android.flick.ui.shimmer.LoadingListUi
 import com.roland.android.flick.utils.Extensions.getName
+import kotlinx.coroutines.launch
 
 @Composable
 fun MovieListScreen(
@@ -26,7 +36,11 @@ fun MovieListScreen(
 	navigateUp: () -> Unit
 ) {
 	val (movieList) = uiState
+	val snackbarHostState = remember { SnackbarHostState() }
+	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
+	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
+	val scrollState = rememberLazyGridState()
 
 	Scaffold(
 		topBar = {
@@ -34,14 +48,35 @@ fun MovieListScreen(
 				title = stringResource(category.getName()),
 				navigateUp = navigateUp
 			)
+		},
+		snackbarHost = {
+			SnackbarHost(snackbarHostState) { data ->
+				errorMessage.value?.let {
+					Snackbar(Modifier.padding(16.dp)) {
+						Text(data.visuals.message)
+					}
+				}
+			}
 		}
 	) { paddingValues ->
-		CommonScreen(movieList) { data ->
+		CommonScreen(
+			state = movieList,
+			loadingScreen = { error ->
+				LoadingListUi(scrollState, paddingValues, error == null)
+				errorMessage.value = error
+				error?.let {
+					scope.launch {
+						snackbarHostState.showSnackbar(it, duration = Indefinite)
+					}
+				}
+			}
+		) { data ->
 			LazyVerticalGrid(
 				columns = GridCells.Adaptive(100.dp),
 				modifier = Modifier
 					.padding(paddingValues)
 					.padding(horizontal = 6.dp),
+				state = scrollState,
 				contentPadding = PaddingValues(bottom = 50.dp)
 			) {
 				itemsIndexed(

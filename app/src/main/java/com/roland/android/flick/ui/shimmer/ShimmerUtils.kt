@@ -47,7 +47,7 @@ fun RowItems(header: String, isLoading: Boolean) {
 		) {
 			Spacer(Modifier.width(PADDING_WIDTH))
 			repeat(10) {
-				MediumBoxItem(isLoading)
+				MediumBoxItem(isLoading, Modifier.padding(end = 12.dp))
 			}
 		}
 	}
@@ -69,15 +69,17 @@ fun LargeBoxItem(isLoading: Boolean) {
 }
 
 @Composable
-private fun MediumBoxItem(isLoading: Boolean) {
+fun MediumBoxItem(
+	isLoading: Boolean,
+	modifier: Modifier = Modifier
+) {
 	val backgroundModifier = if (isLoading) {
 		Modifier.background(rememberAnimatedShimmerBrush())
 	} else Modifier.background(Color.LightGray.copy(alpha = 0.6f))
 
 	Box(
-		modifier = Modifier
+		modifier = modifier
 			.size(POSTER_WIDTH_MEDIUM, 180.dp)
-			.padding(end = 12.dp)
 			.clip(MaterialTheme.shapes.large)
 			.then(backgroundModifier)
 	)

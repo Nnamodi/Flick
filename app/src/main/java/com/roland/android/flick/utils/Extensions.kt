@@ -48,4 +48,11 @@ object Extensions {
 		}
 	}
 
+	fun String.refine() = when {
+		"UnknownHostException" in this -> "No Internet Connection"
+		"SocketTimeoutException" in this -> "Connection Timeout"
+		"ConnectException" in this -> "Connection Interrupted"
+		else -> this
+	}
+
 }
