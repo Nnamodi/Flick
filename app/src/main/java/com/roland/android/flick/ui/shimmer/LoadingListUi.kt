@@ -28,7 +28,7 @@ fun LoadingListUi(
 		contentPadding = PaddingValues(bottom = 50.dp)
 	) {
 		itemsIndexed(
-			items = (1..20).toList(),
+			items = (1..21).toList(),
 			key = { _, item -> item }
 		) { _, _ ->
 			MediumBoxItem(isLoading, Modifier.padding(6.dp))

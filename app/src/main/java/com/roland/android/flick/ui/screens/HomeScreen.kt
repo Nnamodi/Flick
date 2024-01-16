@@ -23,6 +23,7 @@ import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -74,7 +75,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
 	uiState: HomeUiState,
-	action: (HomeScreenActions) -> Unit,
+	action: (HomeActions) -> Unit,
 	seeMore: (Category) -> Unit
 ) {
 	val (movies, furtherMovies, shows, furtherShows, selectedCategory) = uiState
@@ -89,7 +90,16 @@ fun HomeScreen(
 		snackbarHost = {
 			SnackbarHost(snackbarHostState) { data ->
 				errorMessage.value?.let {
-					Snackbar(Modifier.padding(16.dp)) {
+					Snackbar(
+						modifier = Modifier.padding(16.dp),
+						action = {
+							data.visuals.actionLabel?.let {
+								TextButton(
+									onClick = { action(HomeActions.Retry) }
+								) { Text(it) }
+							}
+						}
+					) {
 						Text(data.visuals.message)
 					}
 				}
@@ -102,8 +112,9 @@ fun HomeScreen(
 				HomeLoadingUi(scrollState, error == null)
 				errorMessage.value = error
 				error?.let {
+					val actionLabel = stringResource(R.string.retry)
 					scope.launch {
-						snackbarHostState.showSnackbar(it, duration = Indefinite)
+						snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
 					}
 				}
 			}
@@ -159,9 +170,8 @@ fun HomeScreen(
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
 					header = stringResource(if (selectedCategory == MOVIES) R.string.in_theatres else R.string.new_releases),
-					onItemClick = { clickedMovieItem.value = it },
-					seeMore = { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
-				)
+					onItemClick = { clickedMovieItem.value = it }
+				) { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
 
 				val topRatedShows = showData1.topRated.copy(
 					results = showData1.topRated.results.sortedByDescending { it.voteAverage }
@@ -169,30 +179,26 @@ fun HomeScreen(
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData1.topRated else topRatedShows,
 					header = stringResource(R.string.top_rated),
-					onItemClick = { clickedMovieItem.value = it },
-					seeMore = { seeMore(if (selectedCategory == MOVIES) TOP_RATED_MOVIES else TOP_RATED_SERIES) }
-				)
+					onItemClick = { clickedMovieItem.value = it }
+				) { seeMore(if (selectedCategory == MOVIES) TOP_RATED_MOVIES else TOP_RATED_SERIES) }
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
 					header = stringResource(R.string.anime_collection),
-					onItemClick = { clickedMovieItem.value = it },
-					seeMore = { seeMore(if (selectedCategory == MOVIES) ANIME else ANIME_SERIES) }
-				)
+					onItemClick = { clickedMovieItem.value = it }
+				) { seeMore(if (selectedCategory == MOVIES) ANIME else ANIME_SERIES) }
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData2.bollywood else showData2.bollywood,
 					header = stringResource(R.string.bollywood),
-					onItemClick = { clickedMovieItem.value = it },
-					seeMore = { seeMore(if (selectedCategory == MOVIES) BOLLYWOOD_MOVIES else BOLLYWOOD_SERIES) }
-				)
+					onItemClick = { clickedMovieItem.value = it }
+				) { seeMore(if (selectedCategory == MOVIES) BOLLYWOOD_MOVIES else BOLLYWOOD_SERIES) }
 
 				HorizontalPosters(
 					movieList = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
 					header = stringResource(R.string.most_popular),
-					onItemClick = { clickedMovieItem.value = it },
-					seeMore = { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
-				)
+					onItemClick = { clickedMovieItem.value = it }
+				) { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
 
 				Spacer(Modifier.height(50.dp))
 			}

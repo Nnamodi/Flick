@@ -28,13 +28,13 @@ import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.ROUNDED_EDGE
 import com.roland.android.flick.utils.Constants.SERIES
-import com.roland.android.flick.utils.HomeScreenActions
+import com.roland.android.flick.utils.HomeActions
 
 @Composable
 fun ToggleButton(
 	selectedOption: String,
 	modifier: Modifier = Modifier,
-	onClick: (HomeScreenActions) -> Unit
+	onClick: (HomeActions) -> Unit
 ) {
 	Row(modifier) {
 		Box(
@@ -54,7 +54,7 @@ fun ToggleButton(
 						bottomStart = ROUNDED_EDGE
 					)
 				)
-				.clickable { onClick(HomeScreenActions.ToggleCategory(MOVIES)) },
+				.clickable { onClick(HomeActions.ToggleCategory(MOVIES)) },
 			contentAlignment = Alignment.Center
 		) {
 			ToggleButtonItem(
@@ -79,7 +79,7 @@ fun ToggleButton(
 						bottomEnd = ROUNDED_EDGE
 					)
 				)
-				.clickable { onClick(HomeScreenActions.ToggleCategory(SERIES)) },
+				.clickable { onClick(HomeActions.ToggleCategory(SERIES)) },
 			contentAlignment = Alignment.Center
 		) {
 			ToggleButtonItem(

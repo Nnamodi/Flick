@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.Category
 import com.roland.android.domain.usecase.GetMovieListUseCase
 import com.roland.android.flick.state.MovieListUiState
+import com.roland.android.flick.utils.MovieListActions
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,11 +34,19 @@ class MovieListViewModel @Inject constructor(
 		}
 	}
 
-	fun prepareListScreen() {
+	fun movieListActions(action: MovieListActions) {
+		when (action) {
+			is MovieListActions.LoadMovieList -> loadMovieList(action.category)
+			MovieListActions.PrepareScreen -> prepareListScreen()
+			is MovieListActions.Retry -> retry(action.categoryName)
+		}
+	}
+
+	private fun prepareListScreen() {
 		_movieListUiState.value = MovieListUiState()
 	}
 
-	fun loadMovieList(category: Category) {
+	private fun loadMovieList(category: Category) {
 		viewModelScope.launch {
 			movieListUseCase.execute(GetMovieListUseCase.Request(category))
 				.map { converter.convertMovieListData(it) }
@@ -45,6 +54,12 @@ class MovieListViewModel @Inject constructor(
 					_movieListUiState.update { it.copy(movieData = data) }
 				}
 		}
+	}
+
+	private fun retry(categoryName: String) {
+		val category = Category.valueOf(categoryName)
+		_movieListUiState.value = MovieListUiState()
+		loadMovieList(category)
 	}
 
 }

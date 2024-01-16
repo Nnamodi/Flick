@@ -10,7 +10,7 @@ import com.roland.android.domain.usecase.GetFurtherTvShowUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.flick.state.HomeUiState
-import com.roland.android.flick.utils.HomeScreenActions
+import com.roland.android.flick.utils.HomeActions
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -84,10 +84,19 @@ class HomeViewModel @Inject constructor(
 		}
 	}
 
-	fun homeScreenAction(action: HomeScreenActions) {
+	fun homeActions(action: HomeActions) {
 		when (action) {
-			is HomeScreenActions.ToggleCategory -> toggleCategory(action.category)
+			is HomeActions.ToggleCategory -> toggleCategory(action.category)
+			is HomeActions.Retry -> retry()
 		}
+	}
+
+	private fun retry() {
+		_homeUiState.value = HomeUiState()
+		loadMovies()
+		loadFurtherMovieCollections()
+		loadTvShows()
+		loadFurtherTvShows()
 	}
 
 	private fun toggleCategory(category: String) {

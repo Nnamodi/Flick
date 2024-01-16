@@ -12,6 +12,7 @@ import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,18 +22,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.roland.android.domain.entity.Movie
+import com.roland.android.flick.R
 import com.roland.android.flick.state.MovieListUiState
 import com.roland.android.flick.ui.components.MediumItemPoster
 import com.roland.android.flick.ui.components.MovieListTopBar
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.shimmer.LoadingListUi
 import com.roland.android.flick.utils.Extensions.getName
+import com.roland.android.flick.utils.MovieListActions
 import kotlinx.coroutines.launch
 
 @Composable
 fun MovieListScreen(
 	uiState: MovieListUiState,
 	category: String,
+	action: (MovieListActions) -> Unit,
 	navigateUp: () -> Unit
 ) {
 	val (movieList) = uiState
@@ -52,7 +56,16 @@ fun MovieListScreen(
 		snackbarHost = {
 			SnackbarHost(snackbarHostState) { data ->
 				errorMessage.value?.let {
-					Snackbar(Modifier.padding(16.dp)) {
+					Snackbar(
+						modifier = Modifier.padding(16.dp),
+						action = {
+							data.visuals.actionLabel?.let {
+								TextButton(
+									onClick = { action(MovieListActions.Retry(category)) }
+								) { Text(it) }
+							}
+						}
+					) {
 						Text(data.visuals.message)
 					}
 				}
@@ -65,8 +78,9 @@ fun MovieListScreen(
 				LoadingListUi(scrollState, paddingValues, error == null)
 				errorMessage.value = error
 				error?.let {
+					val actionLabel = stringResource(R.string.retry)
 					scope.launch {
-						snackbarHostState.showSnackbar(it, duration = Indefinite)
+						snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
 					}
 				}
 			}
