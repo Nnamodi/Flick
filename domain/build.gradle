@@ -41,6 +41,9 @@ dependencies {
     implementation di.hiltAndroid
     kapt di.kapt
 
+    // paging
+    implementation paging.runtime
+
     // unit testing
     testImplementation test.junit
     testImplementation test.coroutines

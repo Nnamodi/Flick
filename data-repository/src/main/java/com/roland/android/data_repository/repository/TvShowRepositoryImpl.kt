@@ -1,9 +1,10 @@
 package com.roland.android.data_repository.repository
 
+import androidx.paging.PagingData
 import com.roland.android.data_repository.data_source.RemoteTvShowSource
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.GenreList
-import com.roland.android.domain.entity.MovieList
+import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.Season
 import com.roland.android.domain.entity.Series
 import com.roland.android.domain.repository.TvShowRepository
@@ -14,23 +15,23 @@ class TvShowRepositoryImpl @Inject constructor(
 	private val remoteTvShowSource: RemoteTvShowSource
 ) : TvShowRepository {
 
-	override fun fetchTrendingShows(): Flow<MovieList> = remoteTvShowSource.fetchTrendingShows()
+	override fun fetchTrendingShows(): Flow<PagingData<Movie>> = remoteTvShowSource.fetchTrendingShows()
 
-	override fun fetchTopRatedShows(): Flow<MovieList> = remoteTvShowSource.fetchTopRatedShows()
+	override fun fetchTopRatedShows(): Flow<PagingData<Movie>> = remoteTvShowSource.fetchTopRatedShows()
 
-	override fun fetchPopularShows(): Flow<MovieList> = remoteTvShowSource.fetchPopularShows()
+	override fun fetchPopularShows(): Flow<PagingData<Movie>> = remoteTvShowSource.fetchPopularShows()
 
-	override fun fetchShowsAiringToday(): Flow<MovieList> = remoteTvShowSource.fetchShowsAiringToday()
+	override fun fetchShowsAiringToday(): Flow<PagingData<Movie>> = remoteTvShowSource.fetchShowsAiringToday()
 
-	override fun fetchShowsSoonToAir(): Flow<MovieList> = remoteTvShowSource.fetchShowsSoonToAir()
+	override fun fetchShowsSoonToAir(): Flow<PagingData<Movie>> = remoteTvShowSource.fetchShowsSoonToAir()
 
-	override fun fetchAnimeShows(): Flow<MovieList> = remoteTvShowSource.fetchAnimeShows()
+	override fun fetchAnimeShows(): Flow<PagingData<Movie>> = remoteTvShowSource.fetchAnimeShows()
 
-	override fun fetchBollywoodShows(): Flow<MovieList> = remoteTvShowSource.fetchBollywoodShows()
+	override fun fetchBollywoodShows(): Flow<PagingData<Movie>> = remoteTvShowSource.fetchBollywoodShows()
 
-	override fun fetchRecommendedTvShows(seriesId: Int): Flow<MovieList> = remoteTvShowSource.fetchRecommendedTvShows(seriesId)
+	override fun fetchRecommendedTvShows(seriesId: Int): Flow<PagingData<Movie>> = remoteTvShowSource.fetchRecommendedTvShows(seriesId)
 
-	override fun fetchSimilarTvShows(seriesId: Int): Flow<MovieList> = remoteTvShowSource.fetchSimilarTvShows(seriesId)
+	override fun fetchSimilarTvShows(seriesId: Int): Flow<PagingData<Movie>> = remoteTvShowSource.fetchSimilarTvShows(seriesId)
 
 	override fun fetchTvShowDetails(seriesId: Int): Flow<Series> = remoteTvShowSource.fetchTvShowDetails(seriesId)
 

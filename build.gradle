@@ -22,6 +22,8 @@ buildscript {
             mockito : "5.0.0",
             navigation : "2.5.3",
             okHttp : "4.11.0",
+            paging : "3.2.1",
+            paging_compose : "3.3.0-alpha02",
             retrofit : "2.9.0",
             moshi : "1.15.0",
             splash_screen : '1.0.0',
@@ -57,6 +59,10 @@ buildscript {
             retrofitMoshi: "com.squareup.retrofit2:converter-moshi:${versions.retrofit}",
             moshi : "com.squareup.moshi:moshi:${versions.moshi}",
             moshiKotlin : "com.squareup.moshi:moshi-kotlin:${versions.moshi}"
+        ]
+        paging = [
+            compose : "androidx.paging:paging-compose:${versions.paging_compose}",
+            runtime : "androidx.paging:paging-runtime:${versions.paging}"
         ]
         androidTest = [
             espressoCore : "androidx.test.espresso:espresso-core:${versions.espresso_core}",

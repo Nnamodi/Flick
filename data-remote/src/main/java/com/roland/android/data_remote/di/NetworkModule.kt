@@ -11,6 +11,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -63,6 +65,11 @@ class NetworkModule {
 	@Provides
 	fun providesTvShowService(retrofit: Retrofit): TvShowService {
 		return retrofit.create(TvShowService::class.java)
+	}
+
+	@Provides
+	fun providesCoroutineScope(): CoroutineScope {
+		return CoroutineScope(Dispatchers.IO)
 	}
 
 }

@@ -1,7 +1,8 @@
 package com.roland.android.domain.usecase
 
+import androidx.paging.PagingData
 import com.roland.android.domain.entity.GenreList
-import com.roland.android.domain.entity.MovieList
+import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.repository.MovieRepository
 import com.roland.android.domain.repository.TvShowRepository
 import com.roland.android.domain.usecase.Category.ANIME
@@ -53,7 +54,7 @@ class GetMovieListUseCase @Inject constructor(
 	data class Request(val category: Category) : UseCase.Request
 
 	data class Response(
-		val result: MovieList,
+		val result: PagingData<Movie>,
 		val movieGenre: GenreList,
 		val seriesGenre: GenreList
 	) : UseCase.Response

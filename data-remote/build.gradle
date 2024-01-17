@@ -67,6 +67,9 @@ dependencies {
     implementation(project(path: ":data-repository"))
     implementation(project(path: ":domain"))
 
+    // paging
+    implementation paging.runtime
+
     // unit testing
     testImplementation test.junit
     testImplementation test.coroutines

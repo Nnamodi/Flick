@@ -1,6 +1,7 @@
 package com.roland.android.domain.usecase
 
-import com.roland.android.domain.entity.MovieList
+import androidx.paging.PagingData
+import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -24,11 +25,11 @@ class GetMoviesUseCase @Inject constructor(
 	object Request : UseCase.Request
 
 	data class Response(
-		val trendingMovies: MovieList,
-		val popularMovies: MovieList,
-		val nowPlayingMovies: MovieList,
-		val topRated: MovieList,
-		val upcomingMovies: MovieList
+		val trendingMovies: PagingData<Movie>,
+		val popularMovies: PagingData<Movie>,
+		val nowPlayingMovies: PagingData<Movie>,
+		val topRated: PagingData<Movie>,
+		val upcomingMovies: PagingData<Movie>
 	) : UseCase.Response
 
 }

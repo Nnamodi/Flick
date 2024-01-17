@@ -1,7 +1,8 @@
 package com.roland.android.domain.usecase
 
+import androidx.paging.PagingData
 import com.roland.android.domain.entity.GenreList
-import com.roland.android.domain.entity.MovieList
+import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -23,8 +24,8 @@ class GetFurtherMovieCollectionUseCase @Inject constructor(
 	object Request : UseCase.Request
 
 	data class Response(
-		val bollywoodMovies: MovieList,
-		val animeCollection: MovieList,
+		val bollywoodMovies: PagingData<Movie>,
+		val animeCollection: PagingData<Movie>,
 		val movieGenres: GenreList
 	) : UseCase.Response
 

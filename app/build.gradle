@@ -80,6 +80,9 @@ dependencies {
     implementation(project(path: ":data-repository"))
     implementation(project(path: ":domain"))
 
+    // paging
+    implementation paging.compose
+
     // splash_screen
     implementation androidx.splashScreen
 

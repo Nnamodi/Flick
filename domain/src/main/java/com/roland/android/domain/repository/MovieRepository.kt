@@ -1,29 +1,30 @@
 package com.roland.android.domain.repository
 
+import androidx.paging.PagingData
 import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails
-import com.roland.android.domain.entity.MovieList
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
 
-	fun fetchTrendingMovies(): Flow<MovieList>
+	fun fetchTrendingMovies(): Flow<PagingData<Movie>>
 
-	fun fetchTopRatedMovies(): Flow<MovieList>
+	fun fetchTopRatedMovies(): Flow<PagingData<Movie>>
 
-	fun fetchNowPlayingMovies(): Flow<MovieList>
+	fun fetchNowPlayingMovies(): Flow<PagingData<Movie>>
 
-	fun fetchPopularMovies(): Flow<MovieList>
+	fun fetchPopularMovies(): Flow<PagingData<Movie>>
 
-	fun fetchUpcomingMovies(): Flow<MovieList>
+	fun fetchUpcomingMovies(): Flow<PagingData<Movie>>
 
-	fun fetchAnimeCollection(): Flow<MovieList>
+	fun fetchAnimeCollection(): Flow<PagingData<Movie>>
 
-	fun fetchBollywoodMovies(): Flow<MovieList>
+	fun fetchBollywoodMovies(): Flow<PagingData<Movie>>
 
-	fun fetchRecommendedMovies(movieId: Int): Flow<MovieList>
+	fun fetchRecommendedMovies(movieId: Int): Flow<PagingData<Movie>>
 
-	fun fetchSimilarMovies(movieId: Int): Flow<MovieList>
+	fun fetchSimilarMovies(movieId: Int): Flow<PagingData<Movie>>
 
 	fun fetchMovieDetails(movieId: Int): Flow<MovieDetails>
 

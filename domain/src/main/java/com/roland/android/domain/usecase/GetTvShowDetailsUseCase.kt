@@ -1,7 +1,8 @@
 package com.roland.android.domain.usecase
 
+import androidx.paging.PagingData
+import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieCredits
-import com.roland.android.domain.entity.MovieList
 import com.roland.android.domain.entity.Series
 import com.roland.android.domain.repository.CastRepository
 import com.roland.android.domain.repository.TvShowRepository
@@ -27,8 +28,8 @@ class GetTvShowDetailsUseCase @Inject constructor(
 	data class Request(val seriesId: Int) : UseCase.Request
 
 	data class Response(
-		val recommendedShows: MovieList,
-		val similarShows: MovieList,
+		val recommendedShows: PagingData<Movie>,
+		val similarShows: PagingData<Movie>,
 		val showDetails: Series,
 		val showCasts: MovieCredits
 	) : UseCase.Response
