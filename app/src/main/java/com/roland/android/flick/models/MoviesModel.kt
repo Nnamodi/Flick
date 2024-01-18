@@ -1,34 +1,36 @@
 package com.roland.android.flick.models
 
+import androidx.paging.PagingData
 import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieCredits
 import com.roland.android.domain.entity.MovieDetails
-import com.roland.android.domain.entity.MovieList
+import kotlinx.coroutines.flow.MutableStateFlow
 
 data class MoviesModel(
-	val trending: MovieList = MovieList(),
-	val popular: MovieList = MovieList(),
-	val nowPlaying: MovieList = MovieList(),
-	val topRated: MovieList = MovieList(),
-	val upcoming: MovieList = MovieList()
+	val trending: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val popular: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val nowPlaying: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val topRated: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val upcoming: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty())
 )
 
 data class FurtherMoviesModel(
-	val bollywood: MovieList = MovieList(),
-	val anime: MovieList = MovieList(),
+	val bollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val anime: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val genres: GenreList = GenreList()
 )
 
 data class MovieListModel(
-	val movieList: MovieList = MovieList(),
+	val movieList: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val movieGenres: GenreList = GenreList(),
 	val seriesGenres: GenreList = GenreList()
 )
 
 data class MovieDetailsModel(
-	val recommendedMovies: MovieList = MovieList(),
-	val similarMovies: MovieList = MovieList(),
+	val recommendedMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val similarMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val movieDetails: MovieDetails = MovieDetails(),
 	val movieCasts: MovieCredits = MovieCredits()
 )

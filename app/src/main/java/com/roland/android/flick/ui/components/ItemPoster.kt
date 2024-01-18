@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.StarRate
 import androidx.compose.material3.Divider
@@ -29,24 +28,30 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.roland.android.domain.entity.Movie
-import com.roland.android.domain.entity.MovieList
 import com.roland.android.flick.R
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W500
+import com.roland.android.flick.utils.Extensions.loadStateUi
 import com.roland.android.flick.utils.Extensions.roundOff
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun HorizontalPosters(
-	movieList: MovieList,
+	pagingData: MutableStateFlow<PagingData<Movie>>,
 	header: String,
 	onItemClick: (Movie) -> Unit,
 	seeMore: () -> Unit
 ) {
+	val movieList = pagingData.collectAsLazyPagingItems()
+
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()
@@ -60,14 +65,16 @@ fun HorizontalPosters(
 		) {
 			Header(header)
 			Spacer(Modifier.weight(1f))
-			Text(
-				text = stringResource(R.string.more),
-				modifier = Modifier
-					.clip(MaterialTheme.shapes.small)
-					.clickable { seeMore() }
-					.padding(6.dp),
-				color = Color.Gray
-			)
+			if (movieList.loadState.refresh is LoadState.NotLoading) {
+				Text(
+					text = stringResource(R.string.more),
+					modifier = Modifier
+						.clip(MaterialTheme.shapes.small)
+						.clickable { seeMore() }
+						.padding(6.dp),
+					color = Color.Gray
+				)
+			}
 		}
 		LazyRow(
 			contentPadding = PaddingValues(
@@ -75,15 +82,18 @@ fun HorizontalPosters(
 				end = PADDING_WIDTH - 12.dp
 			)
 		) {
-			itemsIndexed(
-				items = movieList.results.take(20),
-				key = { _, movie -> movie.id}
-			) { _, movie ->
-				MediumItemPoster(
-					movie = movie,
-					modifier = Modifier.padding(end = 12.dp),
-					onClick = onItemClick
-				)
+			val movies = movieList.itemSnapshotList.take(20)
+			items(movies.size) { index ->
+				movies[index]?.let { movie ->
+					MediumItemPoster(
+						movie = movie,
+						modifier = Modifier.padding(end = 12.dp),
+						onClick = onItemClick
+					)
+				}
+			}
+			item {
+				movieList.loadStateUi(PosterType.Medium)
 			}
 		}
 	}

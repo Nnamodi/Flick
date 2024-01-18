@@ -20,6 +20,7 @@ import com.roland.android.flick.models.SeasonDetailsModel
 import com.roland.android.flick.models.TvShowDetailsModel
 import com.roland.android.flick.models.TvShowsModel
 import com.roland.android.flick.state.State
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 class ResponseConverter @Inject constructor() {
@@ -34,11 +35,11 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					MoviesModel(
-						result.data.trendingMovies,
-						result.data.popularMovies,
-						result.data.nowPlayingMovies,
-						result.data.topRated,
-						result.data.upcomingMovies
+						MutableStateFlow(result.data.trendingMovies),
+						MutableStateFlow(result.data.popularMovies),
+						MutableStateFlow(result.data.nowPlayingMovies),
+						MutableStateFlow(result.data.topRated),
+						MutableStateFlow(result.data.upcomingMovies)
 					)
 				)
 			}
@@ -55,8 +56,8 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					FurtherMoviesModel(
-						result.data.bollywoodMovies,
-						result.data.animeCollection,
+						MutableStateFlow(result.data.bollywoodMovies),
+						MutableStateFlow(result.data.animeCollection),
 						result.data.movieGenres
 					)
 				)
@@ -74,8 +75,8 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					MovieDetailsModel(
-						result.data.recommendedMovies,
-						result.data.similarMovies,
+						MutableStateFlow(result.data.recommendedMovies),
+						MutableStateFlow(result.data.similarMovies),
 						result.data.movieDetails,
 						result.data.movieCasts
 					)
@@ -94,11 +95,11 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					TvShowsModel(
-						result.data.trendingShows,
-						result.data.topRatedShows,
-						result.data.popularShows,
-						result.data.showsAiringToday,
-						result.data.showsSoonToAir
+						MutableStateFlow(result.data.trendingShows),
+						MutableStateFlow(result.data.popularShows),
+						MutableStateFlow(result.data.showsAiringToday),
+						MutableStateFlow(result.data.topRatedShows),
+						MutableStateFlow(result.data.showsSoonToAir)
 					)
 				)
 			}
@@ -115,8 +116,8 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					FurtherTvShowsModel(
-						result.data.bollywoodShows,
-						result.data.animeShows,
+						MutableStateFlow(result.data.bollywoodShows),
+						MutableStateFlow(result.data.animeShows),
 						result.data.genres
 					)
 				)
@@ -134,7 +135,7 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					MovieListModel(
-						result.data.result,
+						MutableStateFlow(result.data.result),
 						result.data.movieGenre,
 						result.data.seriesGenre
 					)
@@ -153,8 +154,8 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					TvShowDetailsModel(
-						result.data.recommendedShows,
-						result.data.similarShows,
+						MutableStateFlow(result.data.recommendedShows),
+						MutableStateFlow(result.data.similarShows),
 						result.data.showDetails,
 						result.data.showCasts
 					)

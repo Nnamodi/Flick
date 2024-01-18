@@ -1,9 +1,18 @@
 package com.roland.android.flick.utils
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.usecase.Category
 import com.roland.android.flick.R
+import com.roland.android.flick.ui.components.PosterType
+import com.roland.android.flick.ui.shimmer.LargeBoxItem
+import com.roland.android.flick.ui.shimmer.MediumBoxItem
 import java.math.RoundingMode
 import java.text.DecimalFormat
 
@@ -52,7 +61,36 @@ object Extensions {
 		"UnknownHostException" in this -> "No Internet Connection"
 		"SocketTimeoutException" in this -> "Connection Timeout"
 		"ConnectException" in this -> "Connection Interrupted"
+		"Unable to resolve host" in this -> "Connection Interrupted"
 		else -> this
+	}
+
+	@Composable
+	fun LazyPagingItems<Movie>.loadStateUi(
+		posterType: PosterType,
+		error: @Composable (String?) -> Unit = {}
+	) = apply {
+		val placeholder: @Composable (Boolean) -> Unit = { isLoading ->
+			when (posterType) {
+				PosterType.Medium -> {
+					MediumBoxItem(isLoading, Modifier.padding(end = 12.dp))
+				}
+				PosterType.Large -> LargeBoxItem(isLoading)
+				else -> {}
+			}
+		}
+
+		when {
+			loadState.refresh is LoadState.Loading -> {
+				repeat(10) { placeholder(true) }
+			}
+			loadState.refresh is LoadState.Error -> {
+				repeat(10) { placeholder(false) }
+				val errorMessage = (loadState.refresh as LoadState.Error).error.localizedMessage
+				error(errorMessage?.refine())
+			}
+			else -> {}
+		}
 	}
 
 }

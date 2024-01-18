@@ -3,8 +3,8 @@ package com.roland.android.flick.ui.screens
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -21,6 +21,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
 import com.roland.android.flick.state.MovieListUiState
@@ -28,6 +31,7 @@ import com.roland.android.flick.ui.components.MediumItemPoster
 import com.roland.android.flick.ui.components.MovieListTopBar
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.shimmer.LoadingListUi
+import com.roland.android.flick.ui.shimmer.MediumBoxItem
 import com.roland.android.flick.utils.Extensions.getName
 import com.roland.android.flick.utils.MovieListActions
 import kotlinx.coroutines.launch
@@ -85,25 +89,14 @@ fun MovieListScreen(
 				}
 			}
 		) { data ->
-			LazyVerticalGrid(
-				columns = GridCells.Adaptive(100.dp),
-				modifier = Modifier
-					.padding(paddingValues)
-					.padding(horizontal = 6.dp),
-				state = scrollState,
-				contentPadding = PaddingValues(bottom = 50.dp)
-			) {
-				itemsIndexed(
-					items = data.movieList.results,
-					key = { _, movie -> movie.id }
-				) { _, movie ->
-					MediumItemPoster(
-						movie = movie,
-						modifier = Modifier.padding(6.dp),
-						onClick = { clickedMovieItem.value = it }
-					)
-				}
-			}
+			val movies = data.movieList.collectAsLazyPagingItems()
+
+			MovieLists(
+				paddingValues = paddingValues,
+				scrollState = scrollState,
+				movies = movies,
+				onItemClick = { clickedMovieItem.value = it }
+			)
 
 			if (clickedMovieItem.value != null) {
 				val clickedItemIsMovie = clickedMovieItem.value!!.title != null
@@ -114,6 +107,46 @@ fun MovieListScreen(
 					viewMore = {},
 					closeSheet = { clickedMovieItem.value = null }
 				)
+			}
+		}
+	}
+}
+
+@Composable
+private fun MovieLists(
+	paddingValues: PaddingValues,
+	scrollState: LazyGridState,
+	movies: LazyPagingItems<Movie>,
+	onItemClick: (Movie) -> Unit,
+) {
+	LazyVerticalGrid(
+		columns = GridCells.Adaptive(100.dp),
+		modifier = Modifier
+			.padding(paddingValues)
+			.padding(horizontal = 6.dp),
+		state = scrollState,
+		contentPadding = PaddingValues(bottom = 50.dp)
+	) {
+		items(movies.itemCount) { index ->
+			movies[index]?.let { movie ->
+				MediumItemPoster(
+					movie = movie,
+					modifier = Modifier.padding(6.dp),
+					onClick = onItemClick
+				)
+			}
+		}
+		movies.apply {
+			items(21) {
+				when (loadState.refresh) {
+					is LoadState.Loading -> {
+						MediumBoxItem(true, Modifier.padding(6.dp))
+					}
+					is LoadState.Error -> {
+						MediumBoxItem(false, Modifier.padding(6.dp))
+					}
+					else -> {}
+				}
 			}
 		}
 	}

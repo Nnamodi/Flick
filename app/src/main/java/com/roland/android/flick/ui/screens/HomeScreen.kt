@@ -38,8 +38,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
-import com.roland.android.domain.entity.MovieList
 import com.roland.android.domain.usecase.Category
 import com.roland.android.domain.usecase.Category.ANIME
 import com.roland.android.domain.usecase.Category.ANIME_SERIES
@@ -60,6 +61,7 @@ import com.roland.android.flick.ui.components.Header
 import com.roland.android.flick.ui.components.HomeTopBar
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.LargeItemPoster
+import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.ToggleButton
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.shimmer.HomeLoadingUi
@@ -67,7 +69,9 @@ import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
-import com.roland.android.flick.utils.HomeScreenActions
+import com.roland.android.flick.utils.Extensions.loadStateUi
+import com.roland.android.flick.utils.HomeActions
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -119,7 +123,7 @@ fun HomeScreen(
 				}
 			}
 		) { movieData1, movieData2, showData1, showData2 ->
-			val pagerState = rememberPagerState()
+			val pagerState = rememberPagerState { 20 }
 			var horizontalPaddingValue by remember { mutableStateOf(PADDING_WIDTH) }
 
 			Column(
@@ -141,7 +145,6 @@ fun HomeScreen(
 					Header(stringResource(R.string.trending))
 				}
 				HorizontalPager(
-					pageCount = 20,
 					state = pagerState,
 					contentPadding = PaddingValues(
 						start = horizontalPaddingValue,
@@ -158,44 +161,54 @@ fun HomeScreen(
 					pageSize = PageSize.Fixed(POSTER_WIDTH_LARGE)
 				) { page ->
 					val trendingMovies = (if (selectedCategory == MOVIES)
-						movieData1.trending.results else showData1.trending.results
-					).take(20)
+						movieData1.trending else showData1.trending
+					).collectAsLazyPagingItems()
 
-					LargeItemPoster(
-						movie = trendingMovies[page],
-						onClick = { clickedMovieItem.value = it }
-					)
+					if (trendingMovies.itemCount > 0) {
+						trendingMovies[page]?.let { movie ->
+							LargeItemPoster(
+								movie = movie,
+								onClick = { clickedMovieItem.value = it }
+							)
+						}
+					}
+					trendingMovies.loadStateUi(PosterType.Large) { error ->
+						errorMessage.value = error
+						error?.let {
+							val actionLabel = stringResource(R.string.retry)
+							scope.launch {
+								snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
+							}
+						}
+					}
 				}
 
 				HorizontalPosters(
-					movieList = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
+					pagingData = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
 					header = stringResource(if (selectedCategory == MOVIES) R.string.in_theatres else R.string.new_releases),
 					onItemClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
 
-				val topRatedShows = showData1.topRated.copy(
-					results = showData1.topRated.results.sortedByDescending { it.voteAverage }
-				)
 				HorizontalPosters(
-					movieList = if (selectedCategory == MOVIES) movieData1.topRated else topRatedShows,
+					pagingData = if (selectedCategory == MOVIES) movieData1.topRated else showData1.topRated,
 					header = stringResource(R.string.top_rated),
 					onItemClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) TOP_RATED_MOVIES else TOP_RATED_SERIES) }
 
 				HorizontalPosters(
-					movieList = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
+					pagingData = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
 					header = stringResource(R.string.anime_collection),
 					onItemClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) ANIME else ANIME_SERIES) }
 
 				HorizontalPosters(
-					movieList = if (selectedCategory == MOVIES) movieData2.bollywood else showData2.bollywood,
+					pagingData = if (selectedCategory == MOVIES) movieData2.bollywood else showData2.bollywood,
 					header = stringResource(R.string.bollywood),
 					onItemClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) BOLLYWOOD_MOVIES else BOLLYWOOD_SERIES) }
 
 				HorizontalPosters(
-					movieList = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
+					pagingData = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
 					header = stringResource(R.string.most_popular),
 					onItemClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
@@ -227,7 +240,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
 	FlickTheme {
-		val movieList = MovieList(results = listOf(Movie(), Movie(), Movie()))
+		val movieList = MutableStateFlow(PagingData.from(listOf(Movie(), Movie(), Movie())))
 		val movies = State.Success(MoviesModel(trending = movieList))
 		val furtherMovies = State.Success(FurtherMoviesModel(anime = movieList))
 		val uiState = HomeUiState(movies, furtherMovies)
