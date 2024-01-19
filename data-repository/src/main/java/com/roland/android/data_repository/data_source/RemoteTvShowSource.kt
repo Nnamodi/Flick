@@ -28,6 +28,8 @@ interface RemoteTvShowSource {
 
 	fun fetchSimilarTvShows(seriesId: Int): Flow<PagingData<Movie>>
 
+	fun searchTvShows(query: String): Flow<PagingData<Movie>>
+
 	fun fetchTvShowDetails(seriesId: Int): Flow<Series>
 
 	fun fetchSeasonDetails(

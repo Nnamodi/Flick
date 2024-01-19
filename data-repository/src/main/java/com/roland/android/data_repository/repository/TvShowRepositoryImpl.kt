@@ -33,6 +33,8 @@ class TvShowRepositoryImpl @Inject constructor(
 
 	override fun fetchSimilarTvShows(seriesId: Int): Flow<PagingData<Movie>> = remoteTvShowSource.fetchSimilarTvShows(seriesId)
 
+	override fun searchTvShows(query: String): Flow<PagingData<Movie>> = remoteTvShowSource.searchTvShows(query)
+
 	override fun fetchTvShowDetails(seriesId: Int): Flow<Series> = remoteTvShowSource.fetchTvShowDetails(seriesId)
 
 	override fun fetchSeasonDetails(

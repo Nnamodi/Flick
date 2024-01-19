@@ -54,7 +54,7 @@ class GetMovieListUseCase @Inject constructor(
 	data class Request(val category: Category) : UseCase.Request
 
 	data class Response(
-		val result: PagingData<Movie>,
+		val movieList: PagingData<Movie>,
 		val movieGenre: GenreList,
 		val seriesGenre: GenreList
 	) : UseCase.Response

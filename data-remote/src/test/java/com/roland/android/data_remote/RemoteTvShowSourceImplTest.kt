@@ -31,6 +31,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -38,12 +40,13 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class RemoteTvShowSourceImplTest {
 
 	private val tvShowService = mock<TvShowService>()
-	private val remoteTvShowSource = RemoteTvShowSourceImpl(tvShowService)
+	private val scope = TestScope(UnconfinedTestDispatcher())
+	private val remoteTvShowSource = RemoteTvShowSourceImpl(tvShowService, scope)
 
-	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
 	fun testFetchTvShows() = runTest {
 		whenever(tvShowService.fetchTrendingShows()).thenReturn(remoteTrendingShows)
@@ -55,6 +58,7 @@ class RemoteTvShowSourceImplTest {
 		whenever(tvShowService.fetchAnimeShows()).thenReturn(remoteAnimeShows)
 		whenever(tvShowService.fetchRecommendedTvShows(0)).thenReturn(remoteRecommendedShows)
 		whenever(tvShowService.fetchSimilarTvShows(0)).thenReturn(remoteSimilarShows)
+		whenever(tvShowService.searchTvShows("")).thenReturn(remoteTrendingShows)
 		whenever(tvShowService.fetchTvShowDetails(0)).thenReturn(remoteShowDetails)
 		whenever(tvShowService.fetchSeasonDetails(0, 0)).thenReturn(remoteSeasonDetails)
 		whenever(tvShowService.fetchEpisodeDetails(0, 0, 0)).thenReturn(remoteEpisodeDetails)
@@ -68,6 +72,7 @@ class RemoteTvShowSourceImplTest {
 		val anime = remoteTvShowSource.fetchAnimeShows().first()
 		val recommended = remoteTvShowSource.fetchRecommendedTvShows(0).first()
 		val similar = remoteTvShowSource.fetchSimilarTvShows(0).first()
+		val search = remoteTvShowSource.searchTvShows("").first()
 		val show = remoteTvShowSource.fetchTvShowDetails(0).first()
 		val season = remoteTvShowSource.fetchSeasonDetails(0, 0).first()
 		val episode = remoteTvShowSource.fetchEpisodeDetails(0, 0, 0).first()
@@ -82,6 +87,7 @@ class RemoteTvShowSourceImplTest {
 			anime,
 			recommended,
 			similar,
+			search,
 			show,
 			season,
 			episode
@@ -96,6 +102,7 @@ class RemoteTvShowSourceImplTest {
 			animeShows,
 			recommendedShows,
 			similarShows,
+			trendingShows,
 			showDetails,
 			seasonDetails,
 			episodeDetails
@@ -103,7 +110,6 @@ class RemoteTvShowSourceImplTest {
 		assertEquals(fetchedShowData, expectedShowData)
 	}
 
-	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
 	fun testFetchTvShowsThrowsError() = runTest {
 		whenever(tvShowService.fetchTrendingShows()).thenThrow(RuntimeException())
@@ -115,6 +121,7 @@ class RemoteTvShowSourceImplTest {
 		whenever(tvShowService.fetchAnimeShows()).thenThrow(RuntimeException())
 		whenever(tvShowService.fetchRecommendedTvShows(0)).thenThrow(RuntimeException())
 		whenever(tvShowService.fetchSimilarTvShows(2)).thenThrow(RuntimeException())
+		whenever(tvShowService.searchTvShows("")).thenThrow(RuntimeException())
 		whenever(tvShowService.fetchTvShowDetails(0)).thenThrow(RuntimeException())
 		whenever(tvShowService.fetchSeasonDetails(0, 2)).thenThrow(RuntimeException())
 		whenever(tvShowService.fetchEpisodeDetails(0, 2, 0)).thenThrow(RuntimeException())

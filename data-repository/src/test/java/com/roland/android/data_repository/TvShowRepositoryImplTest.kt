@@ -40,6 +40,7 @@ class TvShowRepositoryImplTest {
 		whenever(remoteTvShowSource.fetchAnimeShows()).thenReturn(flowOf(animeShows))
 		whenever(remoteTvShowSource.fetchRecommendedTvShows(0)).thenReturn(flowOf(recommendedShows))
 		whenever(remoteTvShowSource.fetchSimilarTvShows(0)).thenReturn(flowOf(similarShows))
+		whenever(remoteTvShowSource.searchTvShows("")).thenReturn(flowOf(trendingShows))
 		whenever(remoteTvShowSource.fetchTvShowDetails(0)).thenReturn(flowOf(showDetails))
 		whenever(remoteTvShowSource.fetchSeasonDetails(0, 0)).thenReturn(flowOf(seasonDetails))
 		whenever(remoteTvShowSource.fetchEpisodeDetails(0, 0, 0)).thenReturn(flowOf(episodeDetails))
@@ -53,6 +54,7 @@ class TvShowRepositoryImplTest {
 		val anime = tvShowRepositoryImpl.fetchAnimeShows().first()
 		val recommended = tvShowRepositoryImpl.fetchRecommendedTvShows(0).first()
 		val similar = tvShowRepositoryImpl.fetchSimilarTvShows(0).first()
+		val search = tvShowRepositoryImpl.searchTvShows("").first()
 		val show = tvShowRepositoryImpl.fetchTvShowDetails(0).first()
 		val season = tvShowRepositoryImpl.fetchSeasonDetails(0, 0).first()
 		val episode = tvShowRepositoryImpl.fetchEpisodeDetails(0, 0, 0).first()
@@ -67,6 +69,7 @@ class TvShowRepositoryImplTest {
 			anime,
 			recommended,
 			similar,
+			search,
 			show,
 			season,
 			episode
@@ -81,6 +84,7 @@ class TvShowRepositoryImplTest {
 			animeShows,
 			recommendedShows,
 			similarShows,
+			trendingShows,
 			showDetails,
 			seasonDetails,
 			episodeDetails

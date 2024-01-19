@@ -1,16 +1,5 @@
 package com.roland.android.data_remote
 
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteAnimeCollections
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteBollywoodMovies
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteGenreList
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteMovieDetails
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteNowPlayingMovies
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remotePopularMovies
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteRecommendedMovies
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteSimilarMovies
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteTopRatedMovies
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteTrendingMovies
-import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteUpcomingMovies
 import com.roland.android.data_remote.data_source.RemoteMovieSourceImpl
 import com.roland.android.data_remote.network.service.MovieService
 import com.roland.android.data_remote.sample_data.ExpectedSampleData.animeCollections
@@ -24,11 +13,24 @@ import com.roland.android.data_remote.sample_data.ExpectedSampleData.similarMovi
 import com.roland.android.data_remote.sample_data.ExpectedSampleData.topRatedMovies
 import com.roland.android.data_remote.sample_data.ExpectedSampleData.trendingMovies
 import com.roland.android.data_remote.sample_data.ExpectedSampleData.upcomingMovies
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteAnimeCollections
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteBollywoodMovies
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteGenreList
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteMovieDetails
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteNowPlayingMovies
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remotePopularMovies
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteRecommendedMovies
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteSimilarMovies
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteTopRatedMovies
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteTrendingMovies
+import com.roland.android.data_remote.sample_data.RemoteSampleData.remoteUpcomingMovies
 import com.roland.android.domain.entity.UseCaseException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -36,12 +38,13 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class RemoteMovieSourceImplTest {
 
 	private val movieService = mock<MovieService>()
-	private val remoteMovieSource = RemoteMovieSourceImpl(movieService)
+	private val scope = TestScope(UnconfinedTestDispatcher())
+	private val remoteMovieSource = RemoteMovieSourceImpl(movieService, scope)
 
-	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
 	fun testFetchMovies() = runTest {
 		whenever(movieService.fetchTrendingMovies()).thenReturn(remoteTrendingMovies)
@@ -53,6 +56,7 @@ class RemoteMovieSourceImplTest {
 		whenever(movieService.fetchAnimeCollection()).thenReturn(remoteAnimeCollections)
 		whenever(movieService.fetchRecommendedMovies(0)).thenReturn(remoteRecommendedMovies)
 		whenever(movieService.fetchSimilarMovies(2)).thenReturn(remoteSimilarMovies)
+		whenever(movieService.searchMovies("")).thenReturn(remoteTrendingMovies)
 		whenever(movieService.fetchMovieDetails(2)).thenReturn(remoteMovieDetails)
 		whenever(movieService.fetchMovieGenres()).thenReturn(remoteGenreList)
 
@@ -65,6 +69,7 @@ class RemoteMovieSourceImplTest {
 		val anime = remoteMovieSource.fetchAnimeCollection().first()
 		val recommended = remoteMovieSource.fetchRecommendedMovies(0).first()
 		val similar = remoteMovieSource.fetchSimilarMovies(2).first()
+		val search = remoteMovieSource.searchMovies("").first()
 		val movie = remoteMovieSource.fetchMovieDetails(2).first()
 		val genres = remoteMovieSource.fetchMovieGenres().first()
 
@@ -78,6 +83,7 @@ class RemoteMovieSourceImplTest {
 			anime,
 			recommended,
 			similar,
+			search,
 			movie,
 			genres
 		)
@@ -91,13 +97,13 @@ class RemoteMovieSourceImplTest {
 			animeCollections,
 			recommendedMovies,
 			similarMovies,
+			trendingMovies,
 			movieDetails,
 			genreList
 		)
 		assertEquals(fetchedMovieData, expectedMovieData)
 	}
 
-	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
 	fun testFetchMoviesThrowsError() = runTest {
 		whenever(movieService.fetchTrendingMovies()).thenThrow(RuntimeException())
@@ -109,6 +115,7 @@ class RemoteMovieSourceImplTest {
 		whenever(movieService.fetchAnimeCollection()).thenThrow(RuntimeException())
 		whenever(movieService.fetchRecommendedMovies(0)).thenThrow(RuntimeException())
 		whenever(movieService.fetchSimilarMovies(2)).thenThrow(RuntimeException())
+		whenever(movieService.searchMovies("")).thenThrow(RuntimeException())
 		whenever(movieService.fetchMovieDetails(2)).thenThrow(RuntimeException())
 		whenever(movieService.fetchMovieGenres()).thenThrow(RuntimeException())
 

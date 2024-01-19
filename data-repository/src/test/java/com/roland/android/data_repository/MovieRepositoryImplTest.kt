@@ -39,6 +39,7 @@ class MovieRepositoryImplTest {
 		whenever(remoteMovieSource.fetchAnimeCollection()).thenReturn(flowOf(animeCollections))
 		whenever(remoteMovieSource.fetchRecommendedMovies(2)).thenReturn(flowOf(recommendedMovies))
 		whenever(remoteMovieSource.fetchSimilarMovies(2)).thenReturn(flowOf(similarMovies))
+		whenever(remoteMovieSource.searchMovies("")).thenReturn(flowOf(trendingMovies))
 		whenever(remoteMovieSource.fetchMovieDetails(2)).thenReturn(flowOf(movieDetails))
 		whenever(remoteMovieSource.fetchMovieGenres()).thenReturn(flowOf(genreList))
 
@@ -51,6 +52,7 @@ class MovieRepositoryImplTest {
 		val anime = movieRepositoryImpl.fetchAnimeCollection().first()
 		val recommended = movieRepositoryImpl.fetchRecommendedMovies(2).first()
 		val similar = movieRepositoryImpl.fetchSimilarMovies(2).first()
+		val search = movieRepositoryImpl.searchMovies("").first()
 		val movie = movieRepositoryImpl.fetchMovieDetails(2).first()
 		val genres = movieRepositoryImpl.fetchMovieGenres().first()
 
@@ -64,6 +66,7 @@ class MovieRepositoryImplTest {
 			anime,
 			recommended,
 			similar,
+			search,
 			movie,
 			genres
 		)
@@ -77,6 +80,7 @@ class MovieRepositoryImplTest {
 			animeCollections,
 			recommendedMovies,
 			similarMovies,
+			trendingMovies,
 			movieDetails,
 			genreList
 		)

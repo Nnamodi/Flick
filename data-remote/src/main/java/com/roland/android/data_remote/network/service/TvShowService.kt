@@ -75,6 +75,13 @@ interface TvShowService {
 		@Query("page") page: Int = 1
 	): MovieListModel
 
+	@GET("/3/search/tv")
+	suspend fun searchTvShows(
+		@Query("query") query: String,
+		@Query("language") language: String = "en_US",
+		@Query("page") page: Int = 1
+	): MovieListModel
+
 	@GET("/3/tv/{series_id}")
 	suspend fun fetchTvShowDetails(
 		@Path("series_id") seriesId: Int,

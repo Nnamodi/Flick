@@ -73,6 +73,13 @@ interface MovieService {
 		@Query("page") page: Int = 1
 	): MovieListModel
 
+	@GET("/3/search/movie")
+	suspend fun searchMovies(
+		@Query("query") query: String,
+		@Query("language") language: String = "en_US",
+		@Query("page") page: Int = 1
+	): MovieListModel
+
 	@GET("/3/movie/{movie_id}")
 	suspend fun fetchMovieDetails(
 		@Path("movie_id") movieId: Int,

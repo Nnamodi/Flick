@@ -53,7 +53,7 @@ class GetMovieListUseCaseTest {
 		val response = useCase.process(GetMovieListUseCase.Request(Category.POPULAR_MOVIES)).first()
 		assertEquals(
 			GetMovieListUseCase.Response(
-				result = popularMovies,
+				movieList = popularMovies,
 				movieGenre = genreList,
 				seriesGenre = genreList
 			),

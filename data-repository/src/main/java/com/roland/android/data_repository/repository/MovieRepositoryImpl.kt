@@ -31,6 +31,8 @@ class MovieRepositoryImpl @Inject constructor(
 
 	override fun fetchSimilarMovies(movieId: Int): Flow<PagingData<Movie>> = remoteMovieSource.fetchSimilarMovies(movieId)
 
+	override fun searchMovies(query: String): Flow<PagingData<Movie>> = remoteMovieSource.searchMovies(query)
+
 	override fun fetchMovieDetails(movieId: Int): Flow<MovieDetails> = remoteMovieSource.fetchMovieDetails(movieId)
 
 	override fun fetchMovieGenres(): Flow<GenreList> = remoteMovieSource.fetchMovieGenres()

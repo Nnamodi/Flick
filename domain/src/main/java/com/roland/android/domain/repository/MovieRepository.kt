@@ -26,6 +26,8 @@ interface MovieRepository {
 
 	fun fetchSimilarMovies(movieId: Int): Flow<PagingData<Movie>>
 
+	fun searchMovies(query: String): Flow<PagingData<Movie>>
+
 	fun fetchMovieDetails(movieId: Int): Flow<MovieDetails>
 
 	fun fetchMovieGenres(): Flow<GenreList>
