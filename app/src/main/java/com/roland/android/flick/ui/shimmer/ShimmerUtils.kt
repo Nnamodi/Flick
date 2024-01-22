@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.roland.android.flick.ui.components.Header
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
+import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
 
@@ -47,7 +48,7 @@ fun RowItems(header: String, isLoading: Boolean) {
 		) {
 			Spacer(Modifier.width(PADDING_WIDTH))
 			repeat(10) {
-				MediumBoxItem(isLoading, Modifier.padding(end = 12.dp))
+				SmallBoxItem(isLoading)
 			}
 		}
 	}
@@ -55,21 +56,40 @@ fun RowItems(header: String, isLoading: Boolean) {
 
 @Composable
 fun LargeBoxItem(isLoading: Boolean) {
-	val backgroundModifier = if (isLoading) {
-		Modifier.background(rememberAnimatedShimmerBrush())
-	} else Modifier.background(Color.LightGray.copy(alpha = 0.6f))
-
-	Box(
+	ShimmerBoxItem(
+		isLoading = isLoading,
 		modifier = Modifier
 			.size(POSTER_WIDTH_LARGE, 370.dp)
 			.padding(end = 14.dp)
-			.clip(MaterialTheme.shapes.large)
-			.then(backgroundModifier)
 	)
 }
 
 @Composable
 fun MediumBoxItem(
+	isLoading: Boolean,
+	modifier: Modifier = Modifier
+) {
+	ShimmerBoxItem(
+		isLoading = isLoading,
+		modifier = modifier.size(POSTER_WIDTH_MEDIUM, POSTER_HEIGHT_MEDIUM)
+	)
+}
+
+@Composable
+fun SmallBoxItem(
+	isLoading: Boolean,
+	modifier: Modifier = Modifier
+) {
+	ShimmerBoxItem(
+		isLoading = isLoading,
+		modifier = modifier
+			.size(POSTER_WIDTH_MEDIUM, 180.dp)
+			.padding(end = 12.dp)
+	)
+}
+
+@Composable
+private fun ShimmerBoxItem(
 	isLoading: Boolean,
 	modifier: Modifier = Modifier
 ) {
@@ -79,7 +99,6 @@ fun MediumBoxItem(
 
 	Box(
 		modifier = modifier
-			.size(POSTER_WIDTH_MEDIUM, 180.dp)
 			.clip(MaterialTheme.shapes.large)
 			.then(backgroundModifier)
 	)

@@ -10,6 +10,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -20,27 +21,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
-import com.roland.android.domain.usecase.Category
 import com.roland.android.flick.R
-import com.roland.android.flick.state.MovieListUiState
-import com.roland.android.flick.ui.components.MovieListTopBar
+import com.roland.android.flick.state.SearchUiState
 import com.roland.android.flick.ui.components.MovieLists
+import com.roland.android.flick.ui.components.SearchTopBar
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.shimmer.LoadingListUi
 import com.roland.android.flick.ui.theme.FlickTheme
-import com.roland.android.flick.utils.Extensions.getName
-import com.roland.android.flick.utils.MovieListActions
+import com.roland.android.flick.utils.SearchActions
 import kotlinx.coroutines.launch
 
 @Composable
-fun MovieListScreen(
-	uiState: MovieListUiState,
-	category: String,
-	action: (MovieListActions) -> Unit,
+fun SearchScreen(
+	uiState: SearchUiState,
+	action: (SearchActions) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
-	val (movieList) = uiState
 	val snackbarHostState = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
@@ -48,12 +45,7 @@ fun MovieListScreen(
 	val scrollState = rememberLazyGridState()
 
 	Scaffold(
-		topBar = {
-			MovieListTopBar(
-				title = stringResource(category.getName()),
-				navigateUp = navigate
-			)
-		},
+		topBar = { SearchTopBar(uiState, action, navigate) },
 		snackbarHost = {
 			SnackbarHost(snackbarHostState) { data ->
 				errorMessage.value?.let {
@@ -62,7 +54,7 @@ fun MovieListScreen(
 						action = {
 							data.visuals.actionLabel?.let {
 								TextButton(
-									onClick = { action(MovieListActions.Retry(category)) }
+									onClick = { action(SearchActions.Retry(uiState.searchQuery)) }
 								) { Text(it) }
 							}
 						}
@@ -74,7 +66,7 @@ fun MovieListScreen(
 		}
 	) { paddingValues ->
 		CommonScreen(
-			state = movieList,
+			state = uiState.movieData,
 			loadingScreen = { error ->
 				LoadingListUi(scrollState, paddingValues, error == null)
 				errorMessage.value = error
@@ -113,17 +105,20 @@ fun MovieListScreen(
 					closeSheet = { clickedMovieItem.value = null }
 				)
 			}
+
+			LaunchedEffect(uiState.searchQuery) {
+				scope.launch { scrollState.animateScrollToItem(0) }
+			}
 		}
 	}
 }
 
 @Preview
 @Composable
-fun MovieListScreenPreview() {
+fun SearchScreenPreview() {
 	FlickTheme {
-		MovieListScreen(
-			uiState = MovieListUiState(),
-			category = Category.ANIME.name,
+		SearchScreen(
+			uiState = SearchUiState(),
 			action = {},
 			navigate = {}
 		)

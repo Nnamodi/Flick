@@ -1,5 +1,6 @@
 package com.roland.android.flick.state
 
+import com.roland.android.domain.usecase.SearchCategory
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.FurtherTvShowsModel
@@ -28,4 +29,10 @@ data class MovieDetailsUiState(
 
 data class MovieListUiState(
 	val movieData: State<MovieListModel>? = null
+)
+
+data class SearchUiState(
+	val movieData: State<MovieListModel>? = null,
+	val searchCategory: SearchCategory = SearchCategory.MOVIES,
+	val searchQuery: String = ""
 )

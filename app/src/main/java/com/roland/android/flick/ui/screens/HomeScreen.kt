@@ -63,6 +63,7 @@ import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.LargeItemPoster
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.ToggleButton
+import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.shimmer.HomeLoadingUi
 import com.roland.android.flick.ui.theme.FlickTheme
@@ -80,7 +81,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
 	uiState: HomeUiState,
 	action: (HomeActions) -> Unit,
-	seeMore: (Category) -> Unit
+	navigate: (Screens) -> Unit
 ) {
 	val (movies, furtherMovies, shows, furtherShows, selectedCategory) = uiState
 	val snackbarHostState = remember { SnackbarHostState() }
@@ -88,9 +89,12 @@ fun HomeScreen(
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 	val scrollState = rememberScrollState()
+	val seeMore: (Category) -> Unit = {
+		navigate(Screens.MovieListScreen(it.name))
+	}
 
 	Scaffold(
-		topBar = { HomeTopBar() },
+		topBar = { HomeTopBar(navigate) },
 		snackbarHost = {
 			SnackbarHost(snackbarHostState) { data ->
 				errorMessage.value?.let {

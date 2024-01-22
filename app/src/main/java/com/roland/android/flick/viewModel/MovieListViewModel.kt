@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
 	private val movieListUseCase: GetMovieListUseCase,
-	private val converter: ResponseConverter,
+	private val converter: ResponseConverter
 ) : ViewModel() {
 
 	private val _movieListUiState = MutableStateFlow(MovieListUiState())

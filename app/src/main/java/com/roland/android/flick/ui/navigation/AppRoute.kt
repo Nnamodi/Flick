@@ -9,16 +9,19 @@ import androidx.navigation.compose.composable
 import com.roland.android.domain.usecase.Category
 import com.roland.android.flick.ui.screens.HomeScreen
 import com.roland.android.flick.ui.screens.MovieListScreen
+import com.roland.android.flick.ui.screens.SearchScreen
 import com.roland.android.flick.utils.MovieListActions
 import com.roland.android.flick.viewModel.HomeViewModel
 import com.roland.android.flick.viewModel.MovieListViewModel
+import com.roland.android.flick.viewModel.SearchViewModel
 
 @Composable
 fun AppRoute(
 	navActions: NavActions,
 	navController: NavHostController,
 	homeViewModel: HomeViewModel = hiltViewModel(),
-	movieListViewModel: MovieListViewModel = hiltViewModel()
+	movieListViewModel: MovieListViewModel = hiltViewModel(),
+	searchViewModel: SearchViewModel = hiltViewModel()
 ) {
 	NavHost(
 		navController = navController,
@@ -28,9 +31,9 @@ fun AppRoute(
 			HomeScreen(
 				uiState = homeViewModel.homeUiState,
 				action = homeViewModel::homeActions,
-				seeMore = {
+				navigate = { // clear movie-list screen data before navigating
 					movieListViewModel.movieListActions(MovieListActions.PrepareScreen)
-					navActions.navigateToMovieListScreen(it.name)
+					navActions.navigate(it)
 				}
 			)
 		}
@@ -45,7 +48,14 @@ fun AppRoute(
 				uiState = movieListViewModel.movieListUiState,
 				category = categoryName,
 				action = movieListViewModel::movieListActions,
-				navigateUp = navController::navigateUp
+				navigate = navActions::navigate
+			)
+		}
+		composable(AppRoute.SearchScreen.route) {
+			SearchScreen(
+				uiState = searchViewModel.searchUiState,
+				action = searchViewModel::searchActions,
+				navigate = navActions::navigate
 			)
 		}
 	}

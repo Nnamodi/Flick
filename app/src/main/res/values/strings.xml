@@ -28,4 +28,6 @@
     <string name="popular_movies">Popular Movies</string>
     <string name="popular_series">Popular Series</string>
     <string name="retry">RETRY</string>
+    <string name="search">Search</string>
+    <string name="clear">Clear</string>
 </resources>

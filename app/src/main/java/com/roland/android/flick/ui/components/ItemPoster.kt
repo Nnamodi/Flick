@@ -3,15 +3,11 @@ package com.roland.android.flick.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.StarRate
 import androidx.compose.material3.Divider
@@ -24,80 +20,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.paging.LoadState
-import androidx.paging.PagingData
-import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.roland.android.domain.entity.Movie
-import com.roland.android.flick.R
-import com.roland.android.flick.utils.Constants.PADDING_WIDTH
+import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W500
-import com.roland.android.flick.utils.Extensions.loadStateUi
 import com.roland.android.flick.utils.Extensions.roundOff
-import kotlinx.coroutines.flow.MutableStateFlow
-
-@Composable
-fun HorizontalPosters(
-	pagingData: MutableStateFlow<PagingData<Movie>>,
-	header: String,
-	onItemClick: (Movie) -> Unit,
-	seeMore: () -> Unit
-) {
-	val movieList = pagingData.collectAsLazyPagingItems()
-
-	Column(
-		modifier = Modifier
-			.fillMaxWidth()
-			.padding(bottom = 12.dp)
-	) {
-		Row(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(PADDING_WIDTH),
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			Header(header)
-			Spacer(Modifier.weight(1f))
-			if (movieList.loadState.refresh is LoadState.NotLoading) {
-				Text(
-					text = stringResource(R.string.more),
-					modifier = Modifier
-						.clip(MaterialTheme.shapes.small)
-						.clickable { seeMore() }
-						.padding(6.dp),
-					color = Color.Gray
-				)
-			}
-		}
-		LazyRow(
-			contentPadding = PaddingValues(
-				start = PADDING_WIDTH,
-				end = PADDING_WIDTH - 12.dp
-			)
-		) {
-			val movies = movieList.itemSnapshotList.take(20)
-			items(movies.size) { index ->
-				movies[index]?.let { movie ->
-					MediumItemPoster(
-						movie = movie,
-						modifier = Modifier.padding(end = 12.dp),
-						onClick = onItemClick
-					)
-				}
-			}
-			item {
-				movieList.loadStateUi(PosterType.Medium)
-			}
-		}
-	}
-}
 
 @Composable
 fun LargeItemPoster(
@@ -124,6 +57,20 @@ fun MediumItemPoster(
 		model = TMDB_POSTER_IMAGE_BASE_URL_W342 + movie.posterPath,
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
+		modifier = modifier.size(POSTER_WIDTH_MEDIUM, POSTER_HEIGHT_MEDIUM)
+	) { onClick(movie) }
+}
+
+@Composable
+fun SmallItemPoster(
+	movie: Movie,
+	modifier: Modifier = Modifier,
+	onClick: (Movie) -> Unit
+) {
+	Poster(
+		model = TMDB_POSTER_IMAGE_BASE_URL_W342 + movie.posterPath,
+		contentDescription = movie.title ?: movie.tvName,
+		voteAverage = movie.voteAverage,
 		modifier = modifier.size(POSTER_WIDTH_MEDIUM, 180.dp)
 	) { onClick(movie) }
 }
@@ -134,7 +81,7 @@ fun Poster(
 	contentDescription: String?,
 	voteAverage: Double,
 	modifier: Modifier = Modifier,
-	posterType: PosterType = PosterType.Medium,
+	posterType: PosterType = PosterType.Small,
 	onClick: () -> Unit
 ) {
 	Box(
@@ -182,7 +129,7 @@ fun Poster(
 }
 
 enum class PosterType {
-	Medium,
+	Small,
 	Large,
 	BottomSheet
 }

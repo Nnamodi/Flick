@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContent {
-			FlickTheme {
+			FlickTheme(darkTheme = true) {
 				Surface(
 					modifier = Modifier.fillMaxSize()
 				) {

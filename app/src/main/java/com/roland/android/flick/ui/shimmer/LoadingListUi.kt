@@ -20,7 +20,7 @@ fun LoadingListUi(
 	isLoading: Boolean
 ) {
 	LazyVerticalGrid(
-		columns = GridCells.Adaptive(100.dp),
+		columns = GridCells.Adaptive(120.dp),
 		modifier = Modifier
 			.padding(paddingValues)
 			.padding(horizontal = 6.dp),
@@ -28,10 +28,13 @@ fun LoadingListUi(
 		contentPadding = PaddingValues(bottom = 50.dp)
 	) {
 		itemsIndexed(
-			items = (1..21).toList(),
+			items = (1..20).toList(),
 			key = { _, item -> item }
 		) { _, _ ->
-			MediumBoxItem(isLoading, Modifier.padding(6.dp))
+			MediumBoxItem(
+				isLoading = isLoading,
+				modifier = Modifier.padding(6.dp)
+			)
 		}
 	}
 }
