@@ -10,6 +10,7 @@ import com.roland.android.data_remote.paging.BollywoodMoviesPagingSource
 import com.roland.android.data_remote.paging.NowPlayingMoviesPagingSource
 import com.roland.android.data_remote.paging.PopularMoviesPagingSource
 import com.roland.android.data_remote.paging.RecommendedMoviesPagingSource
+import com.roland.android.data_remote.paging.SearchedMoviesAndShowsPagingSource
 import com.roland.android.data_remote.paging.SearchedMoviesPagingSource
 import com.roland.android.data_remote.paging.SimilarMoviesPagingSource
 import com.roland.android.data_remote.paging.TopRatedMoviesPagingSource
@@ -170,6 +171,20 @@ class RemoteMovieSourceImpl @Inject constructor(
 			),
 			pagingSourceFactory = {
 				SearchedMoviesPagingSource(movieService, query)
+			}
+		).flow
+			.distinctUntilChanged()
+			.cachedIn(scope)
+	}
+
+	override fun searchMoviesAndShows(query: String): Flow<PagingData<Movie>> {
+		return Pager(
+			config = PagingConfig(
+				pageSize = MAX_PAGE_SIZE,
+				prefetchDistance = MAX_PAGE_SIZE / 2
+			),
+			pagingSourceFactory = {
+				SearchedMoviesAndShowsPagingSource(movieService, query)
 			}
 		).flow
 			.distinctUntilChanged()

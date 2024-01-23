@@ -17,6 +17,7 @@ import com.roland.android.flick.models.FurtherTvShowsModel
 import com.roland.android.flick.models.MovieDetailsModel
 import com.roland.android.flick.models.MovieListModel
 import com.roland.android.flick.models.MoviesModel
+import com.roland.android.flick.models.SearchModel
 import com.roland.android.flick.models.SeasonDetailsModel
 import com.roland.android.flick.models.TvShowDetailsModel
 import com.roland.android.flick.models.TvShowsModel
@@ -147,15 +148,17 @@ class ResponseConverter @Inject constructor() {
 
 	fun convertSearchedMovieData(
 		result: Result<GetSearchedMoviesUseCase.Response>
-	): State<MovieListModel> {
+	): State<SearchModel> {
 		return when (result) {
 			is Result.Error -> {
 				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
 				State.Success(
-					MovieListModel(
-						result.data.movieList.refactor(),
+					SearchModel(
+						result.data.moviesAndShows.refactor(),
+						result.data.movies.refactor(),
+						result.data.tvShows.refactor(),
 						result.data.movieGenre,
 						result.data.seriesGenre
 					)

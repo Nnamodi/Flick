@@ -28,6 +28,8 @@ interface MovieRepository {
 
 	fun searchMovies(query: String): Flow<PagingData<Movie>>
 
+	fun searchMoviesAndShows(query: String): Flow<PagingData<Movie>>
+
 	fun fetchMovieDetails(movieId: Int): Flow<MovieDetails>
 
 	fun fetchMovieGenres(): Flow<GenreList>

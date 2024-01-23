@@ -3,6 +3,7 @@ package com.roland.android.data_remote.network.service
 import com.roland.android.data_remote.network.model.GenreListModel
 import com.roland.android.data_remote.network.model.MovieDetailsModel
 import com.roland.android.data_remote.network.model.MovieListModel
+import com.roland.android.data_remote.network.model.MultiListModel
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -79,6 +80,13 @@ interface MovieService {
 		@Query("language") language: String = "en_US",
 		@Query("page") page: Int = 1
 	): MovieListModel
+
+	@GET("/3/search/multi")
+	suspend fun searchMoviesAndShows(
+		@Query("query") query: String,
+		@Query("language") language: String = "en_US",
+		@Query("page") page: Int = 1
+	): MultiListModel
 
 	@GET("/3/movie/{movie_id}")
 	suspend fun fetchMovieDetails(

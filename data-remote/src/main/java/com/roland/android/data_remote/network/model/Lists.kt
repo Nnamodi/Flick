@@ -15,11 +15,11 @@ data class MovieListModel(
 	val totalResults: Int = 0
 )
 
-data class CastListModel(
+data class MultiListModel(
 	@Json(name = "page")
 	val page: Int = 0,
 	@Json(name = "results")
-	val results: List<CastModel> = emptyList(),
+	val results: List<MultiModel> = emptyList(),
 	@Json(name = "total_pages")
 	val totalPages: Int = 0,
 	@Json(name = "total_results")

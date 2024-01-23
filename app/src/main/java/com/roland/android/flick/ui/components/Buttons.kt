@@ -1,12 +1,17 @@
 package com.roland.android.flick.ui.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +34,7 @@ import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.ROUNDED_EDGE
 import com.roland.android.flick.utils.Constants.SERIES
 import com.roland.android.flick.utils.HomeActions
+import com.roland.android.flick.utils.SearchCategory
 
 @Composable
 fun ToggleButton(
@@ -102,6 +108,40 @@ private fun ToggleButtonItem(text: String, textColor: Color) {
 }
 
 @Composable
+fun ChipSet(
+	modifier: Modifier,
+	selectedCategory: SearchCategory?,
+	onValueChanged: (SearchCategory) -> Unit
+) {
+	Row(
+		modifier = modifier,
+		horizontalArrangement = Arrangement.SpaceAround
+	) {
+		Chips.values().forEach { chip ->
+			AssistChip(
+				onClick = { onValueChanged(chip.category) },
+				label = {
+					Text(stringResource(chip.labelRes))
+				},
+				colors = AssistChipDefaults.assistChipColors(
+					containerColor = rememberContainerColor(selectedCategory == chip.category),
+					labelColor = rememberLabelColor(selectedCategory == chip.category)
+				)
+			)
+		}
+	}
+}
+
+private enum class Chips(
+	@StringRes val labelRes: Int,
+	val category: SearchCategory
+) {
+	All(R.string.all, SearchCategory.ALL),
+	Movies(R.string.movies, SearchCategory.MOVIES),
+	TvShows(R.string.series, SearchCategory.TV_SHOWS)
+}
+
+@Composable
 private fun rememberBackgroundColor(selected: Boolean) = if (selected) {
 	MaterialTheme.colorScheme.primaryContainer
 } else MaterialTheme.colorScheme.background
@@ -111,14 +151,35 @@ private fun rememberBorderColor(selected: Boolean) = if (selected) {
 	MaterialTheme.colorScheme.onPrimaryContainer
 } else MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
 
+@Composable
+private fun rememberContainerColor(selected: Boolean) = if (selected) {
+	MaterialTheme.colorScheme.primaryContainer
+} else Color.Transparent
+
+@Composable
+private fun rememberLabelColor(selected: Boolean) = if (selected) {
+	MaterialTheme.colorScheme.onPrimaryContainer
+} else MaterialTheme.colorScheme.onSurface
+
 @Preview(showBackground = true)
 @Composable
-fun ToggleButtonPreview() {
+private fun ToggleButtonPreview() {
 	FlickTheme {
 		var selectedOption by remember { mutableStateOf(MOVIES) }
 
 		ToggleButton(selectedOption) {
 			selectedOption = if (selectedOption == MOVIES) SERIES else MOVIES
 		}
+	}
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ChipSet() {
+	FlickTheme {
+		ChipSet(
+			modifier = Modifier.fillMaxWidth(),
+			selectedCategory = SearchCategory.MOVIES
+		) {}
 	}
 }

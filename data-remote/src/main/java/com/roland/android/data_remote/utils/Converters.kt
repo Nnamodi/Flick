@@ -10,6 +10,8 @@ import com.roland.android.data_remote.network.model.MovieCreditsModel
 import com.roland.android.data_remote.network.model.MovieDetailsModel
 import com.roland.android.data_remote.network.model.MovieListModel
 import com.roland.android.data_remote.network.model.MovieModel
+import com.roland.android.data_remote.network.model.MultiListModel
+import com.roland.android.data_remote.network.model.MultiModel
 import com.roland.android.data_remote.network.model.ProductionCompanyModel
 import com.roland.android.data_remote.network.model.ProductionCountryModel
 import com.roland.android.data_remote.network.model.SeasonModel
@@ -37,6 +39,16 @@ object Converters {
 		movieListModel.results.map { convertToMovie(it) },
 		movieListModel.totalPages,
 		movieListModel.totalResults
+	)
+
+	fun convertToMovieList(multiListModel: MultiListModel) = MovieList(
+		null,
+		multiListModel.page,
+		multiListModel.results
+			.filter { it.movieType != "person" }
+			.map { convertToMovie(it) },
+		multiListModel.totalPages,
+		multiListModel.totalResults
 	)
 
 	fun convertToMovieDetails(detailsModel: MovieDetailsModel) = MovieDetails(
@@ -151,7 +163,7 @@ object Converters {
 		genreListModel.genres.map { convertToGenre(it) }
 	)
 
-	fun convertToGenre(genreModel: GenreModel) = Genre(
+	private fun convertToGenre(genreModel: GenreModel) = Genre(
 		genreModel.id,
 		genreModel.name
 	)
@@ -175,6 +187,28 @@ object Converters {
 		movieModel.firstAirDate,
 		movieModel.originCountry
 	)
+
+	private fun convertToMovie(multiModel: MultiModel): Movie {
+		return Movie(
+			multiModel.id,
+			multiModel.title,
+			multiModel.overview!!,
+			multiModel.genreIds!!, // convert to genres
+			multiModel.backdropPath,
+			multiModel.posterPath,
+			multiModel.language!!,
+			multiModel.popularity,
+			multiModel.movieType,
+			multiModel.videoAvailable,
+			multiModel.voteAverage!!,
+			multiModel.voteCount!!,
+			multiModel.adult,
+			multiModel.releaseDate,
+			multiModel.tvName,
+			multiModel.firstAirDate,
+			multiModel.originCountry
+		)
+	}
 
 	private fun convertToDates(datesModel: DatesModel?) = Dates(
 		datesModel?.maximum ?: "",

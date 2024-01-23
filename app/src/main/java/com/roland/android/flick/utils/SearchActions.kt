@@ -1,7 +1,5 @@
 package com.roland.android.flick.utils
 
-import com.roland.android.domain.usecase.SearchCategory
-
 sealed class SearchActions {
 
 	data class Retry(val query: String) : SearchActions()
@@ -11,4 +9,10 @@ sealed class SearchActions {
 		val category: SearchCategory
 	) : SearchActions()
 
+	data class ToggleCategory(val searchCategory: SearchCategory) : SearchActions()
+
+}
+
+enum class SearchCategory {
+	ALL, MOVIES, TV_SHOWS
 }

@@ -1,5 +1,7 @@
 package com.roland.android.flick.ui.screens
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Scaffold
@@ -23,6 +25,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
 import com.roland.android.flick.state.SearchUiState
+import com.roland.android.flick.ui.components.ChipSet
 import com.roland.android.flick.ui.components.MovieLists
 import com.roland.android.flick.ui.components.SearchTopBar
 import com.roland.android.flick.ui.navigation.Screens
@@ -30,6 +33,9 @@ import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.shimmer.LoadingListUi
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.SearchActions
+import com.roland.android.flick.utils.SearchCategory.ALL
+import com.roland.android.flick.utils.SearchCategory.MOVIES
+import com.roland.android.flick.utils.SearchCategory.TV_SHOWS
 import kotlinx.coroutines.launch
 
 @Composable
@@ -38,6 +44,7 @@ fun SearchScreen(
 	action: (SearchActions) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
+	val (movieData, searchCategory, searchQuery) = uiState
 	val snackbarHostState = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
@@ -54,7 +61,7 @@ fun SearchScreen(
 						action = {
 							data.visuals.actionLabel?.let {
 								TextButton(
-									onClick = { action(SearchActions.Retry(uiState.searchQuery)) }
+									onClick = { action(SearchActions.Retry(searchQuery)) }
 								) { Text(it) }
 							}
 						}
@@ -66,9 +73,14 @@ fun SearchScreen(
 		}
 	) { paddingValues ->
 		CommonScreen(
-			state = uiState.movieData,
+			state = movieData,
 			loadingScreen = { error ->
-				LoadingListUi(scrollState, paddingValues, error == null)
+				LoadingListUi(
+					scrollState = scrollState,
+					paddingValues = paddingValues,
+					isLoading = error == null,
+					isSearchScreen = true
+				)
 				errorMessage.value = error
 				error?.let {
 					val actionLabel = stringResource(R.string.retry)
@@ -78,19 +90,30 @@ fun SearchScreen(
 				}
 			}
 		) { data ->
-			val movies = data.movieList.collectAsLazyPagingItems()
+			val movies = when (searchCategory) {
+				ALL -> data.moviesAndShows
+				MOVIES -> data.movies
+				TV_SHOWS -> data.tvShows
+			}.collectAsLazyPagingItems()
 
-			MovieLists(
-				paddingValues = paddingValues,
-				scrollState = scrollState,
-				movies = movies,
-				onItemClick = { clickedMovieItem.value = it }
-			) { error ->
-				errorMessage.value = error
-				error?.let {
-					val actionLabel = stringResource(R.string.retry)
-					scope.launch {
-						snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
+			Column(Modifier.padding(paddingValues)) {
+				ChipSet(
+					modifier = Modifier.fillMaxWidth(),
+					selectedCategory = searchCategory,
+					onValueChanged = { action(SearchActions.ToggleCategory(it)) }
+				)
+
+				MovieLists(
+					scrollState = scrollState,
+					movies = movies,
+					onItemClick = { clickedMovieItem.value = it }
+				) { error ->
+					errorMessage.value = error
+					error?.let {
+						val actionLabel = stringResource(R.string.retry)
+						scope.launch {
+							snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
+						}
 					}
 				}
 			}
@@ -106,7 +129,7 @@ fun SearchScreen(
 				)
 			}
 
-			LaunchedEffect(uiState.searchQuery) {
+			LaunchedEffect(searchQuery) {
 				scope.launch { scrollState.animateScrollToItem(0) }
 			}
 		}
