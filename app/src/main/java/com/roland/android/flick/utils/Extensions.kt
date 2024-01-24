@@ -71,6 +71,7 @@ object Extensions {
 	fun String.refine() = when {
 		"UnknownHostException" in this -> "No Internet Connection"
 		"SocketTimeoutException" in this -> "Connection Timeout"
+		"timeout" in this -> "Connection Timeout"
 		"ConnectException" in this -> "Connection Interrupted"
 		"Unable to resolve host" in this -> "Connection Interrupted"
 		else -> this
@@ -89,22 +90,25 @@ object Extensions {
 	@Composable
 	fun LazyPagingItems<Movie>.loadStateUi(
 		posterType: PosterType,
+		largeBoxItemModifier: Modifier = Modifier,
 		error: @Composable (String?) -> Unit = {}
 	) = apply {
 		val placeholder: @Composable (Boolean) -> Unit = { isLoading ->
 			when (posterType) {
-				PosterType.Small -> SmallBoxItem(isLoading)
-				PosterType.Large -> LargeBoxItem(isLoading)
+				PosterType.Small -> repeat(10) {
+					SmallBoxItem(isLoading)
+				}
+				PosterType.Large -> LargeBoxItem(isLoading, largeBoxItemModifier)
 				else -> {}
 			}
 		}
 
 		when (loadState.refresh) {
 			is LoadState.Loading -> {
-				repeat(10) { placeholder(true) }
+				placeholder(true)
 			}
 			is LoadState.Error -> {
-				repeat(10) { placeholder(false) }
+				placeholder(false)
 				val errorMessage = (loadState.refresh as LoadState.Error).error.localizedMessage
 				error(errorMessage?.refine())
 			}

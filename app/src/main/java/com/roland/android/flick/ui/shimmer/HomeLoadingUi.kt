@@ -47,7 +47,7 @@ fun HomeLoadingUi(scrollState: ScrollState, isLoading: Boolean) {
 		) {
 			Spacer(Modifier.width(PADDING_WIDTH))
 			repeat(10) {
-				LargeBoxItem(isLoading)
+				LargeBoxItem(isLoading, Modifier.padding(end = 14.dp))
 			}
 		}
 

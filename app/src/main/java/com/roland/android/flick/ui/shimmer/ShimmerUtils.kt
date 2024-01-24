@@ -55,12 +55,13 @@ fun RowItems(header: String, isLoading: Boolean) {
 }
 
 @Composable
-fun LargeBoxItem(isLoading: Boolean) {
+fun LargeBoxItem(
+	isLoading: Boolean,
+	modifier: Modifier = Modifier,
+) {
 	ShimmerBoxItem(
 		isLoading = isLoading,
-		modifier = Modifier
-			.size(POSTER_WIDTH_LARGE, 370.dp)
-			.padding(end = 14.dp)
+		modifier = modifier.size(POSTER_WIDTH_LARGE, 370.dp)
 	)
 }
 

@@ -127,8 +127,13 @@ fun HomeScreen(
 				}
 			}
 		) { movieData1, movieData2, showData1, showData2 ->
-			val pagerState = rememberPagerState { 20 }
-			var horizontalPaddingValue by remember { mutableStateOf(PADDING_WIDTH) }
+			val moviesPagerState = rememberPagerState { 20 }
+			val seriesPagerState = rememberPagerState { 20 }
+			val pagerState = if (selectedCategory == MOVIES) moviesPagerState else seriesPagerState
+			val horizontalPaddingValue by animateDpAsState(
+				targetValue = if (pagerState.currentPage == 0) PADDING_WIDTH else 40.dp,
+				label = "padding width value"
+			)
 
 			Column(
 				modifier = Modifier.verticalScroll(scrollState),
@@ -229,12 +234,6 @@ fun HomeScreen(
 					viewMore = {},
 					closeSheet = { clickedMovieItem.value = null }
 				)
-			}
-
-			LaunchedEffect(pagerState) {
-				snapshotFlow { pagerState.currentPage }.collect { page ->
-					horizontalPaddingValue = if (page == 0) PADDING_WIDTH else 40.dp
-				}
 			}
 		}
 	}

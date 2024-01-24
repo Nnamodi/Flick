@@ -1,10 +1,12 @@
 package com.roland.android.flick.ui.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,12 +17,17 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
@@ -37,19 +44,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun MovieLists(
-	paddingValues: PaddingValues,
+	paddingValues: PaddingValues = PaddingValues(0.dp),
 	scrollState: LazyGridState,
 	movies: LazyPagingItems<Movie>,
 	onItemClick: (Movie) -> Unit,
 	error: @Composable (String?) -> Unit
 ) {
+	val showEmptyList = remember { mutableStateOf(false) }
+
+	if (showEmptyList.value) { EmptyList() }
+
+	if (!searchQueryEntered) { EmptyList(nothingSearched = true) }
+
 	LazyVerticalGrid(
 		columns = GridCells.Adaptive(120.dp),
 		modifier = Modifier
 			.padding(paddingValues)
 			.padding(horizontal = 6.dp),
 		state = scrollState,
-		contentPadding = PaddingValues(bottom = 50.dp)
+		contentPadding = PaddingValues(bottom = 78.dp)
 	) {
 		items(movies.itemCount) { index ->
 			movies[index]?.let { movie ->
@@ -82,7 +95,9 @@ fun MovieLists(
 						error(errorMessage?.refine())
 					}
 				}
-				else -> {}
+				is LoadState.NotLoading -> {
+					showEmptyList.value = itemSnapshotList.isEmpty()
+				}
 			}
 		}
 		item {
@@ -143,6 +158,34 @@ fun HorizontalPosters(
 			item {
 				movieList.loadStateUi(PosterType.Small)
 			}
+		}
+	}
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EmptyList(nothingSearched: Boolean = false) {
+	Column(
+		modifier = Modifier.fillMaxSize(),
+		verticalArrangement = Arrangement.Center,
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		if (nothingSearched) {
+			Icon(Icons.Rounded.Search, null, Modifier.size(250.dp))
+			Spacer(Modifier.height(30.dp))
+			Text(
+				text = stringResource(R.string.nothing_searched),
+				fontSize = 24.sp,
+				fontWeight = FontWeight.SemiBold
+			)
+		} else {
+			Text(text = stringResource(R.string.sad_face), fontSize = 100.sp)
+			Spacer(Modifier.height(30.dp))
+			Text(
+				text = stringResource(R.string.no_result),
+				fontSize = 24.sp,
+				fontWeight = FontWeight.SemiBold
+			)
 		}
 	}
 }
