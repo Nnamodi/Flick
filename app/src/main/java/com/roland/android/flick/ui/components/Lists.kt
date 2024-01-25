@@ -10,10 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,6 +50,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun MovieLists(
 	paddingValues: PaddingValues = PaddingValues(0.dp),
 	scrollState: LazyGridState,
+	searchQueryEntered: Boolean = true,
 	movies: LazyPagingItems<Movie>,
 	onItemClick: (Movie) -> Unit,
 	error: @Composable (String?) -> Unit

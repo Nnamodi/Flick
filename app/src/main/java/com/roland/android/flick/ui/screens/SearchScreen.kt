@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -49,7 +50,14 @@ fun SearchScreen(
 	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
-	val scrollState = rememberLazyGridState()
+	val allScrollState = rememberLazyGridState()
+	val moviesScrollState = rememberLazyGridState()
+	val seriesScrollState = rememberLazyGridState()
+	val scrollState = when (searchCategory) {
+		ALL -> allScrollState
+		MOVIES -> moviesScrollState
+		TV_SHOWS -> seriesScrollState
+	}
 
 	Scaffold(
 		topBar = { SearchTopBar(uiState, action, navigate) },
@@ -105,6 +113,7 @@ fun SearchScreen(
 
 				MovieLists(
 					scrollState = scrollState,
+					searchQueryEntered = searchQuery.isNotEmpty(),
 					movies = movies,
 					onItemClick = { clickedMovieItem.value = it }
 				) { error ->
@@ -116,6 +125,7 @@ fun SearchScreen(
 						}
 					}
 				}
+				Log.i("MoviesInfo", "$searchCategory --- ${movies.itemSnapshotList.items}")
 			}
 
 			if (clickedMovieItem.value != null) {
@@ -130,7 +140,11 @@ fun SearchScreen(
 			}
 
 			LaunchedEffect(searchQuery) {
-				scope.launch { scrollState.animateScrollToItem(0) }
+				scope.launch {
+					allScrollState.animateScrollToItem(0)
+					moviesScrollState.animateScrollToItem(0)
+					seriesScrollState.animateScrollToItem(0)
+				}
 			}
 		}
 	}

@@ -33,7 +33,7 @@ data class MovieListUiState(
 )
 
 data class SearchUiState(
-	val movieData: State<SearchModel>? = null,
+	val movieData: State<SearchModel>? = State.Success(SearchModel()),
 	val searchCategory: SearchCategory = SearchCategory.ALL,
 	val searchQuery: String = ""
 )

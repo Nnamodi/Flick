@@ -3,11 +3,13 @@ package com.roland.android.flick.ui.sheets
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
@@ -33,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
@@ -58,7 +61,11 @@ fun MovieDetailsSheet(
 
 	ModalBottomSheet(
 		onDismissRequest = closeSheet,
+		modifier = Modifier
+			.absoluteOffset(y = 16.dp)
+			.padding(horizontal = 12.dp),
 		sheetState = sheetState,
+		shape = RoundedCornerShape(28.dp),
 		dragHandle = {}
 	) {
 		Box(
@@ -125,6 +132,7 @@ fun MovieDetailsSheet(
 fun MovieDetailsSheetPreview() {
 	FlickTheme {
 		var movie by remember { mutableStateOf<Movie?>(null) }
+		val movies = trendingMovies.collectAsLazyPagingItems().itemSnapshotList
 
 		if (movie != null) {
 			MovieDetailsSheet(
@@ -132,7 +140,7 @@ fun MovieDetailsSheetPreview() {
 				genreList = genreList,
 				viewMore = {}
 			) {
-				movie = if (movie == null) trendingMovies.results[0] else null
+				movie = if (movie == null) movies[0] else null
 			}
 		}
 	}

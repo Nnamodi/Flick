@@ -1,16 +1,16 @@
 package com.roland.android.flick.models
 
+import androidx.paging.PagingData
 import com.roland.android.domain.entity.Cast
-import com.roland.android.domain.entity.Dates
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieCredits
 import com.roland.android.domain.entity.MovieDetails
-import com.roland.android.domain.entity.MovieList
 import com.roland.android.domain.entity.Season
 import com.roland.android.domain.entity.Series
+import com.roland.android.flick.utils.Extensions.refactor
 
 object SampleData {
 
@@ -25,15 +25,15 @@ object SampleData {
 	private val movie3 = Movie(id = 2, title = "The Burial")
 	private val movie4 = Movie(id = 3, title = "Infinite")
 
-	val trendingMovies = MovieList(dates = Dates(), results = listOf(movie1, movie2), totalResults = 2)
-	val popularMovies = MovieList(dates = Dates(), results = listOf(movie1, movie2, movie3, movie4), totalResults = 4)
-	val nowPlayingMovies = MovieList(dates = Dates(), results = listOf(movie1, movie2, movie4), totalResults = 3)
-	val topRatedMovies = MovieList(dates = Dates(), results = listOf(movie1, movie4), totalResults = 2)
-	val upcomingMovies = MovieList(dates = Dates(), results = listOf(movie3), totalResults = 1)
-	val bollywoodMovies = MovieList(dates = Dates(), results = listOf(movie1, movie2, movie3), totalResults = 3)
-	val animeCollections = MovieList(dates = Dates(), results = listOf(movie1, movie3), totalResults = 2)
-	val recommendedMovies = MovieList(dates = Dates(), results = listOf(movie4), totalResults = 1)
-	val similarMovies = MovieList(dates = Dates(), results = listOf(movie2, movie3, movie4), totalResults = 3)
+	val trendingMovies = PagingData.from(listOf(movie1, movie2, movie3, movie4)).refactor()
+	val popularMovies = PagingData.from(listOf(movie1, movie2)).refactor()
+	val nowPlayingMovies = PagingData.from(listOf(movie1, movie2, movie4)).refactor()
+	val topRatedMovies = PagingData.from(listOf(movie1, movie4)).refactor()
+	val upcomingMovies = PagingData.from(listOf(movie3)).refactor()
+	val bollywoodMovies = PagingData.from(listOf(movie1, movie2, movie3)).refactor()
+	val animeCollections = PagingData.from(listOf(movie1, movie3)).refactor()
+	val recommendedMovies = PagingData.from(listOf(movie4)).refactor()
+	val similarMovies = PagingData.from(listOf(movie2, movie3, movie4)).refactor()
 	val movieDetails = MovieDetails(id = 2, title = movie1.title)
 
 	// TvShows
@@ -42,15 +42,15 @@ object SampleData {
 	private val show3 = Movie(id = 2, title = "Money Heist")
 	private val show4 = Movie(id = 3, title = "911")
 
-	val trendingShows = MovieList(dates = Dates(), results = listOf(show2, show3, show4), totalResults = 3)
-	val popularShows = MovieList(dates = Dates(), results = listOf(show1, show2, show3, show4), totalResults = 4)
-	val showsAiringToday = MovieList(dates = Dates(), results = listOf(show1, show2, show4), totalResults = 3)
-	val topRatedShows = MovieList(dates = Dates(), results = listOf(show1, show2), totalResults = 2)
-	val showsSoonToAir = MovieList(dates = Dates(), results = listOf(show1, show4), totalResults = 2)
-	val bollywoodShows = MovieList(dates = Dates(), results = listOf(show1, show2, show3, show4), totalResults = 4)
-	val animeShows = MovieList(dates = Dates(), results = listOf(show1, show3, show4), totalResults = 3)
-	val recommendedShows = MovieList(dates = Dates(), results = listOf(show2, show3), totalResults = 2)
-	val similarShows = MovieList(dates = Dates(), results = listOf(show2, show3, show4), totalResults = 3)
+	val trendingShows = PagingData.from(listOf(show2, show3, show4)).refactor()
+	val popularShows = PagingData.from(listOf(show1, show2, show3, show4)).refactor()
+	val showsAiringToday = PagingData.from(listOf(show1, show2, show4)).refactor()
+	val topRatedShows = PagingData.from(listOf(show1, show2)).refactor()
+	val showsSoonToAir = PagingData.from(listOf(show1, show4)).refactor()
+	val bollywoodShows = PagingData.from(listOf(show1, show2, show3, show4)).refactor()
+	val animeShows = PagingData.from(listOf(show1, show3, show4)).refactor()
+	val recommendedShows = PagingData.from(listOf(show2, show3)).refactor()
+	val similarShows = PagingData.from(listOf(show2, show3, show4)).refactor()
 	val showDetails = Series(name = "24 hours")
 	val seasonDetails = Season(seasonNumber = 2)
 	val episodeDetails = Episode(episodeNumber = 1)

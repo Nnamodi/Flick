@@ -30,4 +30,8 @@
     <string name="retry">RETRY</string>
     <string name="search">Search</string>
     <string name="clear">Clear</string>
+    <string name="sad_face">😔</string>
+    <string name="no_result">Oops! No result found</string>
+    <string name="all">All</string>
+    <string name="nothing_searched">Nothing searched</string>
 </resources>

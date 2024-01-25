@@ -20,11 +20,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImagePainter
 import com.roland.android.flick.ui.components.Header
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
@@ -103,6 +106,15 @@ private fun ShimmerBoxItem(
 			.clip(MaterialTheme.shapes.large)
 			.then(backgroundModifier)
 	)
+}
+
+fun Modifier.painterPlaceholder(state: AsyncImagePainter.State): Modifier = composed {
+	val color = Color.LightGray.copy(alpha = 0.6f)
+	when (state) {
+		is AsyncImagePainter.State.Success -> drawBehind { drawRect(color) }
+		is AsyncImagePainter.State.Error -> background(color)
+		else -> background(rememberAnimatedShimmerBrush())
+	}
 }
 
 @Composable

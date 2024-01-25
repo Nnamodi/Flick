@@ -28,7 +28,6 @@ class SearchViewModel @Inject constructor(
 	var searchUiState by mutableStateOf(_searchUiState.value); private set
 
 	init {
-		search(searchUiState.searchQuery, searchUiState.searchCategory)
 		viewModelScope.launch {
 			_searchUiState.collect {
 				searchUiState = it
@@ -45,7 +44,7 @@ class SearchViewModel @Inject constructor(
 	}
 
 	private fun search(query: String, searchCategory: SearchCategory) {
-		_searchUiState.value = SearchUiState()
+		_searchUiState.value = SearchUiState(movieData = null)
 		viewModelScope.launch {
 			searchedMoviesUseCase.execute(GetSearchedMoviesUseCase.Request(query))
 				.map { converter.convertSearchedMovieData(it) }

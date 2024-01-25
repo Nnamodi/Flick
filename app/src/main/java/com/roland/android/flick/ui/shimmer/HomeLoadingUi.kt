@@ -4,6 +4,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,12 +26,18 @@ import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 
 @Composable
-fun HomeLoadingUi(scrollState: ScrollState, isLoading: Boolean) {
+fun HomeLoadingUi(
+	paddingValues: PaddingValues,
+	scrollState: ScrollState,
+	isLoading: Boolean
+) {
 	Column(
-		modifier = Modifier.verticalScroll(scrollState),
+		modifier = Modifier
+			.padding(bottom = paddingValues.calculateBottomPadding())
+			.verticalScroll(scrollState),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		Spacer(Modifier.height(64.dp))
+		Spacer(Modifier.height(paddingValues.calculateTopPadding()))
 		ToggleButton("", Modifier.padding(bottom = 6.dp)) {}
 		Row(
 			modifier = Modifier
@@ -69,6 +76,10 @@ fun HomeLoadingUi(scrollState: ScrollState, isLoading: Boolean) {
 @Composable
 fun HomeLoadingUiPreview() {
 	FlickTheme {
-		HomeLoadingUi(rememberScrollState(), true)
+		HomeLoadingUi(
+			paddingValues = PaddingValues(0.dp),
+			scrollState = rememberScrollState(),
+			isLoading = true
+		)
 	}
 }

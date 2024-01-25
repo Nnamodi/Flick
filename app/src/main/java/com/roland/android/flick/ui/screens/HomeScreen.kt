@@ -1,6 +1,6 @@
 package com.roland.android.flick.ui.screens
 
-import android.annotation.SuppressLint
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,20 +25,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.usecase.Category
@@ -54,7 +50,13 @@ import com.roland.android.domain.usecase.Category.TOP_RATED_MOVIES
 import com.roland.android.domain.usecase.Category.TOP_RATED_SERIES
 import com.roland.android.flick.R
 import com.roland.android.flick.models.FurtherMoviesModel
+import com.roland.android.flick.models.FurtherTvShowsModel
 import com.roland.android.flick.models.MoviesModel
+import com.roland.android.flick.models.SampleData.animeCollections
+import com.roland.android.flick.models.SampleData.animeShows
+import com.roland.android.flick.models.SampleData.trendingMovies
+import com.roland.android.flick.models.SampleData.trendingShows
+import com.roland.android.flick.models.TvShowsModel
 import com.roland.android.flick.state.HomeUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.Header
@@ -72,10 +74,9 @@ import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Extensions.loadStateUi
 import com.roland.android.flick.utils.HomeActions
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.roland.android.flick.utils.animatePagerItem
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
@@ -113,11 +114,11 @@ fun HomeScreen(
 				}
 			}
 		}
-	) { _ ->
+	) { paddingValues ->
 		CommonScreen(
 			movies, furtherMovies, shows, furtherShows,
 			loadingScreen = { error ->
-				HomeLoadingUi(scrollState, error == null)
+				HomeLoadingUi(paddingValues, scrollState, isLoading = error == null)
 				errorMessage.value = error
 				error?.let {
 					val actionLabel = stringResource(R.string.retry)
@@ -136,10 +137,12 @@ fun HomeScreen(
 			)
 
 			Column(
-				modifier = Modifier.verticalScroll(scrollState),
+				modifier = Modifier
+					.padding(bottom = paddingValues.calculateBottomPadding())
+					.verticalScroll(scrollState),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
-				Spacer(Modifier.height(64.dp))
+				Spacer(Modifier.height(paddingValues.calculateTopPadding()))
 				ToggleButton(
 					selectedOption = selectedCategory,
 					modifier = Modifier.padding(bottom = 6.dp),
@@ -177,11 +180,15 @@ fun HomeScreen(
 						trendingMovies[page]?.let { movie ->
 							LargeItemPoster(
 								movie = movie,
+								modifier = Modifier.animatePagerItem(page, pagerState),
 								onClick = { clickedMovieItem.value = it }
 							)
 						}
 					}
-					trendingMovies.loadStateUi(PosterType.Large) { error ->
+					trendingMovies.loadStateUi(
+						posterType = PosterType.Large,
+						largeBoxItemModifier = Modifier.animatePagerItem(page, pagerState)
+					) { error ->
 						errorMessage.value = error
 						error?.let {
 							val actionLabel = stringResource(R.string.retry)
@@ -243,10 +250,11 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
 	FlickTheme {
-		val movieList = MutableStateFlow(PagingData.from(listOf(Movie(), Movie(), Movie())))
-		val movies = State.Success(MoviesModel(trending = movieList))
-		val furtherMovies = State.Success(FurtherMoviesModel(anime = movieList))
-		val uiState = HomeUiState(movies, furtherMovies)
+		val movies = State.Success(MoviesModel(trending = trendingMovies))
+		val furtherMovies = State.Success(FurtherMoviesModel(anime = animeCollections))
+		val shows = State.Success(TvShowsModel(trending = trendingShows))
+		val furtherShows = State.Success(FurtherTvShowsModel(anime = animeShows))
+		val uiState = HomeUiState(movies, furtherMovies, shows, furtherShows)
 		HomeScreen(uiState, {}) {}
 	}
 }

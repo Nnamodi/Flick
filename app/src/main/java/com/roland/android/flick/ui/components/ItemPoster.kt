@@ -1,7 +1,6 @@
 package com.roland.android.flick.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +14,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,13 +25,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.AsyncImagePainter.State.Empty
 import com.roland.android.domain.entity.Movie
+import com.roland.android.flick.ui.shimmer.painterPlaceholder
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W500
 import com.roland.android.flick.utils.Extensions.roundOff
+import com.roland.android.flick.utils.bounceClickable
 
 @Composable
 fun LargeItemPoster(
@@ -57,7 +62,8 @@ fun MediumItemPoster(
 		model = TMDB_POSTER_IMAGE_BASE_URL_W342 + movie.posterPath,
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
-		modifier = modifier.size(POSTER_WIDTH_MEDIUM, POSTER_HEIGHT_MEDIUM)
+		modifier = modifier.size(POSTER_WIDTH_MEDIUM, POSTER_HEIGHT_MEDIUM),
+		posterType = PosterType.Medium
 	) { onClick(movie) }
 }
 
@@ -84,15 +90,20 @@ fun Poster(
 	posterType: PosterType = PosterType.Small,
 	onClick: () -> Unit
 ) {
+	val state = remember { mutableStateOf<AsyncImagePainter.State>(Empty) }
+
 	Box(
 		modifier = modifier
+			.bounceClickable(posterType != PosterType.BottomSheet) { onClick() }
 			.clip(MaterialTheme.shapes.large)
-			.clickable(posterType != PosterType.BottomSheet) { onClick() }
 	) {
 		AsyncImage(
 			model = model,
 			contentDescription = contentDescription,
-			modifier = Modifier.fillMaxSize(),
+			modifier = Modifier
+				.fillMaxSize()
+				.painterPlaceholder(state.value),
+			onState = { state.value = it },
 			contentScale = ContentScale.Crop
 		)
 		Row {
@@ -130,6 +141,7 @@ fun Poster(
 
 enum class PosterType {
 	Small,
+	Medium,
 	Large,
 	BottomSheet
 }
@@ -145,6 +157,7 @@ fun Header(
 	) {
 		Divider(
 			modifier = Modifier
+				.padding(vertical = 8.dp)
 				.size(4.dp, 18.dp)
 				.clip(MaterialTheme.shapes.medium),
 			color = MaterialTheme.colorScheme.surfaceTint
