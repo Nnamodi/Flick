@@ -66,6 +66,20 @@ fun HomeTopBar(navigateToSearch: (Screens) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun ComingSoonTopBar() {
+	TopAppBar(
+		title = {
+			Text(
+				text = stringResource(R.string.coming_soon),
+				fontWeight = FontWeight.Bold
+			)
+		},
+		colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+	)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun MovieListTopBar(
 	title: String,
 	navigateUp: (Screens) -> Unit

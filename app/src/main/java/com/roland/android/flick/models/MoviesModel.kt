@@ -36,6 +36,13 @@ data class SearchModel(
 	val seriesGenres: GenreList = GenreList()
 )
 
+data class ComingSoonModel(
+	val upcomingMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val upcomingShows: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val movieGenres: GenreList = GenreList(),
+	val seriesGenres: GenreList = GenreList()
+)
+
 data class MovieDetailsModel(
 	val recommendedMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val similarMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),

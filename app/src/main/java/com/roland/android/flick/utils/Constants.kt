@@ -12,9 +12,14 @@ object Constants {
 	const val SERIES = "series"
 
 	// Dimensions
+	val POSTER_WIDTH_X_LARGE = 280.dp
+	val POSTER_HEIGHT_X_LARGE = 400.dp
 	val POSTER_WIDTH_LARGE = 250.dp
+	val POSTER_HEIGHT_LARGE = 370.dp
 	val POSTER_WIDTH_MEDIUM = 130.dp
 	val POSTER_HEIGHT_MEDIUM = 250.dp
+	val POSTER_WIDTH_SMALL = 130.dp
+	val POSTER_HEIGHT_SMALL = 180.dp
 	val PADDING_WIDTH = 16.dp
 	val ROUNDED_EDGE = 12.dp
 

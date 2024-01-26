@@ -1,6 +1,7 @@
 package com.roland.android.flick.ui.screens
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -181,7 +182,15 @@ fun HomeScreen(
 							LargeItemPoster(
 								movie = movie,
 								modifier = Modifier.animatePagerItem(page, pagerState),
-								onClick = { clickedMovieItem.value = it }
+								onClick = {
+									if (page != pagerState.currentPage) scope.launch {
+										pagerState.animateScrollToPage(
+											page = page,
+											animationSpec = tween(durationMillis = 1000)
+										)
+									}
+									clickedMovieItem.value = it
+								}
 							)
 						}
 					}

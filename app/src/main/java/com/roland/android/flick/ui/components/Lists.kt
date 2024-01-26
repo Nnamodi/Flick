@@ -59,7 +59,7 @@ fun MovieLists(
 
 	if (showEmptyList.value) { EmptyList() }
 
-	if (!searchQueryEntered) { EmptyList(nothingSearched = true) }
+	if (!searchQueryEntered) { NothingSearched() }
 
 	LazyVerticalGrid(
 		columns = GridCells.Adaptive(120.dp),
@@ -169,28 +169,36 @@ fun HorizontalPosters(
 
 @Preview(showBackground = true)
 @Composable
-private fun EmptyList(nothingSearched: Boolean = false) {
+private fun EmptyList() {
 	Column(
 		modifier = Modifier.fillMaxSize(),
 		verticalArrangement = Arrangement.Center,
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		if (nothingSearched) {
-			Icon(Icons.Rounded.Search, null, Modifier.size(250.dp))
-			Spacer(Modifier.height(30.dp))
-			Text(
-				text = stringResource(R.string.nothing_searched),
-				fontSize = 24.sp,
-				fontWeight = FontWeight.SemiBold
-			)
-		} else {
-			Text(text = stringResource(R.string.sad_face), fontSize = 100.sp)
-			Spacer(Modifier.height(30.dp))
-			Text(
-				text = stringResource(R.string.no_result),
-				fontSize = 24.sp,
-				fontWeight = FontWeight.SemiBold
-			)
-		}
+		Text(text = stringResource(R.string.sad_face), fontSize = 100.sp)
+		Spacer(Modifier.height(30.dp))
+		Text(
+			text = stringResource(R.string.no_result),
+			fontSize = 24.sp,
+			fontWeight = FontWeight.SemiBold
+		)
+	}
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun NothingSearched() {
+	Column(
+		modifier = Modifier.fillMaxSize(),
+		verticalArrangement = Arrangement.Center,
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		Icon(Icons.Rounded.Search, null, Modifier.size(250.dp))
+		Spacer(Modifier.height(30.dp))
+		Text(
+			text = stringResource(R.string.nothing_searched),
+			fontSize = 24.sp,
+			fontWeight = FontWeight.SemiBold
+		)
 	}
 }

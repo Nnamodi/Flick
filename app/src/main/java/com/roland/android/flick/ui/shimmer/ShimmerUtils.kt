@@ -30,9 +30,14 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import com.roland.android.flick.ui.components.Header
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
+import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
+import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_SMALL
+import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_X_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
+import com.roland.android.flick.utils.Constants.POSTER_WIDTH_SMALL
+import com.roland.android.flick.utils.Constants.POSTER_WIDTH_X_LARGE
 
 @Composable
 fun RowItems(header: String, isLoading: Boolean) {
@@ -58,13 +63,24 @@ fun RowItems(header: String, isLoading: Boolean) {
 }
 
 @Composable
+fun ComingSoonBoxItem(
+	isLoading: Boolean,
+	modifier: Modifier = Modifier,
+) {
+	ShimmerBoxItem(
+		isLoading = isLoading,
+		modifier = modifier.size(POSTER_WIDTH_X_LARGE, POSTER_HEIGHT_X_LARGE)
+	)
+}
+
+@Composable
 fun LargeBoxItem(
 	isLoading: Boolean,
 	modifier: Modifier = Modifier,
 ) {
 	ShimmerBoxItem(
 		isLoading = isLoading,
-		modifier = modifier.size(POSTER_WIDTH_LARGE, 370.dp)
+		modifier = modifier.size(POSTER_WIDTH_LARGE, POSTER_HEIGHT_LARGE)
 	)
 }
 
@@ -87,7 +103,7 @@ fun SmallBoxItem(
 	ShimmerBoxItem(
 		isLoading = isLoading,
 		modifier = modifier
-			.size(POSTER_WIDTH_MEDIUM, 180.dp)
+			.size(POSTER_WIDTH_SMALL, POSTER_HEIGHT_SMALL)
 			.padding(end = 12.dp)
 	)
 }

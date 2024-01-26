@@ -45,7 +45,7 @@ object Converters {
 		null,
 		multiListModel.page,
 		multiListModel.results
-			.filter { it.movieType != "person" }
+//			.filter { it.movieType != "person" }
 			.map { convertToMovie(it) },
 		multiListModel.totalPages,
 		multiListModel.totalResults
@@ -172,7 +172,7 @@ object Converters {
 		movieModel.id,
 		movieModel.title,
 		movieModel.overview,
-		movieModel.genreIds, // convert to genres
+		movieModel.genreIds,
 		movieModel.backdropPath,
 		movieModel.posterPath,
 		movieModel.language,
@@ -192,16 +192,16 @@ object Converters {
 		return Movie(
 			multiModel.id,
 			multiModel.title,
-			multiModel.overview!!,
-			multiModel.genreIds!!, // convert to genres
+			multiModel.overview ?: "",
+			multiModel.genreIds ?: emptyList(),
 			multiModel.backdropPath,
 			multiModel.posterPath,
 			multiModel.language!!,
 			multiModel.popularity,
 			multiModel.movieType,
 			multiModel.videoAvailable,
-			multiModel.voteAverage!!,
-			multiModel.voteCount!!,
+			multiModel.voteAverage ?: 0.0,
+			multiModel.voteCount ?: 0,
 			multiModel.adult,
 			multiModel.releaseDate,
 			multiModel.tvName,

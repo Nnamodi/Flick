@@ -11,7 +11,9 @@ import com.roland.android.domain.usecase.GetSearchedMoviesUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
+import com.roland.android.domain.usecase.GetUpcomingMoviesUseCase
 import com.roland.android.flick.models.CastDetailsModel
+import com.roland.android.flick.models.ComingSoonModel
 import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.FurtherTvShowsModel
 import com.roland.android.flick.models.MovieDetailsModel
@@ -121,6 +123,26 @@ class ResponseConverter @Inject constructor() {
 						result.data.bollywoodShows.refactor(),
 						result.data.animeShows.refactor(),
 						result.data.genres
+					)
+				)
+			}
+		}
+	}
+
+	fun convertComingSoonData(
+		result: Result<GetUpcomingMoviesUseCase.Response>
+	): State<ComingSoonModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					ComingSoonModel(
+						result.data.upcomingMovies.refactor(),
+						result.data.upcomingShows.refactor(),
+						result.data.movieGenres,
+						result.data.seriesGenres
 					)
 				)
 			}

@@ -29,13 +29,31 @@ import coil.compose.AsyncImagePainter
 import coil.compose.AsyncImagePainter.State.Empty
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.ui.shimmer.painterPlaceholder
+import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
+import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_X_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
+import com.roland.android.flick.utils.Constants.POSTER_WIDTH_X_LARGE
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W500
 import com.roland.android.flick.utils.Extensions.roundOff
 import com.roland.android.flick.utils.bounceClickable
+
+@Composable
+fun ComingSoonItemPoster(
+	movie: Movie,
+	modifier: Modifier = Modifier,
+	onClick: (Movie) -> Unit
+) {
+	Poster(
+		model = TMDB_POSTER_IMAGE_BASE_URL_W500 + movie.posterPath,
+		contentDescription = movie.title ?: movie.tvName,
+		voteAverage = movie.voteAverage,
+		modifier = modifier.size(POSTER_WIDTH_X_LARGE, POSTER_HEIGHT_X_LARGE),
+		posterType = PosterType.ComingSoon
+	) { onClick(movie) }
+}
 
 @Composable
 fun LargeItemPoster(
@@ -47,7 +65,7 @@ fun LargeItemPoster(
 		model = TMDB_POSTER_IMAGE_BASE_URL_W500 + movie.posterPath,
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
-		modifier = modifier.size(POSTER_WIDTH_LARGE, 370.dp),
+		modifier = modifier.size(POSTER_WIDTH_LARGE, POSTER_HEIGHT_LARGE),
 		posterType = PosterType.Large
 	) { onClick(movie) }
 }
@@ -143,6 +161,7 @@ enum class PosterType {
 	Small,
 	Medium,
 	Large,
+	ComingSoon,
 	BottomSheet
 }
 

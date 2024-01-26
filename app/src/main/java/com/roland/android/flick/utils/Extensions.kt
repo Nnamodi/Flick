@@ -21,6 +21,7 @@ import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.usecase.Category
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.PosterType
+import com.roland.android.flick.ui.shimmer.ComingSoonBoxItem
 import com.roland.android.flick.ui.shimmer.LargeBoxItem
 import com.roland.android.flick.ui.shimmer.SmallBoxItem
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -99,6 +100,7 @@ object Extensions {
 					SmallBoxItem(isLoading)
 				}
 				PosterType.Large -> LargeBoxItem(isLoading, largeBoxItemModifier)
+				PosterType.ComingSoon -> ComingSoonBoxItem(isLoading, largeBoxItemModifier)
 				else -> {}
 			}
 		}
