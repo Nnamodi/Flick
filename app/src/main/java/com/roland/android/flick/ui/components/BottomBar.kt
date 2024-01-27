@@ -35,7 +35,6 @@ fun BottomBar(navController: NavHostController) {
 						popUpTo(navController.graph.findStartDestination().id)
 						launchSingleTop = true
 					}
-
 				},
 				icon = { Icon(item.icon, null) },
 				label = { Text(stringResource(item.title)) },

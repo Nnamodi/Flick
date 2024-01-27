@@ -1,4 +1,4 @@
-package com.roland.android.flick.viewModel
+package com.roland.android.flick.ui.screens.coming_soon
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,7 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.GetUpcomingMoviesUseCase
 import com.roland.android.flick.state.ComingSoonUiState
-import com.roland.android.flick.utils.ComingSoonActions
+import com.roland.android.flick.utils.Constants.MOVIES
+import com.roland.android.flick.utils.Constants.SERIES
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +48,7 @@ class ComingSoonViewModel @Inject constructor(
 
 	fun comingSoonActions(action: ComingSoonActions) {
 		when (action) {
-			is ComingSoonActions.ToggleCategory -> toggleCategory(action.category)
+			is ComingSoonActions.ToggleCategory -> toggleCategory()
 			is ComingSoonActions.Retry -> retry()
 		}
 	}
@@ -57,9 +58,11 @@ class ComingSoonViewModel @Inject constructor(
 		loadComingSoonData()
 	}
 
-	private fun toggleCategory(category: String) {
+	private fun toggleCategory() {
+		val currentCategory = comingSoonUiState.selectedCategory
+		val selectedCategory = if (currentCategory == MOVIES) SERIES else MOVIES
 		_comingSoonUiState.update {
-			it.copy(selectedCategory = category)
+			it.copy(selectedCategory = selectedCategory)
 		}
 	}
 

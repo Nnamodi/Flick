@@ -1,4 +1,4 @@
-package com.roland.android.flick.viewModel
+package com.roland.android.flick.ui.screens.list
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.Category
 import com.roland.android.domain.usecase.GetMovieListUseCase
 import com.roland.android.flick.state.MovieListUiState
-import com.roland.android.flick.utils.MovieListActions
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

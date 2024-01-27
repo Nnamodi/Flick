@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.screens
+package com.roland.android.flick.ui.screens.home
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -26,6 +26,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,14 +68,14 @@ import com.roland.android.flick.ui.components.LargeItemPoster
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.ToggleButton
 import com.roland.android.flick.ui.navigation.Screens
+import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
-import com.roland.android.flick.ui.shimmer.HomeLoadingUi
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.MOVIES
+import com.roland.android.flick.utils.Constants.NavigationBarHeight
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Extensions.loadStateUi
-import com.roland.android.flick.utils.HomeActions
 import com.roland.android.flick.utils.animatePagerItem
 import kotlinx.coroutines.launch
 
@@ -101,7 +102,9 @@ fun HomeScreen(
 			SnackbarHost(snackbarHostState) { data ->
 				errorMessage.value?.let {
 					Snackbar(
-						modifier = Modifier.padding(16.dp),
+						modifier = Modifier
+							.padding(16.dp)
+							.padding(bottom = NavigationBarHeight),
 						action = {
 							data.visuals.actionLabel?.let {
 								TextButton(
@@ -132,8 +135,13 @@ fun HomeScreen(
 			val moviesPagerState = rememberPagerState { 20 }
 			val seriesPagerState = rememberPagerState { 20 }
 			val pagerState = if (selectedCategory == MOVIES) moviesPagerState else seriesPagerState
-			val horizontalPaddingValue by animateDpAsState(
-				targetValue = if (pagerState.currentPage == 0) PADDING_WIDTH else 40.dp,
+			val paddingTargetValue = remember(pagerState.currentPage) {
+				derivedStateOf {
+					if (pagerState.currentPage == 0) PADDING_WIDTH else 40.dp
+				}
+			}
+			val startPaddingValue by animateDpAsState(
+				targetValue = paddingTargetValue.value,
 				label = "padding width value"
 			)
 
@@ -160,7 +168,7 @@ fun HomeScreen(
 				HorizontalPager(
 					state = pagerState,
 					contentPadding = PaddingValues(
-						start = horizontalPaddingValue,
+						start = startPaddingValue,
 						end = PADDING_WIDTH
 					),
 					modifier = Modifier
@@ -238,7 +246,7 @@ fun HomeScreen(
 					onItemClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
 
-				Spacer(Modifier.height(50.dp))
+				Spacer(Modifier.height(50.dp + NavigationBarHeight))
 			}
 
 			if (clickedMovieItem.value != null) {

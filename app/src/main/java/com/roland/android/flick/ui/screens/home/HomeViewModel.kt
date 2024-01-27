@@ -1,4 +1,4 @@
-package com.roland.android.flick.viewModel
+package com.roland.android.flick.ui.screens.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +10,6 @@ import com.roland.android.domain.usecase.GetFurtherTvShowUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.flick.state.HomeUiState
-import com.roland.android.flick.utils.HomeActions
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

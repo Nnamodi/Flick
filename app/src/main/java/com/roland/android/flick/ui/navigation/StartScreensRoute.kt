@@ -3,12 +3,12 @@ package com.roland.android.flick.ui.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.roland.android.flick.ui.screens.ComingSoonScreen
-import com.roland.android.flick.ui.screens.HomeScreen
-import com.roland.android.flick.utils.MovieListActions
-import com.roland.android.flick.viewModel.ComingSoonViewModel
-import com.roland.android.flick.viewModel.HomeViewModel
-import com.roland.android.flick.viewModel.MovieListViewModel
+import com.roland.android.flick.ui.screens.coming_soon.ComingSoonScreen
+import com.roland.android.flick.ui.screens.coming_soon.ComingSoonViewModel
+import com.roland.android.flick.ui.screens.home.HomeScreen
+import com.roland.android.flick.ui.screens.home.HomeViewModel
+import com.roland.android.flick.ui.screens.list.MovieListActions
+import com.roland.android.flick.ui.screens.list.MovieListViewModel
 
 fun NavGraphBuilder.startScreensRoute(
 	navActions: NavActions,

@@ -38,12 +38,12 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
-import com.roland.android.flick.ui.shimmer.MediumBoxItem
 import com.roland.android.flick.utils.Constants
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Extensions.appendStateUi
 import com.roland.android.flick.utils.Extensions.loadStateUi
 import com.roland.android.flick.utils.Extensions.refine
+import com.roland.android.flick.utils.MediumBoxItem
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable

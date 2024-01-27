@@ -7,13 +7,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.roland.android.domain.usecase.Category
-import com.roland.android.flick.ui.screens.MovieListScreen
-import com.roland.android.flick.ui.screens.SearchScreen
-import com.roland.android.flick.utils.MovieListActions
-import com.roland.android.flick.viewModel.ComingSoonViewModel
-import com.roland.android.flick.viewModel.HomeViewModel
-import com.roland.android.flick.viewModel.MovieListViewModel
-import com.roland.android.flick.viewModel.SearchViewModel
+import com.roland.android.flick.ui.screens.coming_soon.ComingSoonViewModel
+import com.roland.android.flick.ui.screens.home.HomeViewModel
+import com.roland.android.flick.ui.screens.list.MovieListActions
+import com.roland.android.flick.ui.screens.list.MovieListScreen
+import com.roland.android.flick.ui.screens.list.MovieListViewModel
+import com.roland.android.flick.ui.screens.search.SearchScreen
+import com.roland.android.flick.ui.screens.search.SearchViewModel
 
 @Composable
 fun AppRoute(

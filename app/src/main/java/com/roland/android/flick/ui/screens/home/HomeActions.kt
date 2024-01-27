@@ -1,4 +1,4 @@
-package com.roland.android.flick.utils
+package com.roland.android.flick.ui.screens.home
 
 sealed class HomeActions {
 

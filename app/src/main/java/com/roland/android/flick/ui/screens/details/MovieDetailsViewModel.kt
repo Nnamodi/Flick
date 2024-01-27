@@ -1,4 +1,4 @@
-package com.roland.android.flick.viewModel
+package com.roland.android.flick.ui.screens.details
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -11,7 +11,6 @@ import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.flick.state.MovieDetailsUiState
-import com.roland.android.flick.utils.DetailsRequest
 import com.roland.android.flick.utils.ResponseConverter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map

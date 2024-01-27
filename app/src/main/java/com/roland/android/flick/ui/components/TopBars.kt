@@ -35,12 +35,15 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.roland.android.flick.R
 import com.roland.android.flick.state.SearchUiState
 import com.roland.android.flick.ui.navigation.Screens
-import com.roland.android.flick.utils.SearchActions
+import com.roland.android.flick.ui.screens.coming_soon.ComingSoonActions
+import com.roland.android.flick.ui.screens.search.SearchActions
+import com.roland.android.flick.utils.Constants.MOVIES
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,12 +69,25 @@ fun HomeTopBar(navigateToSearch: (Screens) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ComingSoonTopBar() {
+fun ComingSoonTopBar(
+	selectedCategory: String,
+	onCategorySelected: (ComingSoonActions) -> Unit
+) {
 	TopAppBar(
 		title = {
 			Text(
 				text = stringResource(R.string.coming_soon),
 				fontWeight = FontWeight.Bold
+			)
+		},
+		actions = {
+			val nextCategory = if (selectedCategory == MOVIES) Chips.TvShows else Chips.Movies
+
+			ChipSet(
+				modifier = Modifier.padding(end = 12.dp),
+				selectedCategory = null,
+				chips = arrayOf(nextCategory),
+				onValueChanged = { onCategorySelected(ComingSoonActions.ToggleCategory) }
 			)
 		},
 		colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -140,7 +156,10 @@ fun SearchTopBar(
 						}
 					}
 				},
-				keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+				keyboardOptions = KeyboardOptions(
+					capitalization = KeyboardCapitalization.Sentences,
+					imeAction = ImeAction.Search
+				),
 				keyboardActions = KeyboardActions(
 					onSearch = {
 						keyboard?.hide()

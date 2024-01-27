@@ -1,10 +1,11 @@
-package com.roland.android.flick.ui.screens
+package com.roland.android.flick.ui.screens.details
 
 import android.annotation.SuppressLint
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import com.roland.android.flick.state.MovieDetailsUiState
 import com.roland.android.flick.ui.components.MovieDetailsTopBar
+import com.roland.android.flick.ui.screens.CommonScreen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

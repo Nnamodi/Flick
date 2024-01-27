@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.screens
+package com.roland.android.flick.ui.screens.search
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -30,13 +30,13 @@ import com.roland.android.flick.ui.components.ChipSet
 import com.roland.android.flick.ui.components.MovieLists
 import com.roland.android.flick.ui.components.SearchTopBar
 import com.roland.android.flick.ui.navigation.Screens
+import com.roland.android.flick.ui.screens.CommonScreen
+import com.roland.android.flick.ui.screens.list.LoadingListUi
+import com.roland.android.flick.ui.screens.search.SearchCategory.ALL
+import com.roland.android.flick.ui.screens.search.SearchCategory.MOVIES
+import com.roland.android.flick.ui.screens.search.SearchCategory.TV_SHOWS
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
-import com.roland.android.flick.ui.shimmer.LoadingListUi
 import com.roland.android.flick.ui.theme.FlickTheme
-import com.roland.android.flick.utils.SearchActions
-import com.roland.android.flick.utils.SearchCategory.ALL
-import com.roland.android.flick.utils.SearchCategory.MOVIES
-import com.roland.android.flick.utils.SearchCategory.TV_SHOWS
 import kotlinx.coroutines.launch
 
 @Composable

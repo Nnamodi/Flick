@@ -1,4 +1,4 @@
-package com.roland.android.flick.viewModel
+package com.roland.android.flick.ui.screens.search
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -9,8 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.GetSearchedMoviesUseCase
 import com.roland.android.flick.state.SearchUiState
 import com.roland.android.flick.utils.ResponseConverter
-import com.roland.android.flick.utils.SearchActions
-import com.roland.android.flick.utils.SearchCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map

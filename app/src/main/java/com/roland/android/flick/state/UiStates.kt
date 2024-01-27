@@ -11,8 +11,8 @@ import com.roland.android.flick.models.SearchModel
 import com.roland.android.flick.models.SeasonDetailsModel
 import com.roland.android.flick.models.TvShowDetailsModel
 import com.roland.android.flick.models.TvShowsModel
+import com.roland.android.flick.ui.screens.search.SearchCategory
 import com.roland.android.flick.utils.Constants.MOVIES
-import com.roland.android.flick.utils.SearchCategory
 
 data class HomeUiState(
 	val movies: State<MoviesModel>? = null,

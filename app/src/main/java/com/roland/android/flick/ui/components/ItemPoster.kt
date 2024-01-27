@@ -28,7 +28,6 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.AsyncImagePainter.State.Empty
 import com.roland.android.domain.entity.Movie
-import com.roland.android.flick.ui.shimmer.painterPlaceholder
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_X_LARGE
@@ -39,6 +38,7 @@ import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W500
 import com.roland.android.flick.utils.Extensions.roundOff
 import com.roland.android.flick.utils.bounceClickable
+import com.roland.android.flick.utils.painterPlaceholder
 
 @Composable
 fun ComingSoonItemPoster(

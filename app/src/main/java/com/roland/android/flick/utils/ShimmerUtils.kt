@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.shimmer
+package com.roland.android.flick.utils
 
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.RepeatMode

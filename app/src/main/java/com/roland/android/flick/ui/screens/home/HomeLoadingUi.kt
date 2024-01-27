@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.shimmer
+package com.roland.android.flick.ui.screens.home
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
@@ -23,7 +23,10 @@ import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.Header
 import com.roland.android.flick.ui.components.ToggleButton
 import com.roland.android.flick.ui.theme.FlickTheme
+import com.roland.android.flick.utils.Constants.NavigationBarHeight
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
+import com.roland.android.flick.utils.LargeBoxItem
+import com.roland.android.flick.utils.RowItems
 
 @Composable
 fun HomeLoadingUi(
@@ -68,7 +71,7 @@ fun HomeLoadingUi(
 
 		RowItems(stringResource(R.string.most_popular), isLoading)
 
-		Spacer(Modifier.height(50.dp))
+		Spacer(Modifier.height(50.dp + NavigationBarHeight))
 	}
 }
 

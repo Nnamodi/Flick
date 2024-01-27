@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.screens
+package com.roland.android.flick.ui.screens.list
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -26,11 +26,10 @@ import com.roland.android.flick.state.MovieListUiState
 import com.roland.android.flick.ui.components.MovieListTopBar
 import com.roland.android.flick.ui.components.MovieLists
 import com.roland.android.flick.ui.navigation.Screens
+import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
-import com.roland.android.flick.ui.shimmer.LoadingListUi
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Extensions.getName
-import com.roland.android.flick.utils.MovieListActions
 import kotlinx.coroutines.launch
 
 @Composable

@@ -29,12 +29,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.roland.android.flick.R
+import com.roland.android.flick.ui.screens.home.HomeActions
+import com.roland.android.flick.ui.screens.search.SearchCategory
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.ROUNDED_EDGE
 import com.roland.android.flick.utils.Constants.SERIES
-import com.roland.android.flick.utils.HomeActions
-import com.roland.android.flick.utils.SearchCategory
 
 @Composable
 fun ToggleButton(
@@ -109,15 +109,16 @@ private fun ToggleButtonItem(text: String, textColor: Color) {
 
 @Composable
 fun ChipSet(
-	modifier: Modifier,
+	modifier: Modifier = Modifier,
 	selectedCategory: SearchCategory?,
+	chips: Array<Chips> = Chips.values(),
 	onValueChanged: (SearchCategory) -> Unit
 ) {
 	Row(
 		modifier = modifier,
 		horizontalArrangement = Arrangement.SpaceAround
 	) {
-		Chips.values().forEach { chip ->
+		chips.forEach { chip ->
 			AssistChip(
 				onClick = { onValueChanged(chip.category) },
 				label = {
@@ -132,7 +133,7 @@ fun ChipSet(
 	}
 }
 
-private enum class Chips(
+enum class Chips(
 	@StringRes val labelRes: Int,
 	val category: SearchCategory
 ) {

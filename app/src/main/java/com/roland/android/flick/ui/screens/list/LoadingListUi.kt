@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.shimmer
+package com.roland.android.flick.ui.screens.list
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.roland.android.flick.ui.components.ChipSet
 import com.roland.android.flick.ui.theme.FlickTheme
+import com.roland.android.flick.utils.MediumBoxItem
 
 @Composable
 fun LoadingListUi(

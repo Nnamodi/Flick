@@ -23,4 +23,5 @@ object Constants {
 	val PADDING_WIDTH = 16.dp
 	val ROUNDED_EDGE = 12.dp
 
+	val NavigationBarHeight = 80.dp
 }
