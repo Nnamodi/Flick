@@ -12,6 +12,7 @@ import com.roland.android.flick.ui.screens.list.MovieListViewModel
 
 fun NavGraphBuilder.startScreensRoute(
 	navActions: NavActions,
+	inFullScreen: (Boolean) -> Unit,
 	homeViewModel: HomeViewModel,
 	comingSoonViewModel: ComingSoonViewModel,
 	movieListViewModel: MovieListViewModel
@@ -33,7 +34,8 @@ fun NavGraphBuilder.startScreensRoute(
 		composable(AppRoute.ComingSoonScreen.route) {
 			ComingSoonScreen(
 				uiState = comingSoonViewModel.comingSoonUiState,
-				action = comingSoonViewModel::comingSoonActions
+				action = comingSoonViewModel::comingSoonActions,
+				inFullScreen = inFullScreen
 			)
 		}
 	}

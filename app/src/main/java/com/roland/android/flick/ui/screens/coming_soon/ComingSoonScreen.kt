@@ -1,10 +1,11 @@
 package com.roland.android.flick.ui.screens.coming_soon
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,10 +24,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -38,7 +42,6 @@ import com.roland.android.flick.models.ComingSoonModel
 import com.roland.android.flick.models.SampleData.upcomingMovies
 import com.roland.android.flick.state.ComingSoonUiState
 import com.roland.android.flick.state.State
-import com.roland.android.flick.ui.components.ComingSoonItemPoster
 import com.roland.android.flick.ui.components.ComingSoonTopBar
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.screens.CommonScreen
@@ -56,16 +59,23 @@ import kotlinx.coroutines.launch
 @Composable
 fun ComingSoonScreen(
 	uiState: ComingSoonUiState,
-	action: (ComingSoonActions) -> Unit
+	action: (ComingSoonActions) -> Unit,
+	inFullScreen: (Boolean) -> Unit
 ) {
 	val (movieData, selectedCategory) = uiState
 	val snackbarHostState = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 	val scrollState = rememberScrollState()
+	var expanded by rememberSaveable { mutableStateOf(false) }
+	val itemExpanded: (Boolean) -> Unit = {
+		expanded = it; inFullScreen(it)
+	}
 
 	Scaffold(
-		topBar = { ComingSoonTopBar(selectedCategory, action) },
+		topBar = {
+			ComingSoonTopBar(selectedCategory, expanded, action) { itemExpanded(false) }
+		},
 		snackbarHost = {
 			SnackbarHost(snackbarHostState) { data ->
 				errorMessage.value?.let {
@@ -86,7 +96,7 @@ fun ComingSoonScreen(
 				}
 			}
 		}
-	) { _ ->
+	) { paddingValues ->
 		CommonScreen(
 			movieData,
 			loadingScreen = { error ->
@@ -107,11 +117,30 @@ fun ComingSoonScreen(
 			val seriesPagerState = rememberPagerState { 60 }
 			val pagerState = if (selectedCategory == MOVIES) moviesPagerState else seriesPagerState
 			val screenWidth = LocalConfiguration.current.screenWidthDp
-			val startPadding = (screenWidth.dp - POSTER_WIDTH_X_LARGE) / 2
+			val startPadding by animateDpAsState(
+				targetValue = if (expanded) 0.dp else (screenWidth.dp - POSTER_WIDTH_X_LARGE) / 2,
+				animationSpec = tween(if (expanded) 700 else 1000),
+				label = "start padding"
+			)
+			val bottomPadding by animateDpAsState(
+				targetValue = if (expanded) 0.dp else NavigationBarHeight + 16.dp,
+				animationSpec = tween(1000),
+				label = "bottom padding"
+			)
+			val pageSize by animateDpAsState(
+				targetValue = if (expanded) screenWidth.dp else POSTER_WIDTH_X_LARGE,
+				animationSpec = tween(if (expanded) 700 else 1000),
+				label = "page size"
+			)
 
-			Column(
-				modifier = Modifier.fillMaxSize(),
-				verticalArrangement = Arrangement.Center
+			BoxWithConstraints(
+				modifier = Modifier
+					.fillMaxSize()
+					.padding(
+						top = paddingValues.calculateTopPadding(),
+						bottom = paddingValues.calculateBottomPadding()
+					),
+				contentAlignment = Alignment.Center
 			) {
 				HorizontalPager(
 					state = pagerState,
@@ -121,28 +150,35 @@ fun ComingSoonScreen(
 					),
 					modifier = Modifier
 						.fillMaxWidth()
-						.padding(bottom = 16.dp),
+						.padding(bottom = bottomPadding),
 					pageSpacing = 14.dp,
 					flingBehavior = PagerDefaults.flingBehavior(
 						state = pagerState,
 						pagerSnapDistance = PagerSnapDistance.atMost(5)
 					),
-					pageSize = PageSize.Fixed(POSTER_WIDTH_X_LARGE)
+					pageSize = PageSize.Fixed(pageSize),
+					userScrollEnabled = !expanded
 				) { page ->
 					if (movies.itemCount > 0) {
 						movies[page]?.let { movie ->
-							ComingSoonItemPoster(
+							ComingSoonItem(
 								movie = movie,
-								modifier = Modifier.animatePagerItem(page, pagerState),
-								onClick = {
+								genreList = if (selectedCategory == MOVIES) movieData.movieGenres else movieData.seriesGenres,
+								expanded = expanded,
+								itemPage = page,
+								pagerState = pagerState,
+								maxHeight = maxHeight,
+								maxWidth = maxWidth,
+								onExpand = {
 									if (page != pagerState.currentPage) scope.launch {
 										pagerState.animateScrollToPage(
 											page = page,
 											animationSpec = tween(durationMillis = 1000)
 										)
-									}
-								}
-							)
+									} else itemExpanded(true)
+								},
+								viewMore = {}
+							) { itemExpanded(false) }
 						}
 					}
 					movies.loadStateUi(
@@ -161,13 +197,17 @@ fun ComingSoonScreen(
 			}
 		}
 	}
+
+	if (expanded) {
+		BackHandler { itemExpanded(false) }
+	}
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun ComingSoonScreenPreview() {
 	FlickTheme {
 		val movieData = State.Success(ComingSoonModel(upcomingMovies))
-		ComingSoonScreen(uiState = ComingSoonUiState(movieData)) {}
+		ComingSoonScreen(ComingSoonUiState(movieData), {}) {}
 	}
 }

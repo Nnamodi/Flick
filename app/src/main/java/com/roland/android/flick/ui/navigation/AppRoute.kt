@@ -22,7 +22,8 @@ fun AppRoute(
 	homeViewModel: HomeViewModel = hiltViewModel(),
 	comingSoonViewModel: ComingSoonViewModel = hiltViewModel(),
 	movieListViewModel: MovieListViewModel = hiltViewModel(),
-	searchViewModel: SearchViewModel = hiltViewModel()
+	searchViewModel: SearchViewModel = hiltViewModel(),
+	inFullScreen: (Boolean) -> Unit
 ) {
 	NavHost(
 		navController = navController,
@@ -30,6 +31,7 @@ fun AppRoute(
 	) {
 		startScreensRoute(
 			navActions = navActions,
+			inFullScreen = inFullScreen,
 			homeViewModel = homeViewModel,
 			comingSoonViewModel = comingSoonViewModel,
 			movieListViewModel = movieListViewModel

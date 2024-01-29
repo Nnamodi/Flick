@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
@@ -67,9 +68,28 @@ fun HomeTopBar(navigateToSearch: (Screens) -> Unit) {
 	)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ComingSoonTopBar(
+	selectedCategory: String,
+	expanded: Boolean,
+	action: (ComingSoonActions) -> Unit,
+	minimize: () -> Unit
+) {
+	AnimatedContent(
+		targetState = expanded,
+		label = "top bar animation"
+	) { itemExpanded ->
+		if (itemExpanded) {
+			MovieListTopBar(null) { minimize() }
+		} else {
+			MinimizedComingSoonTopBar(selectedCategory, action)
+		}
+	}
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MinimizedComingSoonTopBar(
 	selectedCategory: String,
 	onCategorySelected: (ComingSoonActions) -> Unit
 ) {
@@ -97,11 +117,11 @@ fun ComingSoonTopBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieListTopBar(
-	title: String,
+	title: String?,
 	navigateUp: (Screens) -> Unit
 ) {
 	TopAppBar(
-		title = { Text(title) },
+		title = { title?.let { Text(it) } },
 		navigationIcon = {
 			IconButton(onClick = { navigateUp(Screens.Back) }) {
 				Icon(Icons.Rounded.ArrowBackIos, stringResource(R.string.back))

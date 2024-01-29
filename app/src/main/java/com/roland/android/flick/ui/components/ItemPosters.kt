@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -28,31 +29,68 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.AsyncImagePainter.State.Empty
 import com.roland.android.domain.entity.Movie
+import com.roland.android.flick.ui.components.PosterType.BackdropPoster
+import com.roland.android.flick.ui.components.PosterType.FullScreen
+import com.roland.android.flick.ui.components.PosterType.Large
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
-import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_X_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
-import com.roland.android.flick.utils.Constants.POSTER_WIDTH_X_LARGE
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W500
+import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W780
 import com.roland.android.flick.utils.Extensions.roundOff
 import com.roland.android.flick.utils.bounceClickable
 import com.roland.android.flick.utils.painterPlaceholder
 
 @Composable
+fun ExpandedComingSoonPoster(
+	movie: Movie,
+	modifier: Modifier = Modifier,
+	posterType: PosterType = BackdropPoster
+) {
+	Poster(
+		model = TMDB_POSTER_IMAGE_BASE_URL_W780 + movie.backdropPath,
+		contentDescription = null,
+		voteAverage = movie.voteAverage,
+		modifier = modifier.fillMaxWidth(),
+		posterType = posterType
+	) {}
+}
+
+@Composable
+fun ItemBackdropPoster(
+	movie: Movie,
+	modifier: Modifier = Modifier,
+	posterType: PosterType = BackdropPoster
+) {
+	Poster(
+		model = TMDB_POSTER_IMAGE_BASE_URL_W780 + movie.backdropPath,
+		contentDescription = null,
+		voteAverage = movie.voteAverage,
+		modifier = modifier.fillMaxWidth(),
+		posterType = posterType
+	) {}
+}
+
+@Composable
 fun ComingSoonItemPoster(
 	movie: Movie,
 	modifier: Modifier = Modifier,
-	onClick: (Movie) -> Unit
+	posterType: PosterType = BackdropPoster,
+	onClick: () -> Unit
 ) {
 	Poster(
-		model = TMDB_POSTER_IMAGE_BASE_URL_W500 + movie.posterPath,
+		model = if (posterType == BackdropPoster) {
+			TMDB_POSTER_IMAGE_BASE_URL_W780 + movie.backdropPath
+		} else {
+			TMDB_POSTER_IMAGE_BASE_URL_W500 + movie.posterPath
+		},
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
-		modifier = modifier.size(POSTER_WIDTH_X_LARGE, POSTER_HEIGHT_X_LARGE),
-		posterType = PosterType.ComingSoon
-	) { onClick(movie) }
+		modifier = modifier,
+		posterType = posterType
+	) { onClick() }
 }
 
 @Composable
@@ -66,7 +104,7 @@ fun LargeItemPoster(
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
 		modifier = modifier.size(POSTER_WIDTH_LARGE, POSTER_HEIGHT_LARGE),
-		posterType = PosterType.Large
+		posterType = Large
 	) { onClick(movie) }
 }
 
@@ -100,7 +138,7 @@ fun SmallItemPoster(
 }
 
 @Composable
-fun Poster(
+private fun Poster(
 	model: String,
 	contentDescription: String?,
 	voteAverage: Double,
@@ -109,10 +147,11 @@ fun Poster(
 	onClick: () -> Unit
 ) {
 	val state = remember { mutableStateOf<AsyncImagePainter.State>(Empty) }
+	val posterIsVeryLarge = posterType == BackdropPoster || posterType == FullScreen
 
 	Box(
 		modifier = modifier
-			.bounceClickable(posterType != PosterType.BottomSheet) { onClick() }
+			.bounceClickable(!posterIsVeryLarge) { onClick() }
 			.clip(MaterialTheme.shapes.large)
 	) {
 		AsyncImage(
@@ -124,35 +163,46 @@ fun Poster(
 			onState = { state.value = it },
 			contentScale = ContentScale.Crop
 		)
-		Row {
-			Spacer(Modifier.weight(1f))
-			Row(
-				modifier = Modifier
-					.padding(6.dp)
-					.clip(MaterialTheme.shapes.large)
-					.background(Color.Black.copy(alpha = 0.5f)),
-				verticalAlignment = Alignment.CenterVertically
-			) {
-				if (posterType == PosterType.BottomSheet) {
-					Icon(
-						imageVector = Icons.Rounded.StarRate,
-						contentDescription = null,
-						modifier = Modifier.padding(start = 8.dp, top = 2.dp, bottom = 2.dp),
-						tint = MaterialTheme.colorScheme.surfaceTint
-					)
-				}
-				Text(
-					text = voteAverage.roundOff(),
-					modifier = Modifier.padding(
-						start = if (posterType == PosterType.BottomSheet) 4.dp else 10.dp,
-						top = 2.dp,
-						end = 10.dp,
-						bottom = 2.dp
-					),
-					color = Color.White,
-					fontSize = if (posterType == PosterType.Large) 16.sp else 14.sp
+		if (posterType != FullScreen) {
+			RatingBar(posterType, voteAverage)
+		}
+	}
+}
+
+@Composable
+fun RatingBar(
+	posterType: PosterType,
+	voteAverage: Double,
+) {
+	Row {
+		Spacer(Modifier.weight(1f))
+		Row(
+			modifier = Modifier
+				.padding(6.dp)
+				.clip(MaterialTheme.shapes.large)
+				.background(Color.Black.copy(alpha = 0.5f)),
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			val posterIsVeryLarge = posterType == BackdropPoster || posterType == FullScreen
+			if (posterIsVeryLarge) {
+				Icon(
+					imageVector = Icons.Rounded.StarRate,
+					contentDescription = null,
+					modifier = Modifier.padding(start = 8.dp, top = 2.dp, bottom = 2.dp),
+					tint = MaterialTheme.colorScheme.surfaceTint
 				)
 			}
+			Text(
+				text = voteAverage.roundOff(),
+				modifier = Modifier.padding(
+					start = if (posterIsVeryLarge) 4.dp else 10.dp,
+					top = 2.dp,
+					end = 10.dp,
+					bottom = 2.dp
+				),
+				color = Color.White,
+				fontSize = if (posterType == Large) 16.sp else 14.sp
+			)
 		}
 	}
 }
@@ -162,7 +212,8 @@ enum class PosterType {
 	Medium,
 	Large,
 	ComingSoon,
-	BottomSheet
+	BackdropPoster,
+	FullScreen
 }
 
 @Composable

@@ -1,5 +1,6 @@
 package com.roland.android.flick.utils
 
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,9 @@ import com.roland.android.flick.ui.components.PosterType
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.util.Locale
 
 object Extensions {
 
@@ -46,6 +50,18 @@ object Extensions {
 			title != null -> R.string.release_date
 			16 in genreIds && title == null -> R.string.anime_first_air_date
 			else -> R.string.first_air_date
+		}
+	}
+
+	fun String.dateFormat(): String {
+		val formatter = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
+		return try {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+				val date = LocalDateTime.parse(this)
+				formatter.format(date)
+			} else this
+		} catch (e: Exception) {
+			return this
 		}
 	}
 

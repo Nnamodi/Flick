@@ -41,10 +41,8 @@ import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
 import com.roland.android.flick.models.SampleData.genreList
 import com.roland.android.flick.models.SampleData.trendingMovies
-import com.roland.android.flick.ui.components.Poster
-import com.roland.android.flick.ui.components.PosterType
+import com.roland.android.flick.ui.components.ItemBackdropPoster
 import com.roland.android.flick.ui.theme.FlickTheme
-import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W780
 import com.roland.android.flick.utils.Extensions.genres
 import com.roland.android.flick.utils.Extensions.releaseDateRes
 
@@ -76,16 +74,12 @@ fun MovieDetailsSheet(
 			contentAlignment = Alignment.BottomCenter
 		) {
 			Column {
-				Poster(
-					model = TMDB_POSTER_IMAGE_BASE_URL_W780 + movie.backdropPath,
-					contentDescription = null,
-					voteAverage = movie.voteAverage,
+				ItemBackdropPoster(
+					movie = movie,
 					modifier = Modifier
-						.fillMaxWidth()
 						.height(210.dp)
-						.clip(BottomSheetDefaults.ExpandedShape),
-					posterType = PosterType.BottomSheet
-				) {}
+						.clip(BottomSheetDefaults.ExpandedShape)
+				)
 				Text(
 					text = movie.title ?: movie.tvName ?: "",
 					modifier = Modifier.padding(vertical = 6.dp),

@@ -8,6 +8,10 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.roland.android.flick.ui.components.BottomBar
@@ -39,18 +43,20 @@ class MainActivity : ComponentActivity() {
 				val currentScreenIsStartScreens = BottomBarItems.values().any {
 					currentDestination == it.route
 				}
+				var inFullScreen by rememberSaveable { mutableStateOf(false) }
 
 				Scaffold(
 					bottomBar = {
-			            if (currentScreenIsStartScreens) {
-							BottomBar(navController = navController)
-			            }
+						BottomBar(
+							expanded = currentScreenIsStartScreens && !inFullScreen,
+							navController = navController
+						)
 					}
 				) { _ ->
 					AppRoute(
 						navActions = navActions,
 						navController = navController
-					)
+					) { inFullScreen = it }
 				}
 			}
 		}

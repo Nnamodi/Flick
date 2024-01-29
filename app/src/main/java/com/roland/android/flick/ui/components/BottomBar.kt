@@ -1,6 +1,10 @@
 package com.roland.android.flick.ui.components
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Upcoming
@@ -19,7 +23,24 @@ import com.roland.android.flick.R
 import com.roland.android.flick.ui.navigation.AppRoute
 
 @Composable
-fun BottomBar(navController: NavHostController) {
+fun BottomBar(
+	expanded: Boolean,
+	navController: NavHostController
+) {
+	AnimatedVisibility(
+		visible = expanded,
+		enter = slideInVertically(
+			animationSpec = tween(durationMillis = 350, delayMillis = 1000),
+			initialOffsetY = { it }
+		),
+		exit = ExitTransition.None
+	) {
+		BottomNavBar(navController)
+	}
+}
+
+@Composable
+private fun BottomNavBar(navController: NavHostController) {
 	NavigationBar(
 		containerColor = NavigationBarDefaults.containerColor.copy(alpha = 0.9f)
 	) {
