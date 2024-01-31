@@ -42,9 +42,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -78,7 +80,12 @@ import com.roland.android.flick.utils.Constants.POSTER_WIDTH_X_LARGE
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.genres
 import com.roland.android.flick.utils.Extensions.releaseDateRes
+import com.roland.android.flick.utils.PosterContainer
+import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.animatePagerItem
+import com.roland.android.flick.utils.dynamicPageHeight
+import com.roland.android.flick.utils.dynamicPageWidth
+import com.roland.android.flick.utils.rememberWindowSize
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -94,6 +101,10 @@ fun ComingSoonItem(
 	viewMore: (Int) -> Unit,
 	minimize: () -> Unit
 ) {
+	val windowSize = rememberWindowSize()
+	val inPortraitMode = remember(windowSize.width) {
+		derivedStateOf { windowSize.width == WindowType.Portrait }
+	}
 	val durationMillis = 1000
 	val defaultDurationMillis = 700
 	val itemTransition = updateTransition(
@@ -124,7 +135,26 @@ fun ComingSoonItem(
 		) },
 		label = "poster height",
 		targetValueByState = { state ->
-			if (state == Expanded) maxHeight * 0.43f else POSTER_HEIGHT_X_LARGE
+			when {
+				state == Expanded && inPortraitMode.value -> maxHeight * 0.43f
+				state == Expanded && !inPortraitMode.value -> maxHeight
+				state == Default && !inPortraitMode.value -> dynamicPageHeight(POSTER_HEIGHT_X_LARGE)
+				else -> POSTER_HEIGHT_X_LARGE
+			}
+		}
+	)
+	val posterWidth by itemTransition.animateDp(
+		transitionSpec = { tween(
+			if (Default isTransitioningTo Expanded) durationMillis else defaultDurationMillis
+		) },
+		label = "poster width",
+		targetValueByState = { state ->
+			when {
+				state == Expanded && inPortraitMode.value -> maxWidth
+				state == Expanded && !inPortraitMode.value -> maxWidth / 2
+				state == Default && !inPortraitMode.value -> dynamicPageWidth(POSTER_WIDTH_X_LARGE)
+				else -> POSTER_WIDTH_X_LARGE
+			}
 		}
 	)
 	val itemHeight by itemTransition.animateDp(
@@ -133,7 +163,11 @@ fun ComingSoonItem(
 		) },
 		label = "item height",
 		targetValueByState = { state ->
-			if (state == Expanded) maxHeight else POSTER_HEIGHT_X_LARGE
+			when {
+				state == Expanded -> maxHeight
+				state == Default && !inPortraitMode.value -> dynamicPageHeight(POSTER_HEIGHT_X_LARGE)
+				else -> POSTER_HEIGHT_X_LARGE
+			}
 		}
 	)
 	val itemWidth by itemTransition.animateDp(
@@ -142,7 +176,11 @@ fun ComingSoonItem(
 		) },
 		label = "item width",
 		targetValueByState = { state ->
-			if (state == Expanded) maxWidth else POSTER_WIDTH_X_LARGE
+			when {
+				state == Expanded -> maxWidth
+				state == Default && !inPortraitMode.value -> dynamicPageWidth(POSTER_WIDTH_X_LARGE)
+				else -> POSTER_WIDTH_X_LARGE
+			}
 		}
 	)
 
@@ -155,8 +193,7 @@ fun ComingSoonItem(
 				indication = null,
 				enabled = expanded
 			) { if (!itemTransition.isRunning) minimize() }
-			.padding(horizontal = itemPadding)
-			.padding(bottom = itemPadding)
+			.padding(start = itemPadding, end = itemPadding, bottom = itemPadding)
 	) {
 		itemTransition.AnimatedContent(
 			transitionSpec = {
@@ -173,13 +210,15 @@ fun ComingSoonItem(
 				}.using(SizeTransform(false))
 			}
 		) { targetState ->
-			Column {
+			PosterContainer {
 				ComingSoonItemPoster(
 					movie = movie,
 					modifier = Modifier
 						.animatePagerItem(itemPage, pagerState)
-						.size(itemWidth, posterHeight),
+						.size(posterWidth, posterHeight)
+						.padding(end = if (!inPortraitMode.value) itemPadding else 0.dp),
 					posterType = if (targetState == Expanded) BackdropPoster else ComingSoon,
+					posterFromPager = targetState == Default,
 					onClick = { if (!itemTransition.isRunning) onExpand() }
 				)
 				if (targetState == Expanded) {
@@ -195,19 +234,32 @@ fun ComingSoonItem(
 }
 
 @Composable
-private fun ItemDetails(
+fun ItemDetails(
 	movie: Movie,
 	genreList: GenreList,
+	inBottomSheet: Boolean = false,
 	viewMore: (Int) -> Unit
 ) {
 	Column {
 		Text(
 			text = movie.title ?: movie.tvName ?: "",
-			modifier = Modifier.padding(vertical = 10.dp),
-			fontSize = 22.sp,
+			modifier = Modifier.padding(vertical = if (inBottomSheet) 6.dp else 10.dp),
+			fontSize = if (inBottomSheet) 20.sp else 22.sp,
 			fontWeight = FontWeight.Bold
 		)
-		GenreRowItems(movie.genreIds.genres(genreList))
+		if (inBottomSheet) {
+			Text(
+				text = movie.genreIds.genres(genreList),
+				modifier = Modifier
+					.padding(bottom = 4.dp)
+					.horizontalScroll(rememberScrollState()),
+				color = MaterialTheme.colorScheme.surfaceTint,
+				fontSize = 14.sp,
+				softWrap = false
+			)
+		} else {
+			GenreRowItems(movie.genreIds.genres(genreList))
+		}
 		(movie.releaseDate ?: movie.firstAirDate)?.let { date ->
 			Text(
 				text = stringResource(movie.releaseDateRes(), date.take(4)),
@@ -221,21 +273,29 @@ private fun ItemDetails(
 			text = movie.overview,
 			modifier = Modifier
 				.weight(1f)
-				.padding(top = 14.dp, bottom = 20.dp)
+				.padding(
+					top = if (inBottomSheet) 8.dp else 14.dp,
+					bottom = 12.dp
+				)
 				.verticalScroll(rememberScrollState())
 		)
 		Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-			(movie.releaseDate ?: movie.firstAirDate)?.let { date ->
-				Text(
-					text = stringResource(R.string.date_to_release, date.dateFormat()),
-					modifier = Modifier.padding(bottom = 12.dp),
-					color = MaterialTheme.colorScheme.surfaceTint
-				)
+			if (!inBottomSheet) {
+				(movie.releaseDate ?: movie.firstAirDate)?.let { date ->
+					Text(
+						text = stringResource(R.string.date_to_release, date.dateFormat()),
+						modifier = Modifier.padding(bottom = 12.dp),
+						color = MaterialTheme.colorScheme.surfaceTint
+					)
+				}
 			}
-			Button(onClick = { viewMore(movie.id) }) {
+			Button(
+				onClick = { viewMore(movie.id) },
+				modifier = if (inBottomSheet) Modifier.fillMaxWidth() else Modifier
+			) {
 				Text(
 					text = stringResource(R.string.more),
-					modifier = Modifier.padding(horizontal = 20.dp)
+					modifier = Modifier.padding(horizontal = if (inBottomSheet) 0.dp else 20.dp)
 				)
 			}
 		}
@@ -359,7 +419,7 @@ private enum class ComingSoonItemState {
 	Default, Expanded
 }
 
-//@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 private fun FullScreenComingSoonItemPreview() {
 	FlickTheme {
@@ -378,7 +438,7 @@ private fun FullScreenComingSoonItemPreview() {
 private fun ComingSoonItemPreview() {
 	FlickTheme(true) {
 		Surface {
-			val expanded = remember { mutableStateOf(false) }
+			val expanded = rememberSaveable { mutableStateOf(false) }
 
 			BoxWithConstraints(
 				modifier = Modifier.fillMaxSize(),
@@ -398,4 +458,10 @@ private fun ComingSoonItemPreview() {
 			}
 		}
 	}
+}
+
+@Preview(showBackground = true, device = "spec:parent=pixel_5,orientation=landscape")
+@Composable
+fun ComingSoonItemLandscapePreview() {
+	ComingSoonItemPreview()
 }

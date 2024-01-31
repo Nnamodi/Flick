@@ -69,7 +69,7 @@ fun ComingSoonBoxItem(
 ) {
 	ShimmerBoxItem(
 		isLoading = isLoading,
-		modifier = modifier.size(POSTER_WIDTH_X_LARGE, POSTER_HEIGHT_X_LARGE)
+		modifier = modifier.dynamicPageSize(POSTER_WIDTH_X_LARGE, POSTER_HEIGHT_X_LARGE)
 	)
 }
 
@@ -80,7 +80,7 @@ fun LargeBoxItem(
 ) {
 	ShimmerBoxItem(
 		isLoading = isLoading,
-		modifier = modifier.size(POSTER_WIDTH_LARGE, POSTER_HEIGHT_LARGE)
+		modifier = modifier.dynamicPageSize(POSTER_WIDTH_LARGE, POSTER_HEIGHT_LARGE)
 	)
 }
 

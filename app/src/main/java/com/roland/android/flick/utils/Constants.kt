@@ -24,4 +24,8 @@ object Constants {
 	val ROUNDED_EDGE = 12.dp
 
 	val NavigationBarHeight = 80.dp
+	val NavigationRailWidth = 80.dp
+
+	const val SCREEN_WIDTH_DIVISOR = 0.5
+	const val SCREEN_HEIGHT_DIVISOR = 0.7
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.StarRate
 import androidx.compose.material3.Divider
@@ -15,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,11 +39,14 @@ import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W342
-import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W500
 import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W780
 import com.roland.android.flick.utils.Extensions.roundOff
+import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.bounceClickable
+import com.roland.android.flick.utils.dynamicPageSize
+import com.roland.android.flick.utils.getPoster
 import com.roland.android.flick.utils.painterPlaceholder
+import com.roland.android.flick.utils.rememberWindowSize
 
 @Composable
 fun ExpandedComingSoonPoster(
@@ -78,18 +83,24 @@ fun ComingSoonItemPoster(
 	movie: Movie,
 	modifier: Modifier = Modifier,
 	posterType: PosterType = BackdropPoster,
+	posterFromPager: Boolean,
 	onClick: () -> Unit
 ) {
+	val isBackdrop = posterType == BackdropPoster
+	val windowSize = rememberWindowSize()
+	val inPortraitMode = remember(windowSize.width) {
+		derivedStateOf { windowSize.width == WindowType.Portrait }
+	}
+
 	Poster(
-		model = if (posterType == BackdropPoster) {
-			TMDB_POSTER_IMAGE_BASE_URL_W780 + movie.backdropPath
-		} else {
-			TMDB_POSTER_IMAGE_BASE_URL_W500 + movie.posterPath
-		},
+		model = (if (isBackdrop || !inPortraitMode.value) {
+			movie.backdropPath
+		} else movie.posterPath).getPoster(isBackdrop),
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
 		modifier = modifier,
-		posterType = posterType
+		posterType = posterType,
+		posterFromPager = posterFromPager
 	) { onClick() }
 }
 
@@ -99,12 +110,20 @@ fun LargeItemPoster(
 	modifier: Modifier = Modifier,
 	onClick: (Movie) -> Unit
 ) {
+	val windowSize = rememberWindowSize()
+	val inPortraitMode = remember(windowSize.width) {
+		derivedStateOf { windowSize.width == WindowType.Portrait }
+	}
+
 	Poster(
-		model = TMDB_POSTER_IMAGE_BASE_URL_W500 + movie.posterPath,
+		model = (if (inPortraitMode.value) {
+			movie.posterPath
+		} else movie.backdropPath).getPoster(),
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
-		modifier = modifier.size(POSTER_WIDTH_LARGE, POSTER_HEIGHT_LARGE),
-		posterType = Large
+		modifier = modifier.dynamicPageSize(POSTER_WIDTH_LARGE, POSTER_HEIGHT_LARGE),
+		posterType = Large,
+		posterFromPager = true,
 	) { onClick(movie) }
 }
 
@@ -144,10 +163,15 @@ private fun Poster(
 	voteAverage: Double,
 	modifier: Modifier = Modifier,
 	posterType: PosterType = PosterType.Small,
+	posterFromPager: Boolean = false,
 	onClick: () -> Unit
 ) {
 	val state = remember { mutableStateOf<AsyncImagePainter.State>(Empty) }
 	val posterIsVeryLarge = posterType == BackdropPoster || posterType == FullScreen
+	val windowSize = rememberWindowSize()
+	val inPortraitMode = remember(windowSize.width) {
+		derivedStateOf { windowSize.width == WindowType.Portrait }
+	}
 
 	Box(
 		modifier = modifier
@@ -165,6 +189,20 @@ private fun Poster(
 		)
 		if (posterType != FullScreen) {
 			RatingBar(posterType, voteAverage)
+		}
+		if (!inPortraitMode.value && posterFromPager) {
+			contentDescription?.let {
+				Text(
+					text = it,
+					modifier = Modifier
+						.align(Alignment.BottomStart)
+						.clip(RoundedCornerShape(topEnd = 12.dp))
+						.background(Color.Black.copy(alpha = 0.65f))
+						.padding(10.dp),
+					fontSize = 22.sp,
+					fontWeight = FontWeight.Bold
+				)
+			}
 		}
 	}
 }

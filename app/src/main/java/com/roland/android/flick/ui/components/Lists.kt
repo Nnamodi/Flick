@@ -44,6 +44,8 @@ import com.roland.android.flick.utils.Extensions.appendStateUi
 import com.roland.android.flick.utils.Extensions.loadStateUi
 import com.roland.android.flick.utils.Extensions.refine
 import com.roland.android.flick.utils.MediumBoxItem
+import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -188,13 +190,19 @@ private fun EmptyList() {
 @Preview(showBackground = true)
 @Composable
 private fun NothingSearched() {
+	val windowSize = rememberWindowSize()
+
 	Column(
 		modifier = Modifier.fillMaxSize(),
 		verticalArrangement = Arrangement.Center,
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		Icon(Icons.Rounded.Search, null, Modifier.size(250.dp))
-		Spacer(Modifier.height(30.dp))
+		Icon(
+			imageVector = Icons.Rounded.Search,
+			contentDescription = null,
+			modifier = Modifier.size(if (windowSize.width == WindowType.Portrait) 250.dp else 125.dp)
+		)
+		Spacer(Modifier.height(if (windowSize.width == WindowType.Portrait) 30.dp else 15.dp))
 		Text(
 			text = stringResource(R.string.nothing_searched),
 			fontSize = 24.sp,

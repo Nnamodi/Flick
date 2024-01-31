@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.flick.R
 import com.roland.android.flick.models.ComingSoonModel
+import com.roland.android.flick.models.SampleData.genreList
+import com.roland.android.flick.models.SampleData.showsSoonToAir
 import com.roland.android.flick.models.SampleData.upcomingMovies
 import com.roland.android.flick.state.ComingSoonUiState
 import com.roland.android.flick.state.State
@@ -51,7 +53,10 @@ import com.roland.android.flick.utils.Constants.NavigationBarHeight
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_X_LARGE
 import com.roland.android.flick.utils.Extensions.loadStateUi
+import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.animatePagerItem
+import com.roland.android.flick.utils.dynamicPageWidth
+import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -67,6 +72,7 @@ fun ComingSoonScreen(
 	val scope = rememberCoroutineScope()
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 	val scrollState = rememberScrollState()
+	val windowSize = rememberWindowSize()
 	var expanded by rememberSaveable { mutableStateOf(false) }
 	val itemExpanded: (Boolean) -> Unit = {
 		expanded = it; inFullScreen(it)
@@ -82,7 +88,7 @@ fun ComingSoonScreen(
 					Snackbar(
 						modifier = Modifier
 							.padding(16.dp)
-							.padding(bottom = NavigationBarHeight),
+							.padding(bottom = if (windowSize.width == WindowType.Portrait) NavigationBarHeight else 0.dp),
 						action = {
 							data.visuals.actionLabel?.let {
 								TextButton(
@@ -117,18 +123,22 @@ fun ComingSoonScreen(
 			val seriesPagerState = rememberPagerState { 60 }
 			val pagerState = if (selectedCategory == MOVIES) moviesPagerState else seriesPagerState
 			val screenWidth = LocalConfiguration.current.screenWidthDp
+			val itemWidth = dynamicPageWidth(POSTER_WIDTH_X_LARGE)
 			val startPadding by animateDpAsState(
-				targetValue = if (expanded) 0.dp else (screenWidth.dp - POSTER_WIDTH_X_LARGE) / 2,
+				targetValue = if (expanded) 0.dp else (screenWidth.dp - itemWidth) / 2,
 				animationSpec = tween(if (expanded) 700 else 1000),
 				label = "start padding"
 			)
 			val bottomPadding by animateDpAsState(
-				targetValue = if (expanded) 0.dp else NavigationBarHeight + 16.dp,
+				targetValue = when {
+					expanded || windowSize.width == WindowType.Landscape -> 0.dp
+					else -> NavigationBarHeight + 16.dp
+				},
 				animationSpec = tween(1000),
 				label = "bottom padding"
 			)
 			val pageSize by animateDpAsState(
-				targetValue = if (expanded) screenWidth.dp else POSTER_WIDTH_X_LARGE,
+				targetValue = if (expanded) screenWidth.dp else itemWidth,
 				animationSpec = tween(if (expanded) 700 else 1000),
 				label = "page size"
 			)
@@ -159,7 +169,7 @@ fun ComingSoonScreen(
 					pageSize = PageSize.Fixed(pageSize),
 					userScrollEnabled = !expanded
 				) { page ->
-					if (movies.itemCount > 0) {
+					if (movies.itemCount > 0 && movies.itemCount > page) {
 						movies[page]?.let { movie ->
 							ComingSoonItem(
 								movie = movie,
@@ -207,7 +217,9 @@ fun ComingSoonScreen(
 @Composable
 private fun ComingSoonScreenPreview() {
 	FlickTheme {
-		val movieData = State.Success(ComingSoonModel(upcomingMovies))
+		val movieData = State.Success(
+			ComingSoonModel(upcomingMovies, showsSoonToAir, genreList, genreList)
+		)
 		ComingSoonScreen(ComingSoonUiState(movieData), {}) {}
 	}
 }

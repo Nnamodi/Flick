@@ -86,3 +86,9 @@ fun HomeLoadingUiPreview() {
 		)
 	}
 }
+
+@Preview(showBackground = true, device = "spec:parent=pixel_5,orientation=landscape")
+@Composable
+fun HomeLoadingLandscapeUiPreview() {
+	HomeLoadingUiPreview()
+}

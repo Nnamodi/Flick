@@ -76,7 +76,10 @@ import com.roland.android.flick.utils.Constants.NavigationBarHeight
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Extensions.loadStateUi
+import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.animatePagerItem
+import com.roland.android.flick.utils.dynamicPageWidth
+import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -92,6 +95,7 @@ fun HomeScreen(
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 	val scrollState = rememberScrollState()
+	val windowSize = rememberWindowSize()
 	val seeMore: (Category) -> Unit = {
 		navigate(Screens.MovieListScreen(it.name))
 	}
@@ -104,7 +108,7 @@ fun HomeScreen(
 					Snackbar(
 						modifier = Modifier
 							.padding(16.dp)
-							.padding(bottom = NavigationBarHeight),
+							.padding(bottom = if (windowSize.width == WindowType.Portrait) NavigationBarHeight else 0.dp),
 						action = {
 							data.visuals.actionLabel?.let {
 								TextButton(
@@ -179,7 +183,7 @@ fun HomeScreen(
 						state = pagerState,
 						pagerSnapDistance = PagerSnapDistance.atMost(3)
 					),
-					pageSize = PageSize.Fixed(POSTER_WIDTH_LARGE)
+					pageSize = PageSize.Fixed(dynamicPageWidth(POSTER_WIDTH_LARGE))
 				) { page ->
 					val trendingMovies = (if (selectedCategory == MOVIES)
 						movieData1.trending else showData1.trending
