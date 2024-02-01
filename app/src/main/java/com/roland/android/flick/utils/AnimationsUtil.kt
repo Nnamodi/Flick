@@ -1,11 +1,16 @@
 package com.roland.android.flick.utils
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -13,6 +18,11 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.lerp
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDeepLink
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -58,3 +68,20 @@ fun Modifier.bounceClickable(
 			enabled = enabled
 		) { onClick() }
 }
+
+// navigation animation
+fun NavGraphBuilder.animatedComposable(
+	route: String,
+	arguments: List<NamedNavArgument> = emptyList(),
+	deepLinks: List<NavDeepLink> = emptyList(),
+	content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
+) = composable(
+	route = route,
+	arguments = arguments,
+	deepLinks = deepLinks,
+	enterTransition = { slideInHorizontally(tween(700)) { it } },
+	exitTransition = null,
+	popEnterTransition = null,
+	popExitTransition = { slideOutHorizontally(tween(700)) { it } },
+	content = content
+)

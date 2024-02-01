@@ -5,7 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import com.roland.android.domain.usecase.Category
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonViewModel
 import com.roland.android.flick.ui.screens.home.HomeViewModel
@@ -14,6 +13,7 @@ import com.roland.android.flick.ui.screens.list.MovieListScreen
 import com.roland.android.flick.ui.screens.list.MovieListViewModel
 import com.roland.android.flick.ui.screens.search.SearchScreen
 import com.roland.android.flick.ui.screens.search.SearchViewModel
+import com.roland.android.flick.utils.animatedComposable
 
 @Composable
 fun AppRoute(
@@ -36,7 +36,7 @@ fun AppRoute(
 			comingSoonViewModel = comingSoonViewModel,
 			movieListViewModel = movieListViewModel
 		)
-		composable(AppRoute.MovieListScreen.route) { backStackEntry ->
+		animatedComposable(AppRoute.MovieListScreen.route) { backStackEntry ->
 			val categoryName = backStackEntry.arguments?.getString("category") ?: ""
 			val category = Category.valueOf(categoryName)
 			LaunchedEffect(true) {
@@ -50,7 +50,7 @@ fun AppRoute(
 				navigate = navActions::navigate
 			)
 		}
-		composable(AppRoute.SearchScreen.route) {
+		animatedComposable(AppRoute.SearchScreen.route) {
 			SearchScreen(
 				uiState = searchViewModel.searchUiState,
 				action = searchViewModel::searchActions,

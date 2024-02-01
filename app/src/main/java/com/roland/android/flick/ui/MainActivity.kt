@@ -7,18 +7,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.roland.android.flick.ui.components.BottomBar
-import com.roland.android.flick.ui.components.BottomBarItems
+import com.roland.android.flick.ui.components.NavBar
 import com.roland.android.flick.ui.navigation.AppRoute
 import com.roland.android.flick.ui.navigation.NavActions
 import com.roland.android.flick.ui.theme.FlickTheme
+import com.roland.android.flick.utils.Constants.NavigationRailWidth
+import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.rememberWindowSize
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,25 +45,30 @@ class MainActivity : ComponentActivity() {
 			FlickTheme(darkTheme = true) {
 				val navController = rememberNavController()
 				val navActions = NavActions(navController)
-				val navBackStackEntry = navController.currentBackStackEntryAsState()
-				val currentDestination = navBackStackEntry.value?.destination?.route
-				val currentScreenIsStartScreens = BottomBarItems.values().any {
-					currentDestination == it.route
-				}
 				var inFullScreen by rememberSaveable { mutableStateOf(false) }
+				val windowSize = rememberWindowSize()
+				val inLandscapeMode by remember(windowSize.width) {
+					derivedStateOf { windowSize.width == WindowType.Landscape }
+				}
 
 				Scaffold(
 					bottomBar = {
-						BottomBar(
-							expanded = currentScreenIsStartScreens && !inFullScreen,
+						NavBar(
+							inFullScreen = inFullScreen,
 							navController = navController
 						)
 					}
 				) { _ ->
-					AppRoute(
-						navActions = navActions,
-						navController = navController
-					) { inFullScreen = it }
+					Row(
+						modifier = Modifier.padding(
+							start = if (inLandscapeMode) NavigationRailWidth else 0.dp
+						)
+					) {
+						AppRoute(
+							navActions = navActions,
+							navController = navController
+						) { inFullScreen = it }
+					}
 				}
 			}
 		}

@@ -20,7 +20,7 @@ buildscript {
             material3 : "1.1.0",
             media3 : "1.0.1",
             mockito : "5.0.0",
-            navigation : "2.5.3",
+            navigation : "2.7.0-rc01",
             okHttp : "4.11.0",
             paging : "3.2.1",
             paging_compose : "3.3.0-alpha02",
