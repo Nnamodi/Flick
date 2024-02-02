@@ -29,5 +29,7 @@ data class Series(
 	val tagline: String = "",
 	val type: String = "",
 	val voteAverage: Double = 0.0,
-	val voteCount: Int = 0
+	val voteCount: Int = 0,
+	val videos: List<Video> = emptyList(),
+	val credits: MovieCredits = MovieCredits()
 )

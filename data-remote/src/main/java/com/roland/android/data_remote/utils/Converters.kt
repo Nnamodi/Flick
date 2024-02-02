@@ -1,5 +1,6 @@
 package com.roland.android.data_remote.utils
 
+import com.roland.android.data_remote.network.model.CastDetailsModel
 import com.roland.android.data_remote.network.model.CastModel
 import com.roland.android.data_remote.network.model.DatesModel
 import com.roland.android.data_remote.network.model.EpisodeModel
@@ -16,7 +17,9 @@ import com.roland.android.data_remote.network.model.ProductionCompanyModel
 import com.roland.android.data_remote.network.model.ProductionCountryModel
 import com.roland.android.data_remote.network.model.SeasonModel
 import com.roland.android.data_remote.network.model.SeriesModel
+import com.roland.android.data_remote.network.model.VideoModel
 import com.roland.android.domain.entity.Cast
+import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.Dates
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.Genre
@@ -30,6 +33,7 @@ import com.roland.android.domain.entity.ProductionCompany
 import com.roland.android.domain.entity.ProductionCountry
 import com.roland.android.domain.entity.Season
 import com.roland.android.domain.entity.Series
+import com.roland.android.domain.entity.Video
 
 object Converters {
 
@@ -77,7 +81,9 @@ object Converters {
 		detailsModel.tagline,
 		detailsModel.tvName,
 		detailsModel.firstAirDate,
-		detailsModel.originalCountry
+		detailsModel.originalCountry,
+		detailsModel.videos.results.map { convertToVideo(it) },
+		convertToMovieCredits(detailsModel.credits)
 	)
 
 	fun convertToShowDetails(seriesModel: SeriesModel) = Series(
@@ -109,7 +115,9 @@ object Converters {
 		seriesModel.tagline,
 		seriesModel.type,
 		seriesModel.voteAverage,
-		seriesModel.voteCount
+		seriesModel.voteCount,
+		seriesModel.videos.results.map { convertToVideo(it) },
+		convertToMovieCredits(seriesModel.credits)
 	)
 
 	fun convertToSeason(seasonModel: SeasonModel) = Season(
@@ -140,23 +148,22 @@ object Converters {
 	)
 
 	fun convertToMovieCredits(creditsModel: MovieCreditsModel) = MovieCredits(
-		creditsModel.id,
-		creditsModel.casts.map { convertToCast(it) }
+		creditsModel.cast.map { convertToCast(it) }
 	)
 
-	fun convertToCast(castModel: CastModel) = Cast(
-		castModel.id,
-		castModel.name,
-		castModel.gender,
-		castModel.knownForDepartment,
-		castModel.profilePath,
-		castModel.popularity,
-		castModel.moviesActed.map { convertToMovie(it) },
-		castModel.adult,
-		castModel.alsoKnownAs,
-		castModel.biography,
-		castModel.birthDay,
-		castModel.deathDay
+	fun convertToCastDetails(castDetailsModel: CastDetailsModel) = CastDetails(
+		castDetailsModel.id,
+		castDetailsModel.name,
+		castDetailsModel.gender,
+		castDetailsModel.knownForDepartment,
+		castDetailsModel.profilePath,
+		castDetailsModel.popularity,
+		castDetailsModel.moviesActed.map { convertToMovie(it) },
+		castDetailsModel.adult,
+		castDetailsModel.alsoKnownAs,
+		castDetailsModel.biography,
+		castDetailsModel.birthDay,
+		castDetailsModel.deathDay
 	)
 
 	fun convertToGenreList(genreListModel: GenreListModel) = GenreList(
@@ -209,6 +216,27 @@ object Converters {
 			multiModel.originCountry
 		)
 	}
+
+	private fun convertToCast(castModel: CastModel) = Cast(
+		castModel.id,
+		castModel.name,
+		castModel.profilePath,
+		castModel.character,
+		castModel.castId,
+		castModel.creditId,
+		castModel.order
+	)
+
+	private fun convertToVideo(videoModel: VideoModel) = Video(
+		videoModel.id,
+		videoModel.name,
+		videoModel.key,
+		videoModel.publishedAt,
+		videoModel.site,
+		videoModel.size,
+		videoModel.type,
+		videoModel.official
+	)
 
 	private fun convertToDates(datesModel: DatesModel?) = Dates(
 		datesModel?.maximum ?: "",

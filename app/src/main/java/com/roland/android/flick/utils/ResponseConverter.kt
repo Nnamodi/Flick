@@ -79,10 +79,9 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					MovieDetailsModel(
-						result.data.recommendedMovies.refactor(),
-						result.data.similarMovies.refactor(),
 						result.data.movieDetails,
-						result.data.movieCasts
+						result.data.recommendedMovies.refactor(),
+						result.data.similarMovies.refactor()
 					)
 				)
 			}
@@ -199,10 +198,9 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					TvShowDetailsModel(
-						result.data.recommendedShows.refactor(),
-						result.data.similarShows.refactor(),
 						result.data.showDetails,
-						result.data.showCasts
+						result.data.recommendedShows.refactor(),
+						result.data.similarShows.refactor()
 					)
 				)
 			}

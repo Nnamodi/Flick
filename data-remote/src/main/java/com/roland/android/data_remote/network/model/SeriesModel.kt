@@ -60,5 +60,9 @@ data class SeriesModel(
 	@Json(name = "vote_average")
 	val voteAverage: Double = 0.0,
 	@Json(name = "vote_count")
-	val voteCount: Int = 0
+	val voteCount: Int = 0,
+	@Json(name = "videos")
+	val videos: VideoListModel = VideoListModel(),
+	@Json(name = "credits")
+	val credits: MovieCreditsModel = MovieCreditsModel()
 )

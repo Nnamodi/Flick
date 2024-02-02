@@ -1,6 +1,6 @@
 package com.roland.android.domain.usecase
 
-import com.roland.android.domain.entity.Cast
+import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.repository.CastRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,6 +18,6 @@ class GetCastDetailsUseCase @Inject constructor(
 
 	data class Request(val personId: Int) : UseCase.Request
 
-	data class Response(val cast: Cast) : UseCase.Response
+	data class Response(val cast: CastDetails) : UseCase.Response
 
 }

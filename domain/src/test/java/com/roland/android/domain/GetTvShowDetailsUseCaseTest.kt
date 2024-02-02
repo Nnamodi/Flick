@@ -23,7 +23,7 @@ class GetTvShowDetailsUseCaseTest {
 
 	private val tvShowRepository = mock<TvShowRepository>()
 	private val castRepository = mock<CastRepository>()
-	private val tvShowDetailsUseCase = GetTvShowDetailsUseCase(mock(), tvShowRepository, castRepository)
+	private val tvShowDetailsUseCase = GetTvShowDetailsUseCase(mock(), tvShowRepository)
 	private val seasonDetailsUseCase = GetSeasonDetailsUseCase(mock(), tvShowRepository, castRepository)
 
 	@OptIn(ExperimentalCoroutinesApi::class)
@@ -32,15 +32,13 @@ class GetTvShowDetailsUseCaseTest {
 		whenever(tvShowRepository.fetchRecommendedTvShows(0)).thenReturn(flowOf(recommendedShows))
 		whenever(tvShowRepository.fetchSimilarTvShows(0)).thenReturn(flowOf(similarShows))
 		whenever(tvShowRepository.fetchTvShowDetails(0)).thenReturn(flowOf(showDetails))
-		whenever(castRepository.fetchMovieCasts(0)).thenReturn(flowOf(movieCredits))
 
 		val response = tvShowDetailsUseCase.process(GetTvShowDetailsUseCase.Request(0)).first()
 		assertEquals(
 			GetTvShowDetailsUseCase.Response(
-				recommendedShows,
-				similarShows,
 				showDetails,
-				movieCredits
+				recommendedShows,
+				similarShows
 			),
 			response
 		)

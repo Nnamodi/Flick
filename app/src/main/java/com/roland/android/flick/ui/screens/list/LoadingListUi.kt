@@ -1,7 +1,7 @@
 package com.roland.android.flick.ui.screens.list
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -16,6 +16,9 @@ import androidx.compose.ui.unit.dp
 import com.roland.android.flick.ui.components.ChipSet
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.MediumBoxItem
+import com.roland.android.flick.utils.PosterContainer
+import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.rememberWindowSize
 
 @Composable
 fun LoadingListUi(
@@ -24,17 +27,23 @@ fun LoadingListUi(
 	isLoading: Boolean,
 	isSearchScreen: Boolean = false
 ) {
-	Column(Modifier.padding(paddingValues)) {
+	val windowSize = rememberWindowSize()
+	val dynamicGridSize = if (windowSize.width == WindowType.Landscape) 150.dp else 120.dp
+	val chipModifier = if (windowSize.width == WindowType.Portrait) {
+		Modifier.fillMaxWidth()
+	} else Modifier.fillMaxHeight()
+
+	PosterContainer(Modifier.padding(paddingValues)) {
 		if (isSearchScreen) {
 			ChipSet(
-				modifier = Modifier.fillMaxWidth(),
+				modifier = chipModifier,
 				selectedCategory = null,
 				onValueChanged = {}
 			)
 		}
 
 		LazyVerticalGrid(
-			columns = GridCells.Adaptive(120.dp),
+			columns = GridCells.Adaptive(dynamicGridSize),
 			modifier = Modifier.padding(horizontal = 6.dp),
 			state = scrollState,
 			contentPadding = PaddingValues(bottom = 78.dp)

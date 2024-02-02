@@ -65,7 +65,26 @@ object SampleData {
 	val animeCollections = PagingData.from(listOf(movie1, movie3)).refactor()
 	val recommendedMovies = PagingData.from(listOf(movie4)).refactor()
 	val similarMovies = PagingData.from(listOf(movie2, movie3, movie4)).refactor()
-	val movieDetails = MovieDetails(id = 2, title = movie1.title)
+	val movieDetails = MovieDetails(
+		id = 2,
+		title = movie5.title,
+		overview = movie5.overview,
+		genres = listOf(
+			Genre(11, "Action"),
+			Genre(16, "Animation"),
+			Genre(5, "Comedy"),
+			Genre(15, "Drama")
+		),
+		voteAverage = movie5.voteAverage,
+		releaseDate = movie5.releaseDate,
+		credits = MovieCredits(
+			cast = listOf(
+				Cast(name = "Jack Jones", character = "Red"),
+				Cast(name = "Downey Furry", character = "Pioneer"),
+				Cast(name = "William Tarnish", character = "Aram")
+			)
+		)
+	)
 
 	// TvShows
 	private val show1 = Movie(id = 0, title = "The Blacklist")
@@ -95,7 +114,13 @@ object SampleData {
 		Genre(24, "Adventure"),
 		Genre(7, "Thriller")
 	))
-	val movieCredits = MovieCredits(casts = listOf(Cast(name = "Jack"), Cast(name = "Downey"), Cast(name = "William")))
-	val movieCast = movieCredits.casts[0]
+	private val movieCredits = MovieCredits(
+		cast = listOf(
+			Cast(name = "Jack Jones", character = "Red"),
+			Cast(name = "Downey Furry", character = "Pioneer"),
+			Cast(name = "William Tarnish", character = "Aram")
+		)
+	)
+	val movieCast = movieCredits.cast[0]
 
 }

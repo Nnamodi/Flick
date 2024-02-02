@@ -1,6 +1,6 @@
 package com.roland.android.data_remote.network.service
 
-import com.roland.android.data_remote.network.model.CastModel
+import com.roland.android.data_remote.network.model.CastDetailsModel
 import com.roland.android.data_remote.network.model.MovieCreditsModel
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -18,6 +18,6 @@ interface CastService {
 	suspend fun fetchCastDetails(
 		@Path("person_id") personId: Int,
 		@Query("language") language: String = "en_US"
-	): CastModel
+	): CastDetailsModel
 
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,6 +36,8 @@ import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.ROUNDED_EDGE
 import com.roland.android.flick.utils.Constants.SERIES
+import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.rememberWindowSize
 
 @Composable
 fun ToggleButton(
@@ -114,22 +117,42 @@ fun ChipSet(
 	chips: Array<Chips> = Chips.values(),
 	onValueChanged: (SearchCategory) -> Unit
 ) {
-	Row(
-		modifier = modifier,
-		horizontalArrangement = Arrangement.SpaceAround
-	) {
-		chips.forEach { chip ->
-			AssistChip(
-				onClick = { onValueChanged(chip.category) },
-				label = {
-					Text(stringResource(chip.labelRes))
-				},
-				colors = AssistChipDefaults.assistChipColors(
-					containerColor = rememberContainerColor(selectedCategory == chip.category),
-					labelColor = rememberLabelColor(selectedCategory == chip.category)
-				)
+	val windowSize = rememberWindowSize()
+	val chipSet: @Composable () -> Unit = {
+		AssistChipSet(chips, onValueChanged, selectedCategory)
+	}
+
+	if (windowSize.width == WindowType.Landscape) {
+		Column(
+			modifier = modifier,
+			verticalArrangement = Arrangement.SpaceAround,
+			horizontalAlignment = Alignment.CenterHorizontally
+		) { chipSet() }
+	} else {
+		Row(
+			modifier = modifier,
+			horizontalArrangement = Arrangement.SpaceAround
+		) { chipSet() }
+	}
+}
+
+@Composable
+private fun AssistChipSet(
+	chips: Array<Chips>,
+	onValueChanged: (SearchCategory) -> Unit,
+	selectedCategory: SearchCategory?,
+) {
+	chips.forEach { chip ->
+		AssistChip(
+			onClick = { onValueChanged(chip.category) },
+			label = {
+				Text(stringResource(chip.labelRes))
+			},
+			colors = AssistChipDefaults.assistChipColors(
+				containerColor = rememberContainerColor(selectedCategory == chip.category),
+				labelColor = rememberLabelColor(selectedCategory == chip.category)
 			)
-		}
+		)
 	}
 }
 

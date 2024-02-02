@@ -1,7 +1,7 @@
 package com.roland.android.flick.ui.screens.search
 
 import android.util.Log
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -37,6 +37,9 @@ import com.roland.android.flick.ui.screens.search.SearchCategory.MOVIES
 import com.roland.android.flick.ui.screens.search.SearchCategory.TV_SHOWS
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
+import com.roland.android.flick.utils.PosterContainer
+import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.launch
 
 @Composable
@@ -103,10 +106,14 @@ fun SearchScreen(
 				MOVIES -> data.movies
 				TV_SHOWS -> data.tvShows
 			}.collectAsLazyPagingItems()
+			val windowSize = rememberWindowSize()
+			val chipModifier = if (windowSize.width == WindowType.Portrait) {
+				Modifier.fillMaxWidth()
+			} else Modifier.fillMaxHeight()
 
-			Column(Modifier.padding(paddingValues)) {
+			PosterContainer(Modifier.padding(paddingValues)) {
 				ChipSet(
-					modifier = Modifier.fillMaxWidth(),
+					modifier = chipModifier,
 					selectedCategory = searchCategory,
 					onValueChanged = { action(SearchActions.ToggleCategory(it)) }
 				)

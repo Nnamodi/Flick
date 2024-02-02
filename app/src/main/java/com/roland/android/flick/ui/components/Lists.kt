@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -38,8 +39,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
-import com.roland.android.flick.utils.Constants
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
+import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
 import com.roland.android.flick.utils.Extensions.appendStateUi
 import com.roland.android.flick.utils.Extensions.loadStateUi
 import com.roland.android.flick.utils.Extensions.refine
@@ -58,13 +59,15 @@ fun MovieLists(
 	error: @Composable (String?) -> Unit
 ) {
 	val showEmptyList = remember { mutableStateOf(false) }
+	val windowSize = rememberWindowSize()
+	val dynamicGridSize = if (windowSize.width == WindowType.Landscape) 150.dp else 120.dp
 
 	if (showEmptyList.value) { EmptyList() }
 
 	if (!searchQueryEntered) { NothingSearched() }
 
 	LazyVerticalGrid(
-		columns = GridCells.Adaptive(120.dp),
+		columns = GridCells.Adaptive(dynamicGridSize),
 		modifier = Modifier
 			.padding(paddingValues)
 			.padding(horizontal = 6.dp),
@@ -77,7 +80,7 @@ fun MovieLists(
 					movie = movie,
 					modifier = Modifier
 						.padding(6.dp)
-						.height(Constants.POSTER_HEIGHT_MEDIUM),
+						.height(POSTER_HEIGHT_MEDIUM),
 					onClick = onItemClick
 				)
 			}
@@ -193,7 +196,9 @@ private fun NothingSearched() {
 	val windowSize = rememberWindowSize()
 
 	Column(
-		modifier = Modifier.fillMaxSize(),
+		modifier = Modifier
+			.fillMaxSize()
+			.alpha(0.8f),
 		verticalArrangement = Arrangement.Center,
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {

@@ -1,10 +1,9 @@
 package com.roland.android.flick.models
 
 import androidx.paging.PagingData
-import com.roland.android.domain.entity.Cast
+import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
-import com.roland.android.domain.entity.MovieCredits
 import com.roland.android.domain.entity.MovieDetails
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -44,10 +43,9 @@ data class ComingSoonModel(
 )
 
 data class MovieDetailsModel(
+	val details: MovieDetails = MovieDetails(),
 	val recommendedMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val similarMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val movieDetails: MovieDetails = MovieDetails(),
-	val movieCasts: MovieCredits = MovieCredits()
+	val similarMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty())
 )
 
-data class CastDetailsModel(val cast: Cast = Cast())
+data class CastDetailsModel(val castDetails: CastDetails = CastDetails())

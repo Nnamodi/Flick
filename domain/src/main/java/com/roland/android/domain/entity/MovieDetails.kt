@@ -27,7 +27,9 @@ data class MovieDetails(
 	//tv-specific params
 	val tvName: String? = null,
 	val firstAirDate: String? = null,
-	val originalCountry: List<String>? = null
+	val originalCountry: List<String>? = null,
+	val videos: List<Video> = emptyList(),
+	val credits: MovieCredits = MovieCredits()
 )
 
 data class GenreList(

@@ -91,7 +91,8 @@ interface MovieService {
 	@GET("/3/movie/{movie_id}")
 	suspend fun fetchMovieDetails(
 		@Path("movie_id") movieId: Int,
-		@Query("language") language: String = "en_US"
+		@Query("language") language: String = "en_US",
+		@Query("append_to_response") appendToResponse: String = "credits,videos"
 	): MovieDetailsModel
 
 	@GET("/3/genre/movie/list")

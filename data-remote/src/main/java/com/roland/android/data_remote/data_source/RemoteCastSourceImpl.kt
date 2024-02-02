@@ -1,10 +1,10 @@
 package com.roland.android.data_remote.data_source
 
 import com.roland.android.data_remote.network.service.CastService
-import com.roland.android.data_remote.utils.Converters.convertToCast
+import com.roland.android.data_remote.utils.Converters.convertToCastDetails
 import com.roland.android.data_remote.utils.Converters.convertToMovieCredits
 import com.roland.android.data_repository.data_source.RemoteCastSource
-import com.roland.android.domain.entity.Cast
+import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.MovieCredits
 import com.roland.android.domain.entity.UseCaseException
 import kotlinx.coroutines.flow.Flow
@@ -25,10 +25,10 @@ class RemoteCastSourceImpl @Inject constructor(
 		throw UseCaseException.CastException(it)
 	}
 
-	override fun fetchCastDetails(personId: Int): Flow<Cast> = flow {
+	override fun fetchCastDetails(personId: Int): Flow<CastDetails> = flow {
 		emit(castService.fetchCastDetails(personId))
-	}.map { castModel ->
-		convertToCast(castModel)
+	}.map { castDetailsModel ->
+		convertToCastDetails(castDetailsModel)
 	}.catch {
 		throw UseCaseException.CastException(it)
 	}

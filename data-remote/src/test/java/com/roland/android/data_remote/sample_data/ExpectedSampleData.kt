@@ -2,6 +2,7 @@ package com.roland.android.data_remote.sample_data
 
 import androidx.paging.PagingData
 import com.roland.android.domain.entity.Cast
+import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.GenreList
@@ -51,7 +52,7 @@ object ExpectedSampleData {
 
 	// Other
 	val genreList = GenreList(listOf(Genre(name = "Action"), Genre(name = "Animation"), Genre(name = "Comedy")))
-	val movieCredits = MovieCredits(casts = listOf(Cast(name = "Jack"), Cast(name = "Downey"), Cast(name = "William")))
-	val movieCast = movieCredits.casts[0]
+	val movieCredits = MovieCredits(cast = listOf(Cast(name = "Jack"), Cast(name = "Downey"), Cast(name = "William")))
+	val movieCast = CastDetails(name = "Jack", moviesActed = listOf(movie1, movie2, movie3))
 
 }

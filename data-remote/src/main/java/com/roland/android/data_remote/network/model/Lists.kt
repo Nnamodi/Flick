@@ -27,10 +27,13 @@ data class MultiListModel(
 )
 
 data class MovieCreditsModel(
-	@Json(name = "id")
-	val id: Int = 0,
-	@Json(name = "casts")
-	val casts: List<CastModel> = emptyList()
+	@Json(name = "cast")
+	val cast: List<CastModel> = emptyList()
+)
+
+data class VideoListModel(
+	@Json(name = "results")
+	val results: List<VideoModel> = emptyList()
 )
 
 data class DatesModel(

@@ -55,7 +55,11 @@ data class MovieDetailsModel(
 	@Json(name = "first_air_date")
 	val firstAirDate: String? = null,
 	@Json(name = "original_country")
-	val originalCountry: List<String>? = null
+	val originalCountry: List<String>? = null,
+	@Json(name = "videos")
+	val videos: VideoListModel = VideoListModel(),
+	@Json(name = "credits")
+	val credits: MovieCreditsModel = MovieCreditsModel()
 )
 
 data class GenreListModel(
