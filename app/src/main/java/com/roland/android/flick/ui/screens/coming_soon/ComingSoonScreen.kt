@@ -46,6 +46,7 @@ import com.roland.android.flick.state.ComingSoonUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.ComingSoonTopBar
 import com.roland.android.flick.ui.components.PosterType
+import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.MOVIES
@@ -65,6 +66,7 @@ import kotlinx.coroutines.launch
 fun ComingSoonScreen(
 	uiState: ComingSoonUiState,
 	action: (ComingSoonActions) -> Unit,
+	navigate: (Screens) -> Unit,
 	inFullScreen: (Boolean) -> Unit
 ) {
 	val (movieData, selectedCategory) = uiState
@@ -187,7 +189,7 @@ fun ComingSoonScreen(
 										)
 									} else itemExpanded(true)
 								},
-								viewMore = {}
+								viewMore = navigate
 							) { itemExpanded(false) }
 						}
 					}
@@ -220,6 +222,11 @@ private fun ComingSoonScreenPreview() {
 		val movieData = State.Success(
 			ComingSoonModel(upcomingMovies, showsSoonToAir, genreList, genreList)
 		)
-		ComingSoonScreen(ComingSoonUiState(movieData), {}) {}
+		ComingSoonScreen(
+			uiState = ComingSoonUiState(movieData),
+			action = {},
+			navigate = {},
+			inFullScreen = {}
+		)
 	}
 }

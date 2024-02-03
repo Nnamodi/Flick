@@ -11,10 +11,10 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W500
+import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W780
 import com.roland.android.flick.utils.Constants.SCREEN_HEIGHT_DIVISOR
 import com.roland.android.flick.utils.Constants.SCREEN_WIDTH_DIVISOR
-import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W500
-import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W780
 
 data class WindowSize(
 	val width: WindowType,
@@ -94,9 +94,9 @@ fun String?.getPoster(isBackdrop: Boolean = false): String {
 	return buildString {
 		append(
 			when {
-				isBackdrop -> TMDB_POSTER_IMAGE_BASE_URL_W780
-				windowSize.width == WindowType.Portrait -> TMDB_POSTER_IMAGE_BASE_URL_W500
-				else -> TMDB_POSTER_IMAGE_BASE_URL_W780
+				isBackdrop -> MOVIE_IMAGE_BASE_URL_W780
+				windowSize.width == WindowType.Portrait -> MOVIE_IMAGE_BASE_URL_W500
+				else -> MOVIE_IMAGE_BASE_URL_W780
 			}
 		)
 		append(this@getPoster)

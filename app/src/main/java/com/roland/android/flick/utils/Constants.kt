@@ -4,9 +4,10 @@ import androidx.compose.ui.unit.dp
 
 object Constants {
 
-	const val TMDB_POSTER_IMAGE_BASE_URL_W342 = "https://image.tmdb.org/t/p/w342"
-	const val TMDB_POSTER_IMAGE_BASE_URL_W500 = "https://image.tmdb.org/t/p/w500"
-	const val TMDB_POSTER_IMAGE_BASE_URL_W780 = "https://image.tmdb.org/t/p/w780"
+	const val MOVIE_IMAGE_BASE_URL_W342 = "https://image.tmdb.org/t/p/w342"
+	const val MOVIE_IMAGE_BASE_URL_W500 = "https://image.tmdb.org/t/p/w500"
+	const val MOVIE_IMAGE_BASE_URL_W780 = "https://image.tmdb.org/t/p/w780"
+	const val CAST_IMAGE_BASE_URL_W185 = "https://image.tmdb.org/t/p/w185" // 342
 
 	const val MOVIES = "movies"
 	const val SERIES = "series"

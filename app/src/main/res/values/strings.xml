@@ -37,4 +37,11 @@
     <string name="home">Home</string>
     <string name="coming_soon">Coming Soon</string>
     <string name="date_to_release">Releases %s</string>
+    <string name="number_of_seasons">%d Seasons</string>
+    <string name="add">My List</string>
+    <string name="favorite">Favorite</string>
+    <string name="share">Share</string>
+    <string name="casts">Casts</string>
+    <string name="recommended">Recommended</string>
+    <string name="similar">Similar</string>
 </resources>

@@ -35,6 +35,7 @@ fun NavGraphBuilder.startScreensRoute(
 			ComingSoonScreen(
 				uiState = comingSoonViewModel.comingSoonUiState,
 				action = comingSoonViewModel::comingSoonActions,
+				navigate = navActions::navigate,
 				inFullScreen = inFullScreen
 			)
 		}

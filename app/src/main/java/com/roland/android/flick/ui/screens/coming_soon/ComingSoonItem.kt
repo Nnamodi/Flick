@@ -71,6 +71,7 @@ import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.PosterType.BackdropPoster
 import com.roland.android.flick.ui.components.PosterType.ComingSoon
 import com.roland.android.flick.ui.components.RatingBar
+import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonItemState.Default
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonItemState.Expanded
 import com.roland.android.flick.ui.theme.FlickTheme
@@ -98,7 +99,7 @@ fun ComingSoonItem(
 	maxHeight: Dp,
 	maxWidth: Dp,
 	onExpand: () -> Unit,
-	viewMore: (Int) -> Unit,
+	viewMore: (Screens) -> Unit,
 	minimize: () -> Unit
 ) {
 	val windowSize = rememberWindowSize()
@@ -238,7 +239,7 @@ fun ItemDetails(
 	movie: Movie,
 	genreList: GenreList,
 	inBottomSheet: Boolean = false,
-	viewMore: (Int) -> Unit
+	viewMore: (Screens) -> Unit
 ) {
 	Column {
 		Text(
@@ -289,8 +290,10 @@ fun ItemDetails(
 					)
 				}
 			}
+			val isMovie = movie.title != null
+			val navInfo = Screens.MovieDetailsScreen(isMovie, movie.id)
 			Button(
-				onClick = { viewMore(movie.id) },
+				onClick = { viewMore(navInfo) },
 				modifier = if (inBottomSheet) Modifier.fillMaxWidth() else Modifier
 			) {
 				Text(

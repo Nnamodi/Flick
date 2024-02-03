@@ -12,12 +12,15 @@ import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.flick.state.MovieDetailsUiState
 import com.roland.android.flick.utils.ResponseConverter
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MovieDetailsViewModel(
+@HiltViewModel
+class MovieDetailsViewModel @Inject constructor(
 	private val movieDetailsUseCase: GetMovieDetailsUseCase,
 	private val tvShowDetailsUseCase: GetTvShowDetailsUseCase,
 	private val seasonDetailsUseCase: GetSeasonDetailsUseCase,
@@ -37,6 +40,7 @@ class MovieDetailsViewModel(
 	}
 
 	fun detailsRequest(action: DetailsRequest) {
+		Log.i("NavigationInfo", "Action: $action")
 		when (action) {
 			is DetailsRequest.GetMovieDetails -> getMovieDetails(action.movieId)
 			is DetailsRequest.GetTvShowDetails -> getTvShowDetails(action.seriesId)

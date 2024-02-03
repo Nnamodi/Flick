@@ -1,18 +1,14 @@
 package com.roland.android.flick.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.StarRate
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,17 +26,18 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.AsyncImagePainter.State.Empty
+import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.ui.components.PosterType.BackdropPoster
 import com.roland.android.flick.ui.components.PosterType.FullScreen
 import com.roland.android.flick.ui.components.PosterType.Large
+import com.roland.android.flick.utils.Constants.CAST_IMAGE_BASE_URL_W185
+import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W342
+import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W780
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
-import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W342
-import com.roland.android.flick.utils.Constants.TMDB_POSTER_IMAGE_BASE_URL_W780
-import com.roland.android.flick.utils.Extensions.roundOff
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.bounceClickable
 import com.roland.android.flick.utils.dynamicPageSize
@@ -55,7 +52,7 @@ fun ExpandedComingSoonPoster(
 	posterType: PosterType = BackdropPoster
 ) {
 	Poster(
-		model = TMDB_POSTER_IMAGE_BASE_URL_W780 + movie.backdropPath,
+		model = MOVIE_IMAGE_BASE_URL_W780 + movie.backdropPath,
 		contentDescription = null,
 		voteAverage = movie.voteAverage,
 		modifier = modifier.fillMaxWidth(),
@@ -70,11 +67,25 @@ fun ItemBackdropPoster(
 	posterType: PosterType = BackdropPoster
 ) {
 	Poster(
-		model = TMDB_POSTER_IMAGE_BASE_URL_W780 + movie.backdropPath,
+		model = MOVIE_IMAGE_BASE_URL_W780 + movie.backdropPath,
 		contentDescription = null,
 		voteAverage = movie.voteAverage,
 		modifier = modifier.fillMaxWidth(),
 		posterType = posterType
+	) {}
+}
+
+@Composable
+fun MovieDetailsPoster(
+	backdropPath: String,
+	modifier: Modifier = Modifier
+) {
+	Poster(
+		model = MOVIE_IMAGE_BASE_URL_W780 + backdropPath,
+		contentDescription = null,
+		voteAverage = 0.0,
+		modifier = modifier.fillMaxWidth(),
+		posterType = FullScreen
 	) {}
 }
 
@@ -134,7 +145,7 @@ fun MediumItemPoster(
 	onClick: (Movie) -> Unit
 ) {
 	Poster(
-		model = TMDB_POSTER_IMAGE_BASE_URL_W342 + movie.posterPath,
+		model = MOVIE_IMAGE_BASE_URL_W342 + movie.posterPath,
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
 		modifier = modifier.size(POSTER_WIDTH_MEDIUM, POSTER_HEIGHT_MEDIUM),
@@ -149,7 +160,7 @@ fun SmallItemPoster(
 	onClick: (Movie) -> Unit
 ) {
 	Poster(
-		model = TMDB_POSTER_IMAGE_BASE_URL_W342 + movie.posterPath,
+		model = MOVIE_IMAGE_BASE_URL_W342 + movie.posterPath,
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
 		modifier = modifier.size(POSTER_WIDTH_MEDIUM, 180.dp)
@@ -208,40 +219,31 @@ private fun Poster(
 }
 
 @Composable
-fun RatingBar(
-	posterType: PosterType,
-	voteAverage: Double,
+fun CastPoster(
+	cast: Cast,
+	modifier: Modifier = Modifier
 ) {
-	Row {
-		Spacer(Modifier.weight(1f))
-		Row(
-			modifier = Modifier
-				.padding(6.dp)
-				.clip(MaterialTheme.shapes.large)
-				.background(Color.Black.copy(alpha = 0.5f)),
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			val posterIsVeryLarge = posterType == BackdropPoster || posterType == FullScreen
-			if (posterIsVeryLarge) {
-				Icon(
-					imageVector = Icons.Rounded.StarRate,
-					contentDescription = null,
-					modifier = Modifier.padding(start = 8.dp, top = 2.dp, bottom = 2.dp),
-					tint = MaterialTheme.colorScheme.surfaceTint
-				)
-			}
-			Text(
-				text = voteAverage.roundOff(),
-				modifier = Modifier.padding(
-					start = if (posterIsVeryLarge) 4.dp else 10.dp,
-					top = 2.dp,
-					end = 10.dp,
-					bottom = 2.dp
-				),
-				color = Color.White,
-				fontSize = if (posterType == Large) 16.sp else 14.sp
+	val state = remember { mutableStateOf<AsyncImagePainter.State>(Empty) }
+
+	Box(
+		modifier = modifier
+			.size(90.dp)
+			.clip(CircleShape)
+			.border(
+				width = 2.dp,
+				color = MaterialTheme.colorScheme.surfaceTint,
+				shape = CircleShape
 			)
-		}
+	) {
+		AsyncImage(
+			model = CAST_IMAGE_BASE_URL_W185 + cast.profilePath,
+			contentDescription = cast.name,
+			modifier = Modifier
+				.fillMaxSize()
+				.painterPlaceholder(state.value),
+			onState = { state.value = it },
+			contentScale = ContentScale.Crop
+		)
 	}
 }
 
@@ -252,29 +254,4 @@ enum class PosterType {
 	ComingSoon,
 	BackdropPoster,
 	FullScreen
-}
-
-@Composable
-fun Header(
-	header: String,
-	modifier: Modifier = Modifier
-) {
-	Row(
-		modifier = modifier,
-		verticalAlignment = Alignment.CenterVertically
-	) {
-		Divider(
-			modifier = Modifier
-				.padding(vertical = 8.dp)
-				.size(4.dp, 18.dp)
-				.clip(MaterialTheme.shapes.medium),
-			color = MaterialTheme.colorScheme.surfaceTint
-		)
-		Text(
-			text = header,
-			modifier = Modifier.padding(start = 4.dp),
-			fontWeight = FontWeight.Bold,
-			fontSize = 16.sp
-		)
-	}
 }

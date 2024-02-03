@@ -80,7 +80,7 @@ fun ComingSoonTopBar(
 		label = "top bar animation"
 	) { itemExpanded ->
 		if (itemExpanded) {
-			MovieListTopBar(null) { minimize() }
+			MovieDetailsTopBar { minimize() }
 		} else {
 			MinimizedComingSoonTopBar(selectedCategory, action)
 		}
@@ -117,11 +117,11 @@ private fun MinimizedComingSoonTopBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieListTopBar(
-	title: String?,
+	title: String,
 	navigateUp: (Screens) -> Unit
 ) {
 	TopAppBar(
-		title = { title?.let { Text(it) } },
+		title = { Text(title) },
 		navigationIcon = {
 			IconButton(onClick = { navigateUp(Screens.Back) }) {
 				Icon(Icons.Rounded.ArrowBackIos, stringResource(R.string.back))
@@ -201,9 +201,14 @@ fun SearchTopBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieDetailsTopBar() {
+fun MovieDetailsTopBar(navigateUp: (Screens) -> Unit) {
 	TopAppBar(
 		title = {},
+		navigationIcon = {
+			IconButton(onClick = { navigateUp(Screens.Back) }) {
+				Icon(Icons.Rounded.ArrowBackIos, stringResource(R.string.back))
+			}
+		},
 		colors = TopAppBarDefaults.topAppBarColors(Color.Transparent)
 	)
 }

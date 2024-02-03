@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
@@ -120,10 +121,15 @@ fun MovieLists(
 fun HorizontalPosters(
 	pagingData: MutableStateFlow<PagingData<Movie>>,
 	header: String,
+	header2: String? = null,
+	selectedHeader: Int = 0,
+	onHeaderClick: (Int) -> Unit = {},
 	onItemClick: (Movie) -> Unit,
 	seeMore: () -> Unit
 ) {
 	val movieList = pagingData.collectAsLazyPagingItems()
+	val listState = rememberLazyListState()
+	val listState2 = rememberLazyListState()
 
 	Column(
 		modifier = Modifier
@@ -136,9 +142,14 @@ fun HorizontalPosters(
 				.padding(PADDING_WIDTH),
 			verticalAlignment = Alignment.CenterVertically
 		) {
-			Header(header)
+			Header(
+				header = header,
+				header2 = header2,
+				selectedHeader = selectedHeader,
+				onHeaderClick = onHeaderClick
+			)
 			Spacer(Modifier.weight(1f))
-			if (movieList.loadState.refresh is LoadState.NotLoading) {
+			if ((header2 == null) && (movieList.loadState.refresh is LoadState.NotLoading)) {
 				Text(
 					text = stringResource(R.string.more),
 					modifier = Modifier
@@ -150,6 +161,7 @@ fun HorizontalPosters(
 			}
 		}
 		LazyRow(
+			state = if (selectedHeader == 2) listState2 else listState,
 			contentPadding = PaddingValues(
 				start = PADDING_WIDTH,
 				end = PADDING_WIDTH - 12.dp

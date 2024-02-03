@@ -141,7 +141,7 @@ fun SearchScreen(
 				MovieDetailsSheet(
 					movie = clickedMovieItem.value!!,
 					genreList = if (clickedItemIsMovie) data.movieGenres else data.seriesGenres,
-					viewMore = {},
+					viewMore = navigate,
 					closeSheet = { clickedMovieItem.value = null }
 				)
 			}

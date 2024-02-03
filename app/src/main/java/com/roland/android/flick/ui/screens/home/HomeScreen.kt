@@ -259,7 +259,7 @@ fun HomeScreen(
 				MovieDetailsSheet(
 					movie = clickedMovieItem.value!!,
 					genreList = if (clickedItemIsMovie) movieData2.genres else showData2.genres,
-					viewMore = {},
+					viewMore = navigate,
 					closeSheet = { clickedMovieItem.value = null }
 				)
 			}

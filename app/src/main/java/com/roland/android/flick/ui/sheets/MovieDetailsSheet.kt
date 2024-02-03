@@ -27,6 +27,7 @@ import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.models.SampleData.genreList
 import com.roland.android.flick.models.SampleData.movie5
 import com.roland.android.flick.ui.components.ItemBackdropPoster
+import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.coming_soon.ItemDetails
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
@@ -39,7 +40,7 @@ import com.roland.android.flick.utils.rememberWindowSize
 fun MovieDetailsSheet(
 	movie: Movie,
 	genreList: GenreList,
-	viewMore: (Int) -> Unit,
+	viewMore: (Screens) -> Unit,
 	closeSheet: () -> Unit
 ) {
 	val sheetState = rememberModalBottomSheetState(true)
@@ -77,7 +78,7 @@ fun MovieDetailsSheet(
 				movie = movie,
 				genreList = genreList,
 				inBottomSheet = true,
-				viewMore = viewMore
+				viewMore = { closeSheet(); viewMore(it) }
 			)
 		}
 	}

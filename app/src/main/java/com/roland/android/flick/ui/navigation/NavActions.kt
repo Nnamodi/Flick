@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.navigation
 
+import android.util.Log
 import androidx.navigation.NavHostController
 
 class NavActions(private val navController: NavHostController) {
@@ -10,6 +11,7 @@ class NavActions(private val navController: NavHostController) {
 			Screens.ComingSoonScreen -> navigateToComingSoonScreen()
 			is Screens.MovieListScreen -> navigateToMovieListScreen(screen.categoryName)
 			Screens.SearchScreen -> navigateToSearchScreen()
+			is Screens.MovieDetailsScreen -> navigateToMovieDetailsScreen(screen.isMovie, screen.movieId)
 			Screens.Back -> navController.navigateUp()
 		}
 	}
@@ -32,6 +34,16 @@ class NavActions(private val navController: NavHostController) {
 		navController.navigate(AppRoute.SearchScreen.route)
 	}
 
+	private fun navigateToMovieDetailsScreen(
+		isMovie: Boolean,
+		movieId: Int
+	) {
+		navController.navigate(
+			AppRoute.MovieDetailsScreen.routeWithInfo(isMovie, movieId)
+		)
+		Log.i("NavigationInfo", "isMovie: $isMovie | movieId: $movieId")
+	}
+
 }
 
 sealed class AppRoute(val route: String) {
@@ -42,6 +54,12 @@ sealed class AppRoute(val route: String) {
 		fun routeWithCategory(category: String) = String.format("movie_list_screen/%s", category)
 	}
 	object SearchScreen: AppRoute("search_screen")
+	object MovieDetailsScreen: AppRoute("movie_details_screen/{isMovie}/{movieId}") {
+		fun routeWithInfo(
+			isMovie: Boolean,
+			movieId: Int
+		) = String.format("movie_details_screen/%b/%d", isMovie, movieId)
+	}
 }
 
 sealed class Screens {
@@ -49,5 +67,9 @@ sealed class Screens {
 	object ComingSoonScreen : Screens()
 	data class MovieListScreen(val categoryName: String) : Screens()
 	object SearchScreen : Screens()
+	data class MovieDetailsScreen(
+		val isMovie: Boolean,
+		val movieId: Int
+	) : Screens()
 	object Back : Screens()
 }
