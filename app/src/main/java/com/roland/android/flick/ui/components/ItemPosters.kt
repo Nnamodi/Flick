@@ -227,7 +227,7 @@ fun CastPoster(
 
 	Box(
 		modifier = modifier
-			.size(90.dp)
+			.size(100.dp)
 			.clip(CircleShape)
 			.border(
 				width = 2.dp,

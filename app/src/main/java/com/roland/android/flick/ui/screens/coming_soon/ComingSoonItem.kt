@@ -75,9 +75,11 @@ import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonItemState.Default
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonItemState.Expanded
 import com.roland.android.flick.ui.theme.FlickTheme
+import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_X_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_X_LARGE
+import com.roland.android.flick.utils.Constants.SERIES
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.genres
 import com.roland.android.flick.utils.Extensions.releaseDateRes
@@ -103,7 +105,7 @@ fun ComingSoonItem(
 	minimize: () -> Unit
 ) {
 	val windowSize = rememberWindowSize()
-	val inPortraitMode = remember(windowSize.width) {
+	val inPortraitMode by remember(windowSize.width) {
 		derivedStateOf { windowSize.width == WindowType.Portrait }
 	}
 	val durationMillis = 1000
@@ -137,9 +139,9 @@ fun ComingSoonItem(
 		label = "poster height",
 		targetValueByState = { state ->
 			when {
-				state == Expanded && inPortraitMode.value -> maxHeight * 0.43f
-				state == Expanded && !inPortraitMode.value -> maxHeight
-				state == Default && !inPortraitMode.value -> dynamicPageHeight(POSTER_HEIGHT_X_LARGE)
+				state == Expanded && inPortraitMode -> maxHeight * 0.43f
+				state == Expanded && !inPortraitMode -> maxHeight
+				state == Default && !inPortraitMode -> dynamicPageHeight(POSTER_HEIGHT_X_LARGE)
 				else -> POSTER_HEIGHT_X_LARGE
 			}
 		}
@@ -151,9 +153,9 @@ fun ComingSoonItem(
 		label = "poster width",
 		targetValueByState = { state ->
 			when {
-				state == Expanded && inPortraitMode.value -> maxWidth
-				state == Expanded && !inPortraitMode.value -> maxWidth / 2
-				state == Default && !inPortraitMode.value -> dynamicPageWidth(POSTER_WIDTH_X_LARGE)
+				state == Expanded && inPortraitMode -> maxWidth
+				state == Expanded && !inPortraitMode -> maxWidth / 2
+				state == Default && !inPortraitMode -> dynamicPageWidth(POSTER_WIDTH_X_LARGE)
 				else -> POSTER_WIDTH_X_LARGE
 			}
 		}
@@ -166,7 +168,7 @@ fun ComingSoonItem(
 		targetValueByState = { state ->
 			when {
 				state == Expanded -> maxHeight
-				state == Default && !inPortraitMode.value -> dynamicPageHeight(POSTER_HEIGHT_X_LARGE)
+				state == Default && !inPortraitMode -> dynamicPageHeight(POSTER_HEIGHT_X_LARGE)
 				else -> POSTER_HEIGHT_X_LARGE
 			}
 		}
@@ -179,7 +181,7 @@ fun ComingSoonItem(
 		targetValueByState = { state ->
 			when {
 				state == Expanded -> maxWidth
-				state == Default && !inPortraitMode.value -> dynamicPageWidth(POSTER_WIDTH_X_LARGE)
+				state == Default && !inPortraitMode -> dynamicPageWidth(POSTER_WIDTH_X_LARGE)
 				else -> POSTER_WIDTH_X_LARGE
 			}
 		}
@@ -217,7 +219,7 @@ fun ComingSoonItem(
 					modifier = Modifier
 						.animatePagerItem(itemPage, pagerState)
 						.size(posterWidth, posterHeight)
-						.padding(end = if (!inPortraitMode.value) itemPadding else 0.dp),
+						.padding(end = if (!inPortraitMode) itemPadding else 0.dp),
 					posterType = if (targetState == Expanded) BackdropPoster else ComingSoon,
 					posterFromPager = targetState == Default,
 					onClick = { if (!itemTransition.isRunning) onExpand() }
@@ -290,8 +292,8 @@ fun ItemDetails(
 					)
 				}
 			}
-			val isMovie = movie.title != null
-			val navInfo = Screens.MovieDetailsScreen(isMovie, movie.id)
+			val movieType = if (movie.title != null) MOVIES else SERIES
+			val navInfo = Screens.MovieDetailsScreen(movieType, movie.id.toString())
 			Button(
 				onClick = { viewMore(navInfo) },
 				modifier = if (inBottomSheet) Modifier.fillMaxWidth() else Modifier

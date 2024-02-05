@@ -8,8 +8,7 @@ sealed class DetailsRequest {
 
 	data class GetSeasonDetails(
 		val seriesId: Int,
-		val seasonNumber: Int,
-		val episodeNumber: Int
+		val seasonNumber: Int
 	) : DetailsRequest()
 
 	data class GetCastDetails(val personId: Int) : DetailsRequest()

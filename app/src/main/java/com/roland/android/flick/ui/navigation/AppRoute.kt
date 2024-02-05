@@ -18,6 +18,7 @@ import com.roland.android.flick.ui.screens.list.MovieListViewModel
 import com.roland.android.flick.ui.screens.search.SearchScreen
 import com.roland.android.flick.ui.screens.search.SearchViewModel
 import com.roland.android.flick.utils.AnimationDirection
+import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.animatedComposable
 
 @Composable
@@ -67,14 +68,15 @@ fun AppRoute(
 			route = AppRoute.MovieDetailsScreen.route,
 			animationDirection = AnimationDirection.UpDown
 		) { backStackEntry ->
-			val isMovie = backStackEntry.arguments?.getBoolean("isMovie") ?: true
-			val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
+			val movieType = backStackEntry.arguments?.getString("movieType") ?: ""
+			val movieId = backStackEntry.arguments?.getString("movieId") ?: ""
+			val isMovie = movieType == MOVIES
 			LaunchedEffect(true) {
 				Log.i("NavigationInfo", "isMovie: $isMovie | movieId: $movieId")
 				movieDetailsViewModel.detailsRequest(
 					if (isMovie) {
-						DetailsRequest.GetMovieDetails(movieId)
-					} else DetailsRequest.GetTvShowDetails(movieId)
+						DetailsRequest.GetMovieDetails(movieId.toInt())
+					} else DetailsRequest.GetTvShowDetails(movieId.toInt())
 				)
 			}
 

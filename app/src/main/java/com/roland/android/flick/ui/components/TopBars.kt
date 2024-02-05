@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -201,11 +202,18 @@ fun SearchTopBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieDetailsTopBar(navigateUp: (Screens) -> Unit) {
+fun MovieDetailsTopBar(
+	enabled: Boolean = true,
+	navigateUp: (Screens) -> Unit,
+) {
 	TopAppBar(
 		title = {},
+		modifier = Modifier.alpha(if (enabled) 1f else 0.1f),
 		navigationIcon = {
-			IconButton(onClick = { navigateUp(Screens.Back) }) {
+			IconButton(
+				onClick = { navigateUp(Screens.Back) },
+				enabled = enabled
+			) {
 				Icon(Icons.Rounded.ArrowBackIos, stringResource(R.string.back))
 			}
 		},

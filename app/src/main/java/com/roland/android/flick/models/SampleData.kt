@@ -81,28 +81,61 @@ object SampleData {
 			cast = listOf(
 				Cast(name = "Jack Jones", character = "Red"),
 				Cast(name = "Downey Furry", character = "Pioneer"),
-				Cast(name = "William Tarnish", character = "Aram")
+				Cast(name = "William Tarnish", character = "Aram"),
+				Cast(name = "Theresa Shawn", character = "The man by the road side"),
+				Cast(name = "Shengupta Schofield", character = "Farmer"),
+				Cast(name = "Roland Nnam", character = "Nnamodi")
 			)
 		)
 	)
 
 	// TvShows
-	private val show1 = Movie(id = 0, title = "The Blacklist")
-	private val show2 = Movie(id = 1, title = "Silicon Valley")
-	private val show3 = Movie(id = 2, title = "Money Heist")
-	private val show4 = Movie(id = 3, title = "911")
-
-	val trendingShows = PagingData.from(listOf(show2, show3, show4)).refactor()
-	val popularShows = PagingData.from(listOf(show1, show2, show3, show4)).refactor()
-	val showsAiringToday = PagingData.from(listOf(show1, show2, show4)).refactor()
-	val topRatedShows = PagingData.from(listOf(show1, show2)).refactor()
-	val showsSoonToAir = PagingData.from(listOf(show1, show4)).refactor()
-	val bollywoodShows = PagingData.from(listOf(show1, show2, show3, show4)).refactor()
-	val animeShows = PagingData.from(listOf(show1, show3, show4)).refactor()
-	val recommendedShows = PagingData.from(listOf(show2, show3)).refactor()
-	val similarShows = PagingData.from(listOf(show2, show3, show4)).refactor()
-	val showDetails = Series(name = "24 hours")
-	val seasonDetails = Season(seasonNumber = 2)
+	val trendingShows = PagingData.from(listOf(movie2, movie3, movie4)).refactor()
+	val popularShows = PagingData.from(listOf(movie1, movie2, movie3, movie4)).refactor()
+	val showsAiringToday = PagingData.from(listOf(movie1, movie2, movie4)).refactor()
+	val topRatedShows = PagingData.from(listOf(movie1, movie2)).refactor()
+	val showsSoonToAir = PagingData.from(listOf(movie1, movie4)).refactor()
+	val bollywoodShows = PagingData.from(listOf(movie1, movie2, movie3, movie4)).refactor()
+	val animeShows = PagingData.from(listOf(movie1, movie3, movie4)).refactor()
+	val recommendedShows = PagingData.from(listOf(movie2, movie3)).refactor()
+	val similarShows = PagingData.from(listOf(movie2, movie3, movie4)).refactor()
+	val showDetails = Series(
+		id = 2,
+		name = "24 hours",
+		overview = movie5.overview,
+		firstAirDate = movie5.releaseDate ?: "",
+		genres = listOf(
+			Genre(11, "Action"),
+			Genre(24, "Adventure"),
+			Genre(5, "Comedy"),
+			Genre(15, "Drama"),
+			Genre(7, "Thriller")
+		),
+		numberOfSeasons = 16,
+		voteAverage = movie3.voteAverage,
+		credits = MovieCredits(
+			cast = listOf(
+				Cast(name = "Roland Nnam", character = "Nnamodi"),
+				Cast(name = "Theresa Shawn", character = "The man by the road side"),
+				Cast(name = "Shengupta Schofield", character = "Farmer"),
+				Cast(name = "William Tarnish", character = "Aram"),
+				Cast(name = "Downey Furry", character = "Pioneer"),
+				Cast(name = "Jack Jones", character = "Red")
+			)
+		)
+	)
+	val seasonDetails = Season(
+		seasonNumber = 3,
+		episodes = listOf(
+			Episode(id = 0, name = "Episode 1", voteAverage = 6.4),
+			Episode(id = 1, name = "Episode 2", voteAverage = 8.0),
+			Episode(id = 2, name = "Episode 3", voteAverage = 7.2),
+			Episode(id = 3, name = "Episode 4", voteAverage = 8.4),
+			Episode(id = 4, name = "Episode 5", voteAverage = 5.3),
+			Episode(id = 5, name = "Episode 6", voteAverage = 7.4),
+			Episode(id = 6, name = "Episode 7", voteAverage = 5.8)
+		)
+	)
 	val episodeDetails = Episode(episodeNumber = 1)
 
 	// Other

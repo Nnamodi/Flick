@@ -24,6 +24,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,6 +76,9 @@ fun ComingSoonScreen(
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 	val scrollState = rememberScrollState()
 	val windowSize = rememberWindowSize()
+	val inPortraitMode by remember(windowSize.width) {
+		derivedStateOf { windowSize.width == WindowType.Portrait }
+	}
 	var expanded by rememberSaveable { mutableStateOf(false) }
 	val itemExpanded: (Boolean) -> Unit = {
 		expanded = it; inFullScreen(it)
@@ -90,7 +94,7 @@ fun ComingSoonScreen(
 					Snackbar(
 						modifier = Modifier
 							.padding(16.dp)
-							.padding(bottom = if (windowSize.width == WindowType.Portrait) NavigationBarHeight else 0.dp),
+							.padding(bottom = if (inPortraitMode) NavigationBarHeight else 0.dp),
 						action = {
 							data.visuals.actionLabel?.let {
 								TextButton(
@@ -133,7 +137,7 @@ fun ComingSoonScreen(
 			)
 			val bottomPadding by animateDpAsState(
 				targetValue = when {
-					expanded || windowSize.width == WindowType.Landscape -> 0.dp
+					expanded || !inPortraitMode -> 0.dp
 					else -> NavigationBarHeight + 16.dp
 				},
 				animationSpec = tween(1000),

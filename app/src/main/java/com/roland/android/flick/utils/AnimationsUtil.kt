@@ -8,6 +8,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -49,6 +50,7 @@ fun Modifier.animatePagerItem(
 
 fun Modifier.bounceClickable(
 	enabled: Boolean = true,
+	indication: Indication? = null,
 	onClick: () -> Unit
 ): Modifier = composed {
 	val interactionSource = remember { MutableInteractionSource() }
@@ -67,7 +69,7 @@ fun Modifier.bounceClickable(
 		}
 		.clickable(
 			interactionSource = interactionSource,
-			indication = null,
+			indication = indication,
 			enabled = enabled
 		) { onClick() }
 }

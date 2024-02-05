@@ -65,69 +65,12 @@ fun <T: Any, R: Any, B: Any, S: Any>CommonScreen(
 }
 
 @Composable
-fun <T: Any, R: Any, B: Any, S: Any>CommonDetailsScreen(
-	state1: State<T>?,
-	state2: State<R>?,
-	state3: State<B>?,
-	state4: State<S>?,
-	loadingScreen: @Composable (String?) -> Unit = { LoadingScreen() },
-	castDetailsSheet: @Composable (S?) -> Unit,
-	successScreen: @Composable (T?, R?, B?) -> Unit,
-) {
-	when {
-		(state1 == null) -> {
-			loadingScreen(null)
-		}
-		state1 is State.Error -> {
-			ErrorScreen(state1.errorMessage.refine())
-		}
-		(state1 is State.Success) -> {
-			successScreen(state1.data, null, null)
-		}
-
-		(state2 == null) || (state3 == null) -> {
-			loadingScreen(null)
-		}
-		state2 is State.Error -> {
-			ErrorScreen(state2.errorMessage.refine())
-		}
-		state3 is State.Error -> {
-			ErrorScreen(state3.errorMessage.refine())
-		}
-		(state2 is State.Success) && (state3 is State.Success) -> {
-			successScreen(null, state2.data, state3.data)
-		}
-
-		(state4 == null) -> {
-			castDetailsSheet(null)
-		}
-		state4 is State.Error -> {
-			castDetailsSheet(null)
-		}
-		state4 is State.Success -> {
-			castDetailsSheet(state4.data)
-		}
-	}
-}
-
-@Composable
-private fun LoadingScreen() {
+fun LoadingScreen(errorMessage: String?) {
 	Column(
 		modifier = Modifier.fillMaxSize(),
 		verticalArrangement = Arrangement.Center,
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		Text(text = "Loading", Modifier.padding(20.dp))
-	}
-}
-
-@Composable
-private fun ErrorScreen(error: String?) {
-	Column(
-		modifier = Modifier.fillMaxSize(),
-		verticalArrangement = Arrangement.Center,
-		horizontalAlignment = Alignment.CenterHorizontally
-	) {
-		Text(text = error ?: "Error", Modifier.padding(20.dp))
+		Text(text = errorMessage ?: "Loading", Modifier.padding(20.dp))
 	}
 }

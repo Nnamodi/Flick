@@ -167,14 +167,26 @@ fun HorizontalPosters(
 				end = PADDING_WIDTH - 12.dp
 			)
 		) {
-			val movies = movieList.itemSnapshotList.take(20)
-			items(movies.size) { index ->
-				movies[index]?.let { movie ->
-					SmallItemPoster(
-						movie = movie,
-						modifier = Modifier.padding(end = 12.dp),
-						onClick = onItemClick
-					)
+			if (header2 == null) {
+				val movies = movieList.itemSnapshotList.take(20)
+				items(movies.size) { index ->
+					movies[index]?.let { movie ->
+						SmallItemPoster(
+							movie = movie,
+							modifier = Modifier.padding(end = 12.dp),
+							onClick = onItemClick
+						)
+					}
+				}
+			} else {
+				items(movieList.itemCount) { index ->
+					movieList[index]?.let { movie ->
+						SmallItemPoster(
+							movie = movie,
+							modifier = Modifier.padding(end = 12.dp),
+							onClick = onItemClick
+						)
+					}
 				}
 			}
 			item {

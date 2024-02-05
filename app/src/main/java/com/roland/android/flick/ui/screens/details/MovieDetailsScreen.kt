@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,14 +46,16 @@ import androidx.paging.PagingData
 import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails
-import com.roland.android.domain.entity.Season
 import com.roland.android.domain.entity.Series
 import com.roland.android.flick.R
-import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.MovieDetailsModel
 import com.roland.android.flick.models.SampleData.movieDetails
 import com.roland.android.flick.models.SampleData.recommendedMovies
+import com.roland.android.flick.models.SampleData.recommendedShows
+import com.roland.android.flick.models.SampleData.seasonDetails
+import com.roland.android.flick.models.SampleData.showDetails
 import com.roland.android.flick.models.SampleData.similarMovies
+import com.roland.android.flick.models.SampleData.similarShows
 import com.roland.android.flick.models.SeasonDetailsModel
 import com.roland.android.flick.models.TvShowDetailsModel
 import com.roland.android.flick.state.MovieDetailsUiState
@@ -63,7 +67,8 @@ import com.roland.android.flick.ui.components.MovieDetailsTopBar
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.RatingBar
 import com.roland.android.flick.ui.navigation.Screens
-import com.roland.android.flick.ui.screens.CommonDetailsScreen
+import com.roland.android.flick.ui.screens.CommonScreen
+import com.roland.android.flick.ui.screens.LoadingScreen
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.bounceClickable
@@ -77,48 +82,75 @@ fun MovieDetailsScreen(
 	navigate: (Screens) -> Unit
 ) {
 	val scrollState = rememberScrollState()
+	val openSeasonSelectionSheet = remember { mutableStateOf(false) }
 
 	Scaffold(
-		topBar = { MovieDetailsTopBar(navigate) }
+		topBar = { MovieDetailsTopBar(!openSeasonSelectionSheet.value) { navigate(it) } }
 	) { paddingValues ->
-		CommonDetailsScreen(
-			uiState.movieDetails, uiState.tvShowDetails,
-			uiState.seasonDetails, uiState.castDetails,
-			loadingScreen = {},
-			castDetailsSheet = {}
-		) { movie, show, seasonDetails ->
-			Column(
-				modifier = Modifier.padding(
-					bottom = paddingValues.calculateBottomPadding()
-				)
-			) {
-				val screenHeight = LocalConfiguration.current.screenWidthDp.dp
-				val backdropPath = if (isMovie) movie?.details?.backdropPath else show?.details?.backdropPath
+		CommonScreen(
+			state = if (isMovie) uiState.movieDetails else uiState.tvShowDetails,
+			loadingScreen = { LoadingScreen(it) }
+		) { details ->
+			val screenHeight = LocalConfiguration.current.screenWidthDp.dp
 
-				MovieDetailsPoster(
-					backdropPath = backdropPath ?: "",
-					modifier = Modifier.height(screenHeight * 0.6f)
-				)
-				when {
-					isMovie && movie != null -> {
-						MovieDetailsScreen(
-							movie = movie.details,
-							casts = movie.details.credits.cast,
-							recommendedMovies = movie.recommendedMovies,
-							similarMovies = movie.similarMovies,
+			if (isMovie) {
+				Column(
+					modifier = Modifier.padding(
+						bottom = paddingValues.calculateBottomPadding()
+					)
+				) {
+					val movie = details as MovieDetailsModel
+
+					MovieDetailsPoster(
+						backdropPath = movie.details.backdropPath,
+						modifier = Modifier.height(screenHeight * 0.6f)
+					)
+					MovieDetails(
+						movie = movie.details,
+						casts = movie.details.credits.cast,
+						recommendedMovies = movie.recommendedMovies,
+						similarMovies = movie.similarMovies,
+						onCastClick = {},
+						onMovieClick = {},
+						scrollState = scrollState
+					)
+				}
+			} else {
+				Box(
+					modifier = Modifier.padding(
+						bottom = paddingValues.calculateBottomPadding()
+					)
+				) {
+					val show = details as TvShowDetailsModel
+					val selectedSeasonNumber = remember { mutableIntStateOf(1) }
+
+					Column {
+						MovieDetailsPoster(
+							backdropPath = show.details.backdropPath,
+							modifier = Modifier.height(screenHeight * 0.6f)
+						)
+						MovieDetails(
+							series = show.details,
+							casts = show.details.credits.cast,
+							seasonDetails = uiState.seasonDetails,
+							recommendedMovies = show.recommendedShows,
+							similarMovies = show.similarShows,
 							onCastClick = {},
+							openSeasonSelectionSheet = { openSeasonSelectionSheet.value = true },
 							onMovieClick = {},
 							scrollState = scrollState
 						)
 					}
-					!isMovie && show != null && seasonDetails != null -> {
-						ShowDetails(
-							series = show.details,
-							casts = show.details.credits.cast,
-							recommendedMovies = show.recommendedShows,
-							similarMovies = show.similarShows,
-							seasonDetails = seasonDetails.season
-						)
+
+					SeasonSelectionSheet(
+						showSheet = openSeasonSelectionSheet.value,
+						seriesId = show.details.id,
+						selectedSeasonNumber = selectedSeasonNumber.intValue,
+						numberOfSeasons = show.details.numberOfSeasons,
+						onSeasonSelected = request
+					) { number ->
+						openSeasonSelectionSheet.value = false
+						number?.let { selectedSeasonNumber.intValue = it }
 					}
 				}
 			}
@@ -127,80 +159,33 @@ fun MovieDetailsScreen(
 }
 
 @Composable
-private fun MovieDetailsScreen(
-	movie: MovieDetails,
+private fun MovieDetails(
+	movie: MovieDetails? = null,
+	series: Series? = null,
 	casts: List<Cast>,
+	seasonDetails: State<SeasonDetailsModel>? = null,
 	recommendedMovies: MutableStateFlow<PagingData<Movie>>,
 	similarMovies: MutableStateFlow<PagingData<Movie>>,
 	onCastClick: (Int) -> Unit,
+	openSeasonSelectionSheet: () -> Unit = {},
 	onMovieClick: (Movie) -> Unit,
 	scrollState: ScrollState
 ) {
-	var expandOverview by remember { mutableStateOf(false) }
 	var selectedCategory by remember { mutableIntStateOf(1) }
 
 	Column(Modifier.verticalScroll(scrollState)) {
-		Text(
-			text = movie.title ?: "",
-			modifier = Modifier.padding(PADDING_WIDTH, 10.dp),
-			fontSize = 22.sp,
-			fontWeight = FontWeight.Bold
-		)
-		Row(
-			modifier = Modifier.padding(horizontal = PADDING_WIDTH),
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			movie.releaseDate?.let { date ->
-				Text(
-					text = date.take(4),
-					modifier = Modifier.alpha(0.8f),
-					fontSize = 12.sp,
-					fontStyle = FontStyle.Italic,
-					fontWeight = FontWeight.Light
-				)
-				DotSeparator()
-			}
-			// for series details only
-//			movie.tvName?.let {
-//				Text(
-//					text = stringResource(R.string.number_of_seasons, 2),
-//					modifier = Modifier.alpha(0.8f),
-//					fontSize = 12.sp,
-//					fontStyle = FontStyle.Italic,
-//					fontWeight = FontWeight.Light
-//				)
-//			}
-			RatingBar(
-				posterType = PosterType.BackdropPoster,
-				voteAverage = movie.voteAverage,
-				fillMaxWidth = false
-			)
-		}
-		Text(
-			text = movie.genres.joinToString(", ") { it.name },
-			modifier = Modifier
-				.padding(horizontal = PADDING_WIDTH)
-				.horizontalScroll(rememberScrollState()),
-			color = MaterialTheme.colorScheme.surfaceTint,
-			fontSize = 14.sp,
-			softWrap = false
-		)
-		Text(
-			text = movie.overview,
-			modifier = Modifier
-				.padding(14.dp)
-				.clickable(
-					interactionSource = remember { MutableInteractionSource() },
-					indication = null
-				) { expandOverview = !expandOverview },
-			overflow = TextOverflow.Ellipsis,
-			maxLines = if (expandOverview) Int.MAX_VALUE else 4
-		)
+		Details(movie, series)
 		ActionButtonsRow()
 		MovieCastList(
 			castList = casts,
 			onCastClick = onCastClick
 		)
+		series?.let {
+			SeasonDetails(
+				seasonUiState = seasonDetails,
+				openSeasonSelectionSheet = openSeasonSelectionSheet
+			)
+		}
 		HorizontalPosters(
 			pagingData = if (selectedCategory == 1) recommendedMovies else similarMovies,
 			header = stringResource(R.string.recommended),
@@ -215,13 +200,70 @@ private fun MovieDetailsScreen(
 }
 
 @Composable
-private fun ShowDetails(
-	series: Series,
-	casts: List<Cast>,
-	recommendedMovies: MutableStateFlow<PagingData<Movie>>,
-	similarMovies: MutableStateFlow<PagingData<Movie>>,
-	seasonDetails: Season
-) {}
+private fun Details(
+	movie: MovieDetails?,
+	series: Series?
+) {
+	var expandOverview by remember { mutableStateOf(false) }
+
+	Text(
+		text = movie?.title ?: series?.name ?: "",
+		modifier = Modifier.padding(PADDING_WIDTH, 10.dp),
+		fontSize = 22.sp,
+		fontWeight = FontWeight.Bold
+	)
+	Row(
+		modifier = Modifier.padding(horizontal = PADDING_WIDTH),
+		verticalAlignment = Alignment.CenterVertically
+	) {
+		(movie?.releaseDate ?: series?.firstAirDate)?.let { date ->
+			Text(
+				text = date.take(4),
+				modifier = Modifier.alpha(0.8f),
+				fontSize = 12.sp,
+				fontStyle = FontStyle.Italic,
+				fontWeight = FontWeight.Light
+			)
+			DotSeparator()
+		}
+		series?.let {
+			Text(
+				text = pluralStringResource(R.plurals.number_of_seasons, series.numberOfSeasons, series.numberOfSeasons),
+				modifier = Modifier.alpha(0.8f),
+				fontSize = 12.sp,
+				fontStyle = FontStyle.Italic,
+				fontWeight = FontWeight.Light
+			)
+			DotSeparator()
+		}
+		RatingBar(
+			posterType = PosterType.BackdropPoster,
+			voteAverage = movie?.voteAverage ?: series?.voteAverage ?: 0.0,
+			fillMaxWidth = false
+		)
+	}
+	Text(
+		text = (movie?.genres ?: series?.genres)
+			?.joinToString(", ") { it.name } ?: "",
+		modifier = Modifier
+			.padding(horizontal = PADDING_WIDTH)
+			.horizontalScroll(rememberScrollState()),
+		color = MaterialTheme.colorScheme.surfaceTint,
+		fontSize = 14.sp,
+		softWrap = false
+	)
+	Text(
+		text = movie?.overview ?: series?.overview ?: "",
+		modifier = Modifier
+			.padding(14.dp)
+			.clickable(
+				interactionSource = remember { MutableInteractionSource() },
+				indication = null
+			) { expandOverview = !expandOverview },
+		overflow = TextOverflow.Ellipsis,
+		maxLines = if (expandOverview) Int.MAX_VALUE else 4
+	)
+}
 
 @Composable
 private fun ActionButtonsRow() {
@@ -272,7 +314,7 @@ private enum class ActionButtons(
 
 @Preview(showBackground = true)
 @Composable
-fun MovieDetailsScreenPreview() {
+private fun MovieDetailsScreenPreview() {
 	FlickTheme(true) {
 		val movieDetails = State.Success(
 			MovieDetailsModel(
@@ -281,13 +323,20 @@ fun MovieDetailsScreenPreview() {
 				similarMovies
 			)
 		)
-		val tvShowDetails = State.Success(TvShowDetailsModel())
-		val seasonDetails = State.Success(SeasonDetailsModel())
-		val castDetails = State.Success(CastDetailsModel())
+		val tvShowDetails = State.Success(
+			TvShowDetailsModel(
+				showDetails,
+				recommendedShows,
+				similarShows
+			)
+		)
+		val seasonDetails = State.Success(
+			SeasonDetailsModel(seasonDetails)
+		)
 
 		MovieDetailsScreen(
-			uiState = MovieDetailsUiState(movieDetails, tvShowDetails, seasonDetails, castDetails),
-			isMovie = true,
+			uiState = MovieDetailsUiState(movieDetails, tvShowDetails, seasonDetails),
+			isMovie = false,
 			request = {}
 		) {}
 	}

@@ -44,7 +44,7 @@ class MovieDetailsViewModel @Inject constructor(
 		when (action) {
 			is DetailsRequest.GetMovieDetails -> getMovieDetails(action.movieId)
 			is DetailsRequest.GetTvShowDetails -> getTvShowDetails(action.seriesId)
-			is DetailsRequest.GetSeasonDetails -> getSeasonDetails(action.seriesId, action.seasonNumber, action.episodeNumber)
+			is DetailsRequest.GetSeasonDetails -> getSeasonDetails(action.seriesId, action.seasonNumber)
 			is DetailsRequest.GetCastDetails -> getCastDetails(action.personId)
 		}
 	}
@@ -67,12 +67,13 @@ class MovieDetailsViewModel @Inject constructor(
 					_movieDetailsUiState.update { it.copy(tvShowDetails = data) }
 				}
 		}
+		getSeasonDetails(seriesId = seriesId, seasonNumber = 1)
 	}
 
 	private fun getSeasonDetails(
 		seriesId: Int,
 		seasonNumber: Int,
-		episodeNumber: Int
+		episodeNumber: Int = 1
 	) {
 		viewModelScope.launch {
 			seasonDetailsUseCase.execute(
