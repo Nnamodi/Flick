@@ -31,6 +31,7 @@ import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.ui.components.PosterType.BackdropPoster
 import com.roland.android.flick.ui.components.PosterType.FullScreen
 import com.roland.android.flick.ui.components.PosterType.Large
+import com.roland.android.flick.ui.components.PosterType.Small
 import com.roland.android.flick.utils.Constants.CAST_IMAGE_BASE_URL_W185
 import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W780
@@ -173,7 +174,7 @@ private fun Poster(
 	contentDescription: String?,
 	voteAverage: Double,
 	modifier: Modifier = Modifier,
-	posterType: PosterType = PosterType.Small,
+	posterType: PosterType = Small,
 	posterFromPager: Boolean = false,
 	onClick: () -> Unit
 ) {
@@ -221,12 +222,12 @@ private fun Poster(
 @Composable
 fun CastPoster(
 	cast: Cast,
-	modifier: Modifier = Modifier
+	modifier: Modifier = Modifier,
+	posterType: PosterType = Small
 ) {
 	val state = remember { mutableStateOf<AsyncImagePainter.State>(Empty) }
-
-	Box(
-		modifier = modifier
+	val imageModifier = if (posterType == Small) {
+		modifier
 			.size(100.dp)
 			.clip(CircleShape)
 			.border(
@@ -234,7 +235,11 @@ fun CastPoster(
 				color = MaterialTheme.colorScheme.surfaceTint,
 				shape = CircleShape
 			)
-	) {
+	} else {
+		modifier.size(140.dp, 190.dp)
+	}
+
+	Box(modifier = imageModifier) {
 		AsyncImage(
 			model = CAST_IMAGE_BASE_URL_W185 + cast.profilePath,
 			contentDescription = cast.name,

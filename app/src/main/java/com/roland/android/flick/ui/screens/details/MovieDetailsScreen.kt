@@ -1,6 +1,7 @@
 package com.roland.android.flick.ui.screens.details
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -44,10 +45,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.PagingData
 import com.roland.android.domain.entity.Cast
+import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.Series
 import com.roland.android.flick.R
+import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.MovieDetailsModel
 import com.roland.android.flick.models.SampleData.movieDetails
 import com.roland.android.flick.models.SampleData.recommendedMovies
@@ -69,8 +72,11 @@ import com.roland.android.flick.ui.components.RatingBar
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.screens.LoadingScreen
+import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
+import com.roland.android.flick.utils.Constants.YEAR
+import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.bounceClickable
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -108,10 +114,12 @@ fun MovieDetailsScreen(
 					MovieDetails(
 						movie = movie.details,
 						casts = movie.details.credits.cast,
+						castDetails = uiState.castDetails,
 						recommendedMovies = movie.recommendedMovies,
 						similarMovies = movie.similarMovies,
-						onCastClick = {},
-						onMovieClick = {},
+						genres = arrayOf(movie.movieGenres, movie.seriesGenres),
+						castDetailsRequest = request,
+						navigate = navigate,
 						scrollState = scrollState
 					)
 				}
@@ -133,11 +141,14 @@ fun MovieDetailsScreen(
 							series = show.details,
 							casts = show.details.credits.cast,
 							seasonDetails = uiState.seasonDetails,
+							castDetails = uiState.castDetails,
 							recommendedMovies = show.recommendedShows,
 							similarMovies = show.similarShows,
-							onCastClick = {},
+							genres = arrayOf(show.movieGenres, show.seriesGenres),
+							selectedSeasonNumber = selectedSeasonNumber.intValue,
 							openSeasonSelectionSheet = { openSeasonSelectionSheet.value = true },
-							onMovieClick = {},
+							castDetailsRequest = request,
+							navigate = navigate,
 							scrollState = scrollState
 						)
 					}
@@ -164,13 +175,18 @@ private fun MovieDetails(
 	series: Series? = null,
 	casts: List<Cast>,
 	seasonDetails: State<SeasonDetailsModel>? = null,
+	castDetails: State<CastDetailsModel>? = null,
 	recommendedMovies: MutableStateFlow<PagingData<Movie>>,
 	similarMovies: MutableStateFlow<PagingData<Movie>>,
-	onCastClick: (Int) -> Unit,
+	genres: Array<GenreList>,
+	selectedSeasonNumber: Int? = null,
 	openSeasonSelectionSheet: () -> Unit = {},
-	onMovieClick: (Movie) -> Unit,
+	castDetailsRequest: (DetailsRequest) -> Unit,
+	navigate: (Screens) -> Unit,
 	scrollState: ScrollState
 ) {
+	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
+	val openCastDetailsSheet = remember { mutableStateOf(false) }
 	var selectedCategory by remember { mutableIntStateOf(1) }
 
 	Column(Modifier.verticalScroll(scrollState)) {
@@ -178,11 +194,17 @@ private fun MovieDetails(
 		ActionButtonsRow()
 		MovieCastList(
 			castList = casts,
-			onCastClick = onCastClick
+			onCastClick = {
+				val request = DetailsRequest.GetCastDetails(it)
+				castDetailsRequest(request)
+				openCastDetailsSheet.value = true
+			}
 		)
 		series?.let {
 			SeasonDetails(
 				seasonUiState = seasonDetails,
+				numberOfSeasons = it.numberOfSeasons,
+				selectedSeasonNumber = selectedSeasonNumber!!,
 				openSeasonSelectionSheet = openSeasonSelectionSheet
 			)
 		}
@@ -192,10 +214,27 @@ private fun MovieDetails(
 			header2 = stringResource(R.string.similar),
 			selectedHeader = selectedCategory,
 			onHeaderClick = { selectedCategory = it },
-			onItemClick = onMovieClick,
-			seeMore = {}
-		)
+			onItemClick = { clickedMovieItem.value = it }
+		) {}
 		Spacer(Modifier.height(50.dp))
+	}
+
+	if (clickedMovieItem.value != null) {
+		val itemIsMovie = clickedMovieItem.value!!.title != null
+
+		MovieDetailsSheet(
+			movie = clickedMovieItem.value!!,
+			genreList = if (itemIsMovie) genres[0] else genres[1],
+			viewMore = navigate,
+			closeSheet = { clickedMovieItem.value = null }
+		)
+	}
+
+	if (openCastDetailsSheet.value) {
+		CastDetailsSheet(
+			uiState = castDetails,
+			closeSheet = { openCastDetailsSheet.value = false }
+		)
 	}
 }
 
@@ -218,7 +257,7 @@ private fun Details(
 	) {
 		(movie?.releaseDate ?: series?.firstAirDate)?.let { date ->
 			Text(
-				text = date.take(4),
+				text = date.dateFormat(YEAR),
 				modifier = Modifier.alpha(0.8f),
 				fontSize = 12.sp,
 				fontStyle = FontStyle.Italic,
@@ -256,6 +295,7 @@ private fun Details(
 		text = movie?.overview ?: series?.overview ?: "",
 		modifier = Modifier
 			.padding(14.dp)
+			.animateContentSize()
 			.clickable(
 				interactionSource = remember { MutableInteractionSource() },
 				indication = null

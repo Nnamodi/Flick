@@ -14,7 +14,7 @@ data class Series(
 	val inProduction: Boolean = false,
 	val languages: List<String> = emptyList(),
 	val lastEpisodeToAir: Episode = Episode(),
-	val nextEpisodeToAir: Episode = Episode(),
+	val nextEpisodeToAir: Episode? = null,
 	val networks: List<ProductionCompany> = emptyList(),
 	val numberOfEpisodes: Int = 0,
 	val numberOfSeasons: Int = 0,

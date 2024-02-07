@@ -5,7 +5,7 @@ data class CastDetails(
 	val name: String = "",
 	val gender: Int = 0,
 	val knownForDepartment: String = "",
-	val profilePath: String = "",
+	val profilePath: String? = null,
 	val popularity: Double = 0.0,
 	val moviesActed: List<Movie> = emptyList(),
 	val adult: Boolean = false,

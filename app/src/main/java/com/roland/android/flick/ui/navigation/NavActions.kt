@@ -1,6 +1,5 @@
 package com.roland.android.flick.ui.navigation
 
-import android.util.Log
 import androidx.navigation.NavHostController
 
 class NavActions(private val navController: NavHostController) {
@@ -41,7 +40,6 @@ class NavActions(private val navController: NavHostController) {
 		navController.navigate(
 			AppRoute.MovieDetailsScreen.routeWithInfo(movieType, movieId)
 		)
-		Log.i("NavigationInfo", "isMovie: $movieType | movieId: $movieId")
 	}
 
 }

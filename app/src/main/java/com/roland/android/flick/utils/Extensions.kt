@@ -1,6 +1,5 @@
 package com.roland.android.flick.utils
 
-import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,11 +21,12 @@ import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.usecase.Category
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.PosterType
+import com.roland.android.flick.utils.Constants.DEFAULT_PATTERN
+import com.roland.android.flick.utils.Constants.RELEASE_DATE_PATTERN
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.Locale
 
 object Extensions {
@@ -53,16 +53,11 @@ object Extensions {
 		}
 	}
 
-	fun String.dateFormat(): String {
-		val formatter = SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
-		return try {
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-				val date = LocalDateTime.parse(this)
-				formatter.format(date)
-			} else this
-		} catch (e: Exception) {
-			return this
-		}
+	fun String.dateFormat(pattern: String = RELEASE_DATE_PATTERN): String {
+		val dateFormat = SimpleDateFormat(DEFAULT_PATTERN, Locale.getDefault())
+		val parsedDate = dateFormat.parse(this)
+		val formatter = SimpleDateFormat(pattern, Locale.getDefault())
+		return parsedDate?.let { formatter.format(it) } ?: this
 	}
 
 	fun String.getName(): Int {

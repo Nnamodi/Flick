@@ -1,6 +1,5 @@
 package com.roland.android.flick.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,8 +39,7 @@ fun AppRoute(
 			navActions = navActions,
 			inFullScreen = inFullScreen,
 			homeViewModel = homeViewModel,
-			comingSoonViewModel = comingSoonViewModel,
-			movieListViewModel = movieListViewModel
+			comingSoonViewModel = comingSoonViewModel
 		)
 		animatedComposable(AppRoute.MovieListScreen.route) { backStackEntry ->
 			val categoryName = backStackEntry.arguments?.getString("category") ?: ""
@@ -72,7 +70,6 @@ fun AppRoute(
 			val movieId = backStackEntry.arguments?.getString("movieId") ?: ""
 			val isMovie = movieType == MOVIES
 			LaunchedEffect(true) {
-				Log.i("NavigationInfo", "isMovie: $isMovie | movieId: $movieId")
 				movieDetailsViewModel.detailsRequest(
 					if (isMovie) {
 						DetailsRequest.GetMovieDetails(movieId.toInt())

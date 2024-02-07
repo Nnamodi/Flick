@@ -81,7 +81,9 @@ class ResponseConverter @Inject constructor() {
 					MovieDetailsModel(
 						result.data.movieDetails,
 						result.data.recommendedMovies.refactor(),
-						result.data.similarMovies.refactor()
+						result.data.similarMovies.refactor(),
+						result.data.movieGenres,
+						result.data.seriesGenres
 					)
 				)
 			}
@@ -200,7 +202,9 @@ class ResponseConverter @Inject constructor() {
 					TvShowDetailsModel(
 						result.data.showDetails,
 						result.data.recommendedShows.refactor(),
-						result.data.similarShows.refactor()
+						result.data.similarShows.refactor(),
+						result.data.movieGenres,
+						result.data.seriesGenres
 					)
 				)
 			}

@@ -26,7 +26,9 @@ data class FurtherTvShowsModel(
 data class TvShowDetailsModel(
 	val details: Series = Series(),
 	val recommendedShows: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val similarShows: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty())
+	val similarShows: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val movieGenres: GenreList = GenreList(),
+	val seriesGenres: GenreList = GenreList()
 )
 
 data class SeasonDetailsModel(

@@ -4,13 +4,20 @@ import androidx.compose.ui.unit.dp
 
 object Constants {
 
+	// Image base urls
 	const val MOVIE_IMAGE_BASE_URL_W342 = "https://image.tmdb.org/t/p/w342"
 	const val MOVIE_IMAGE_BASE_URL_W500 = "https://image.tmdb.org/t/p/w500"
 	const val MOVIE_IMAGE_BASE_URL_W780 = "https://image.tmdb.org/t/p/w780"
 	const val CAST_IMAGE_BASE_URL_W185 = "https://image.tmdb.org/t/p/w185" // 342
 
+	// Media types
 	const val MOVIES = "movies"
 	const val SERIES = "series"
+
+	// Date patterns
+	const val DEFAULT_PATTERN = "yyyy-MM-dd"
+	const val RELEASE_DATE_PATTERN = "MMMM d, yyyy"
+	const val YEAR = "yyyy"
 
 	// Dimensions
 	val POSTER_WIDTH_X_LARGE = 280.dp

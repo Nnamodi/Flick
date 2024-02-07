@@ -100,7 +100,7 @@ object Converters {
 		seriesModel.inProduction,
 		seriesModel.languages,
 		convertToEpisode(seriesModel.lastEpisodeToAir),
-		convertToEpisode(seriesModel.nextEpisodeToAir),
+		seriesModel.nextEpisodeToAir?.let { convertToEpisode(it) },
 		seriesModel.networks.map { convertToProductionCompany(it) },
 		seriesModel.numberOfEpisodes,
 		seriesModel.numberOfSeasons,

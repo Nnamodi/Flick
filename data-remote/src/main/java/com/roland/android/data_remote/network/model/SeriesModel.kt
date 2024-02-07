@@ -30,7 +30,7 @@ data class SeriesModel(
 	@Json(name = "last_episode_to_air")
 	val lastEpisodeToAir: EpisodeModel = EpisodeModel(),
 	@Json(name = "next_episode_to_air")
-	val nextEpisodeToAir: EpisodeModel = EpisodeModel(),
+	val nextEpisodeToAir: EpisodeModel? = null,
 	@Json(name = "networks")
 	val networks: List<ProductionCompanyModel> = emptyList(),
 	@Json(name = "number_of_episodes")

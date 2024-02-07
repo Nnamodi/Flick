@@ -80,6 +80,7 @@ import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_X_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_X_LARGE
 import com.roland.android.flick.utils.Constants.SERIES
+import com.roland.android.flick.utils.Constants.YEAR
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.genres
 import com.roland.android.flick.utils.Extensions.releaseDateRes
@@ -265,7 +266,7 @@ fun ItemDetails(
 		}
 		(movie.releaseDate ?: movie.firstAirDate)?.let { date ->
 			Text(
-				text = stringResource(movie.releaseDateRes(), date.take(4)),
+				text = stringResource(movie.releaseDateRes(), date.dateFormat(YEAR)),
 				modifier = Modifier.alpha(0.8f),
 				fontSize = 12.sp,
 				fontStyle = FontStyle.Italic,
@@ -452,7 +453,7 @@ private fun ComingSoonItemPreview() {
 				ComingSoonItem(
 					movie = movie5,
 					genreList = genreList,
-					expanded = expanded.value,
+					expanded = !expanded.value,
 					itemPage = 0,
 					pagerState = rememberPagerState { 1 },
 					maxHeight = maxHeight,

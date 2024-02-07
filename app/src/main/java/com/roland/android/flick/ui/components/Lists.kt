@@ -128,8 +128,9 @@ fun HorizontalPosters(
 	seeMore: () -> Unit
 ) {
 	val movieList = pagingData.collectAsLazyPagingItems()
-	val listState = rememberLazyListState()
+	val listState1 = rememberLazyListState()
 	val listState2 = rememberLazyListState()
+	val lazyListState = if (selectedHeader == 2) listState2 else listState1
 
 	Column(
 		modifier = Modifier
@@ -161,7 +162,7 @@ fun HorizontalPosters(
 			}
 		}
 		LazyRow(
-			state = if (selectedHeader == 2) listState2 else listState,
+			state = lazyListState,
 			contentPadding = PaddingValues(
 				start = PADDING_WIDTH,
 				end = PADDING_WIDTH - 12.dp
@@ -191,6 +192,42 @@ fun HorizontalPosters(
 			}
 			item {
 				movieList.loadStateUi(PosterType.Small)
+			}
+		}
+	}
+}
+
+@Composable
+fun HorizontalPosters(
+	movieList: List<Movie>,
+	header: String,
+	onItemClick: (Movie) -> Unit
+) {
+	Column(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(bottom = 12.dp)
+	) {
+		Row(
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(PADDING_WIDTH),
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			Header(header)
+		}
+		LazyRow(
+			contentPadding = PaddingValues(
+				start = PADDING_WIDTH,
+				end = PADDING_WIDTH - 12.dp
+			)
+		) {
+			items(movieList.size) { index ->
+				SmallItemPoster(
+					movie = movieList[index],
+					modifier = Modifier.padding(end = 12.dp),
+					onClick = onItemClick
+				)
 			}
 		}
 	}

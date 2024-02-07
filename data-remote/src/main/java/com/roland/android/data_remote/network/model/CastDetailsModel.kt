@@ -12,7 +12,7 @@ data class CastDetailsModel(
 	@Json(name = "known_for_department")
 	val knownForDepartment: String = "",
 	@Json(name = "profile_path")
-	val profilePath: String = "",
+	val profilePath: String? = null,
 	@Json(name = "popularity")
 	val popularity: Double = 0.0,
 	@Json(name = "movies_acted")

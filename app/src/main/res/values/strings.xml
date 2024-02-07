@@ -46,6 +46,9 @@
     <string name="episodes">Episodes</string>
     <string name="season_number">Season %d</string>
     <string name="more_seasons">More seasons</string>
+    <string name="known_for">Known for:</string>
+    <string name="biography">Biography:</string>
+    <string name="filmography">Filmography</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

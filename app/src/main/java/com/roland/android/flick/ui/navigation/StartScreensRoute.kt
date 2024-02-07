@@ -7,15 +7,12 @@ import com.roland.android.flick.ui.screens.coming_soon.ComingSoonScreen
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonViewModel
 import com.roland.android.flick.ui.screens.home.HomeScreen
 import com.roland.android.flick.ui.screens.home.HomeViewModel
-import com.roland.android.flick.ui.screens.list.MovieListActions
-import com.roland.android.flick.ui.screens.list.MovieListViewModel
 
 fun NavGraphBuilder.startScreensRoute(
 	navActions: NavActions,
 	inFullScreen: (Boolean) -> Unit,
 	homeViewModel: HomeViewModel,
-	comingSoonViewModel: ComingSoonViewModel,
-	movieListViewModel: MovieListViewModel
+	comingSoonViewModel: ComingSoonViewModel
 ) {
 	navigation(
 		startDestination = AppRoute.HomeScreen.route,
@@ -25,10 +22,7 @@ fun NavGraphBuilder.startScreensRoute(
 			HomeScreen(
 				uiState = homeViewModel.homeUiState,
 				action = homeViewModel::homeActions,
-				navigate = { // clear movie-list screen data before navigating
-					movieListViewModel.movieListActions(MovieListActions.PrepareScreen)
-					navActions.navigate(it)
-				}
+				navigate = navActions::navigate
 			)
 		}
 		composable(AppRoute.ComingSoonScreen.route) {

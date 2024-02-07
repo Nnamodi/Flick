@@ -1,12 +1,14 @@
 package com.roland.android.domain
 
 import com.roland.android.domain.SampleTestData.episodeDetails
+import com.roland.android.domain.SampleTestData.genreList
 import com.roland.android.domain.SampleTestData.movieCredits
 import com.roland.android.domain.SampleTestData.recommendedShows
 import com.roland.android.domain.SampleTestData.seasonDetails
 import com.roland.android.domain.SampleTestData.showDetails
 import com.roland.android.domain.SampleTestData.similarShows
 import com.roland.android.domain.repository.CastRepository
+import com.roland.android.domain.repository.MovieRepository
 import com.roland.android.domain.repository.TvShowRepository
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
@@ -21,9 +23,10 @@ import org.mockito.kotlin.whenever
 
 class GetTvShowDetailsUseCaseTest {
 
+	private val movieRepository = mock<MovieRepository>()
 	private val tvShowRepository = mock<TvShowRepository>()
 	private val castRepository = mock<CastRepository>()
-	private val tvShowDetailsUseCase = GetTvShowDetailsUseCase(mock(), tvShowRepository)
+	private val tvShowDetailsUseCase = GetTvShowDetailsUseCase(mock(), movieRepository, tvShowRepository)
 	private val seasonDetailsUseCase = GetSeasonDetailsUseCase(mock(), tvShowRepository, castRepository)
 
 	@OptIn(ExperimentalCoroutinesApi::class)
@@ -32,13 +35,17 @@ class GetTvShowDetailsUseCaseTest {
 		whenever(tvShowRepository.fetchRecommendedTvShows(0)).thenReturn(flowOf(recommendedShows))
 		whenever(tvShowRepository.fetchSimilarTvShows(0)).thenReturn(flowOf(similarShows))
 		whenever(tvShowRepository.fetchTvShowDetails(0)).thenReturn(flowOf(showDetails))
+		whenever(movieRepository.fetchMovieGenres()).thenReturn(flowOf(genreList))
+		whenever(tvShowRepository.fetchTvShowGenres()).thenReturn(flowOf(genreList))
 
 		val response = tvShowDetailsUseCase.process(GetTvShowDetailsUseCase.Request(0)).first()
 		assertEquals(
 			GetTvShowDetailsUseCase.Response(
 				showDetails,
 				recommendedShows,
-				similarShows
+				similarShows,
+				genreList,
+				genreList
 			),
 			response
 		)

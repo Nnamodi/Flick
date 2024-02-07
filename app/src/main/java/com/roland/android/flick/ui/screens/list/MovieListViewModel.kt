@@ -36,16 +36,12 @@ class MovieListViewModel @Inject constructor(
 	fun movieListActions(action: MovieListActions) {
 		when (action) {
 			is MovieListActions.LoadMovieList -> loadMovieList(action.category)
-			MovieListActions.PrepareScreen -> prepareListScreen()
 			is MovieListActions.Retry -> retry(action.categoryName)
 		}
 	}
 
-	private fun prepareListScreen() {
-		_movieListUiState.value = MovieListUiState()
-	}
-
 	private fun loadMovieList(category: Category) {
+		_movieListUiState.value = MovieListUiState()
 		viewModelScope.launch {
 			movieListUseCase.execute(GetMovieListUseCase.Request(category))
 				.map { converter.convertMovieListData(it) }

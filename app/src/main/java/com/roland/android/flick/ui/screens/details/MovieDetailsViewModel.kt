@@ -50,6 +50,7 @@ class MovieDetailsViewModel @Inject constructor(
 	}
 
 	private fun getMovieDetails(movieId: Int) {
+		_movieDetailsUiState.update { it.copy(movieDetails = null) }
 		viewModelScope.launch {
 			movieDetailsUseCase.execute(GetMovieDetailsUseCase.Request(movieId))
 				.map { converter.convertMovieDetailsData(it) }
@@ -60,6 +61,7 @@ class MovieDetailsViewModel @Inject constructor(
 	}
 
 	private fun getTvShowDetails(seriesId: Int) {
+		_movieDetailsUiState.update { it.copy(tvShowDetails = null) }
 		viewModelScope.launch {
 			tvShowDetailsUseCase.execute(GetTvShowDetailsUseCase.Request(seriesId))
 				.map { converter.convertTvShowDetailsData(it) }
@@ -89,6 +91,7 @@ class MovieDetailsViewModel @Inject constructor(
 	}
 
 	private fun getCastDetails(personId: Int) {
+		_movieDetailsUiState.update { it.copy(castDetails = null) }
 		viewModelScope.launch {
 			castDetailsUseCase.execute(
 				GetCastDetailsUseCase.Request(personId)

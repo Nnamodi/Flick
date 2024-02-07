@@ -7,11 +7,9 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -64,10 +62,6 @@ fun SeasonSelectionSheet(
 		) {
 			val lazyListState = rememberLazyListState()
 
-			Spacer(Modifier
-				.weight(1f)
-				.clickable { closeSheet(null) }
-			)
 			LazyColumn(
 				modifier = Modifier.weight(1f),
 				state = lazyListState,
@@ -125,7 +119,7 @@ private fun SeasonOption(
 				indication = LocalIndication.current
 			) {
 				val request =
-					DetailsRequest.GetSeasonDetails(seriesId, selectedSeasonNumber)
+					DetailsRequest.GetSeasonDetails(seriesId, seasonNumber)
 				onSeasonSelected(request)
 			}
 			.padding(vertical = 14.dp)

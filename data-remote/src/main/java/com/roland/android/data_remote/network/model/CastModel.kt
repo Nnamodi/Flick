@@ -8,7 +8,7 @@ data class CastModel(
 	@Json(name = "name")
 	val name: String = "",
 	@Json(name = "profile_path")
-	val profilePath: String = "",
+	val profilePath: String? = null,
 	@Json(name = "character")
 	val character: String = "",
 	@Json(name = "cast_id")
