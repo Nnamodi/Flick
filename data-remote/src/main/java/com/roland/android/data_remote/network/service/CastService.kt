@@ -17,7 +17,8 @@ interface CastService {
 	@GET("/3/person/{person_id}")
 	suspend fun fetchCastDetails(
 		@Path("person_id") personId: Int,
-		@Query("language") language: String = "en_US"
+		@Query("language") language: String = "en_US",
+		@Query("append_to_response") appendToResponse: String = "combined_credits"
 	): CastDetailsModel
 
 }

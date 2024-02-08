@@ -53,6 +53,6 @@ object RemoteSampleData {
 	// Other
 	val remoteGenreList = GenreListModel(listOf(GenreModel(name = "Action"), GenreModel(name = "Animation"), GenreModel(name = "Comedy")))
 	val remoteMovieCredits = MovieCreditsModel(cast = listOf(CastModel(name = "Jack"), CastModel(name = "Downey"), CastModel(name = "William")))
-	val remoteMovieCast = CastDetailsModel(name = "Jack", moviesActed = listOf(movie1, movie2, movie3))
+	val remoteMovieCast = CastDetailsModel(name = "Jack")
 
 }

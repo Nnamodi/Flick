@@ -7,11 +7,10 @@ data class CastDetails(
 	val knownForDepartment: String = "",
 	val profilePath: String? = null,
 	val popularity: Double = 0.0,
-	val moviesActed: List<Movie> = emptyList(),
 	val adult: Boolean = false,
-	// more details
 	val alsoKnownAs: List<String>? = null,
 	val biography: String? = null,
 	val birthDay: String? = null,
-	val deathDay: String? = null
+	val deathDay: String? = null,
+	val moviesAndShowsActed: List<Movie> = emptyList()
 )

@@ -15,11 +15,8 @@ data class CastDetailsModel(
 	val profilePath: String? = null,
 	@Json(name = "popularity")
 	val popularity: Double = 0.0,
-	@Json(name = "movies_acted")
-	val moviesActed: List<MovieModel> = emptyList(),
 	@Json(name = "adult")
 	val adult: Boolean = false,
-	// more details
 	@Json(name = "also_known_as")
 	val alsoKnownAs: List<String>? = null,
 	@Json(name = "biography")
@@ -27,5 +24,7 @@ data class CastDetailsModel(
 	@Json(name = "birthday")
 	val birthDay: String? = null,
 	@Json(name = "deathday")
-	val deathDay: String? = null
+	val deathDay: String? = null,
+	@Json(name = "combined_credits")
+	val combinedCredits: CombinedCreditsModel = CombinedCreditsModel()
 )

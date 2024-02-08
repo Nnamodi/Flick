@@ -10,7 +10,7 @@ data class MovieDetailsModel(
 	@Json(name = "overview")
 	val overview: String = "",
 	@Json(name = "imdb_id")
-	val imdbId: String = "",
+	val imdbId: String? = null,
 	@Json(name = "genres")
 	val genres: List<GenreModel> = emptyList(),
 	@Json(name = "backdrop_path")

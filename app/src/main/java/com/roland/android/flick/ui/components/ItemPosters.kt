@@ -33,6 +33,7 @@ import com.roland.android.flick.ui.components.PosterType.FullScreen
 import com.roland.android.flick.ui.components.PosterType.Large
 import com.roland.android.flick.ui.components.PosterType.Small
 import com.roland.android.flick.utils.Constants.CAST_IMAGE_BASE_URL_W185
+import com.roland.android.flick.utils.Constants.CAST_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W780
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_LARGE
@@ -112,7 +113,8 @@ fun ComingSoonItemPoster(
 		voteAverage = movie.voteAverage,
 		modifier = modifier,
 		posterType = posterType,
-		posterFromPager = posterFromPager
+		posterFromPager = posterFromPager,
+		showVoteAverage = false
 	) { onClick() }
 }
 
@@ -176,6 +178,7 @@ private fun Poster(
 	modifier: Modifier = Modifier,
 	posterType: PosterType = Small,
 	posterFromPager: Boolean = false,
+	showVoteAverage: Boolean = true,
 	onClick: () -> Unit
 ) {
 	val state = remember { mutableStateOf<AsyncImagePainter.State>(Empty) }
@@ -199,7 +202,7 @@ private fun Poster(
 			onState = { state.value = it },
 			contentScale = ContentScale.Crop
 		)
-		if (posterType != FullScreen) {
+		if (posterType != FullScreen && showVoteAverage) {
 			RatingBar(posterType, voteAverage)
 		}
 		if (!inPortraitMode.value && posterFromPager) {
@@ -238,10 +241,11 @@ fun CastPoster(
 	} else {
 		modifier.size(140.dp, 190.dp)
 	}
+	val baseUrl = if (posterType == Small) CAST_IMAGE_BASE_URL_W185 else CAST_IMAGE_BASE_URL_W342
 
 	Box(modifier = imageModifier) {
 		AsyncImage(
-			model = CAST_IMAGE_BASE_URL_W185 + cast.profilePath,
+			model = baseUrl + cast.profilePath,
 			contentDescription = cast.name,
 			modifier = Modifier
 				.fillMaxSize()

@@ -5,9 +5,11 @@ import com.roland.android.data_remote.network.model.GenreListModel
 import com.roland.android.data_remote.network.model.MovieListModel
 import com.roland.android.data_remote.network.model.SeasonModel
 import com.roland.android.data_remote.network.model.SeriesModel
+import com.roland.android.data_remote.utils.Constants.date
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.util.Calendar
 
 interface TvShowService {
 
@@ -35,10 +37,14 @@ interface TvShowService {
 		@Query("page") page: Int = 1
 	): MovieListModel
 
-	@GET("/3/tv/on_the_air")
+	@GET("/3/discover/tv")
 	suspend fun fetchShowsSoonToAir(
+		@Query("include_adult") includeAdult: Boolean = false,
+		@Query("first_air_date.gte") fromDate: String = date(Calendar.DAY_OF_YEAR),
+		@Query("first_air_date.lte") toDate: String = date(Calendar.MONTH),
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int = 1,
+		@Query("sort_by") sortBy: String = "popularity.desc"
 	): MovieListModel
 
 	@GET("/3/discover/tv")

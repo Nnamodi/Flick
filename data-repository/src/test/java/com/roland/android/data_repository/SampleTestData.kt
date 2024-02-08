@@ -53,6 +53,6 @@ object SampleTestData {
 	// Other
 	val genreList = GenreList(listOf(Genre(name = "Action"), Genre(name = "Animation"), Genre(name = "Comedy")))
 	val movieCredits = MovieCredits(cast = listOf(Cast(name = "Jack"), Cast(name = "Downey"), Cast(name = "William")))
-	val movieCast = CastDetails(name = "Jack", moviesActed = listOf(movie1, movie2, movie3))
+	val movieCast = CastDetails(name = "Jack", moviesAndShowsActed = listOf(movie1, movie2, movie3))
 
 }

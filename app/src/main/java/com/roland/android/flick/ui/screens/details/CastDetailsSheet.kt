@@ -50,6 +50,7 @@ import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.screens.LoadingScreen
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
+import com.roland.android.flick.utils.Extensions.refactor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,7 +123,7 @@ fun CastDetailsSheet(
 					)
 				}
 				HorizontalPosters(
-					movieList = castDetails.moviesActed,
+					movieList = castDetails.moviesAndShowsActed.refactor(),
 					header = stringResource(R.string.filmography),
 					onItemClick = {}
 				)

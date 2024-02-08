@@ -99,7 +99,7 @@ object Converters {
 		seriesModel.homePage,
 		seriesModel.inProduction,
 		seriesModel.languages,
-		convertToEpisode(seriesModel.lastEpisodeToAir),
+		seriesModel.lastEpisodeToAir?.let { convertToEpisode(it) },
 		seriesModel.nextEpisodeToAir?.let { convertToEpisode(it) },
 		seriesModel.networks.map { convertToProductionCompany(it) },
 		seriesModel.numberOfEpisodes,
@@ -158,12 +158,12 @@ object Converters {
 		castDetailsModel.knownForDepartment,
 		castDetailsModel.profilePath,
 		castDetailsModel.popularity,
-		castDetailsModel.moviesActed.map { convertToMovie(it) },
 		castDetailsModel.adult,
 		castDetailsModel.alsoKnownAs,
 		castDetailsModel.biography,
 		castDetailsModel.birthDay,
-		castDetailsModel.deathDay
+		castDetailsModel.deathDay,
+		castDetailsModel.combinedCredits.moviesActed.map { convertToMovie(it) }
 	)
 
 	fun convertToGenreList(genreListModel: GenreListModel) = GenreList(

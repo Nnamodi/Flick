@@ -157,16 +157,12 @@ object SampleData {
 	)
 	val movieCastDetails = CastDetails(
 		name = "Jack Jones",
-		gender = 1,
 		knownForDepartment = "Acting",
-		moviesActed = listOf(movie1, movie2, movie3, movie4, movie5),
-		alsoKnownAs = listOf("The Machine", "Gymnast", "Fire on Ice", "Nine lives", "Uncaged Wolf", "Diamond in the rough"),
 		biography = "Teen Miles Markus becomes the Spider-Man of more universes and now joins with five spider-powered individuals from other climes to stop a threat for all live forms." +
 				"An exploration in the human world by dolls who have lived in isolation of themselves since their existence in the unimaginably weird universe." +
 				"Relentlessly pursued by a powerful politician's daughter who will do anything to make him hers, a man slips down a dark, risky path to reclaim his life." +
 				"A robot that lives on a post-apocalyptic earth which was built to protect the life of his dying creator's beloved dog, it learns about love, friendship and more traits that makes it behave human.",
-		birthDay = "1963-09-26",
-//		deathDay = "2014-11-18"
+		moviesAndShowsActed = listOf(movie1, movie2, movie3, movie4, movie5)
 	)
 
 }

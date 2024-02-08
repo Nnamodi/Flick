@@ -50,8 +50,8 @@ fun SeasonSelectionSheet(
 ) {
 	AnimatedVisibility(
 		visible = showSheet,
-		enter = slideInVertically(tween(700)) { it },
-		exit = slideOutVertically(tween(400)) { it },
+		enter = slideInVertically(tween(400)) { it },
+		exit = slideOutVertically(tween(300)) { it },
 	) {
 		Column(
 			modifier = Modifier

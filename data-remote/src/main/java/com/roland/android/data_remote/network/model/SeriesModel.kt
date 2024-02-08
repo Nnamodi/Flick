@@ -18,8 +18,8 @@ data class SeriesModel(
 	@Json(name = "first_air_date")
 	val firstAirDate: String = "",
 	@Json(name = "last_air_date")
-	val lastAirDate: String = "",
-	@Json(name = "genre_ids")
+	val lastAirDate: String? = null,
+	@Json(name = "genres")
 	val genres: List<GenreModel> = emptyList(),
 	@Json(name = "homepage")
 	val homePage: String = "",
@@ -28,7 +28,7 @@ data class SeriesModel(
 	@Json(name = "languages")
 	val languages: List<String> = emptyList(),
 	@Json(name = "last_episode_to_air")
-	val lastEpisodeToAir: EpisodeModel = EpisodeModel(),
+	val lastEpisodeToAir: EpisodeModel? = null,
 	@Json(name = "next_episode_to_air")
 	val nextEpisodeToAir: EpisodeModel? = null,
 	@Json(name = "networks")

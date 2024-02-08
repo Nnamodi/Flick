@@ -35,7 +35,7 @@ fun MovieCastList(
 			.padding(vertical = 12.dp)
 	) {
 		Row(Modifier.padding(PADDING_WIDTH)) {
-			Header(stringResource(R.string.casts))
+			Header(stringResource(R.string.top_casts))
 		}
 		LazyRow(
 			contentPadding = PaddingValues(

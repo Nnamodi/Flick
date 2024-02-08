@@ -31,6 +31,11 @@ data class MovieCreditsModel(
 	val cast: List<CastModel> = emptyList()
 )
 
+data class CombinedCreditsModel(
+	@Json(name = "cast")
+	val moviesActed: List<MovieModel> = emptyList()
+)
+
 data class VideoListModel(
 	@Json(name = "results")
 	val results: List<VideoModel> = emptyList()

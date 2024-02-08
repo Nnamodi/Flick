@@ -86,14 +86,24 @@ object Extensions {
 		else -> this
 	}
 
-	fun PagingData<Movie>.refactor(): MutableStateFlow<PagingData<Movie>> {
+	fun PagingData<Movie>.refactor(showsVoteAverage: Boolean = true): MutableStateFlow<PagingData<Movie>> {
 		return MutableStateFlow(
 			filter {
-				it.voteAverage > 5.0 &&
-					it.posterPath != null &&
-						it.backdropPath != null
+				if (showsVoteAverage) {
+					it.voteAverage > 5.0 &&
+						it.posterPath != null &&
+							it.backdropPath != null
+				} else {
+					it.posterPath != null && it.backdropPath != null
+				}
 			}
 		)
+	}
+
+	fun List<Movie>.refactor(): List<Movie> = filter {
+		it.voteAverage > 5.0 &&
+			it.posterPath != null &&
+				it.backdropPath != null
 	}
 
 	@Composable
