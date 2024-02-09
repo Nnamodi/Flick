@@ -29,6 +29,7 @@ class MovieDetailsViewModel @Inject constructor(
 ) : ViewModel() {
 	private var _movieDetailsUiState = MutableStateFlow(MovieDetailsUiState())
 	var movieDetailsUiState by mutableStateOf(_movieDetailsUiState.value); private set
+	private var lastRequest by mutableStateOf<DetailsRequest?>(null)
 
 	init {
 		viewModelScope.launch {
@@ -39,14 +40,17 @@ class MovieDetailsViewModel @Inject constructor(
 		}
 	}
 
-	fun detailsRequest(action: DetailsRequest) {
-		Log.i("NavigationInfo", "Action: $action")
-		when (action) {
-			is DetailsRequest.GetMovieDetails -> getMovieDetails(action.movieId)
-			is DetailsRequest.GetTvShowDetails -> getTvShowDetails(action.seriesId)
-			is DetailsRequest.GetSeasonDetails -> getSeasonDetails(action.seriesId, action.seasonNumber)
-			is DetailsRequest.GetCastDetails -> getCastDetails(action.personId)
+	fun detailsRequest(request: DetailsRequest) {
+		Log.i("NavigationInfo", "Action: $request")
+		when (request) {
+			is DetailsRequest.GetMovieDetails -> getMovieDetails(request.movieId)
+			is DetailsRequest.GetTvShowDetails -> getTvShowDetails(request.seriesId)
+			is DetailsRequest.GetSeasonDetails -> getSeasonDetails(request.seriesId, request.seasonNumber)
+			is DetailsRequest.GetCastDetails -> getCastDetails(request.personId)
+			is DetailsRequest.Retry -> retryLastRequest()
 		}
+		if (request is DetailsRequest.Retry) return
+		lastRequest = request
 	}
 
 	private fun getMovieDetails(movieId: Int) {
@@ -101,6 +105,10 @@ class MovieDetailsViewModel @Inject constructor(
 					_movieDetailsUiState.update { it.copy(castDetails = data) }
 				}
 		}
+	}
+
+	private fun retryLastRequest() {
+		lastRequest?.let { detailsRequest(it) }
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.roland.android.flick.ui.screens.details
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
@@ -10,10 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.CastDetails
+import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.SampleData.movieCastDetails
@@ -47,7 +48,6 @@ import com.roland.android.flick.ui.components.CastPoster
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.screens.CommonScreen
-import com.roland.android.flick.ui.screens.LoadingScreen
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Extensions.refactor
@@ -56,29 +56,29 @@ import com.roland.android.flick.utils.Extensions.refactor
 @Composable
 fun CastDetailsSheet(
 	uiState: State<CastDetailsModel>?,
+	onMovieClick: (Movie) -> Unit,
 	closeSheet: () -> Unit
 ) {
-	CommonScreen(
-		state = uiState,
-		loadingScreen = { LoadingScreen(it) }
-	) {	data ->
-		val castDetails = data.castDetails
-		val screenHeight = LocalConfiguration.current.screenHeightDp
+	val screenHeight = LocalConfiguration.current.screenHeightDp
 
-		ModalBottomSheet(
-			onDismissRequest = closeSheet,
-			modifier = Modifier
-				.absoluteOffset(y = 16.dp)
-				.padding(horizontal = 12.dp),
-			sheetState = rememberModalBottomSheetState(true),
-			shape = RoundedCornerShape(28.dp),
-			dragHandle = null
-		) {
-			Column(
-				modifier = Modifier
-					.clip(BottomSheetDefaults.ExpandedShape)
-					.heightIn(100.dp, (screenHeight - 100).dp)
-			) {
+	ModalBottomSheet(
+		onDismissRequest = closeSheet,
+		modifier = Modifier
+			.absoluteOffset(y = 16.dp)
+			.padding(horizontal = 12.dp),
+		sheetState = rememberModalBottomSheetState(true),
+		shape = RoundedCornerShape(28.dp),
+		dragHandle = null
+	) {
+		CommonScreen(
+			state = uiState,
+			loadingScreen = { error ->
+				CastDetailsLoadingUi(isLoading = error == null)
+			}
+		) {	data ->
+			val castDetails = data.castDetails
+
+			Column(Modifier.heightIn(100.dp, (screenHeight - 80).dp)) {
 				Row(verticalAlignment = Alignment.CenterVertically) {
 					Card(
 						modifier = Modifier
@@ -89,7 +89,10 @@ fun CastDetailsSheet(
 						elevation = CardDefaults.cardElevation(10.dp)
 					) {
 						CastPoster(
-							cast = Cast(name = castDetails.name, profilePath = castDetails.profilePath),
+							cast = Cast(
+								name = castDetails.name,
+								profilePath = castDetails.profilePath
+							),
 							posterType = PosterType.Medium
 						)
 					}
@@ -97,35 +100,25 @@ fun CastDetailsSheet(
 				}
 				castDetails.biography?.let { biography ->
 					var expandBiography by remember { mutableStateOf(false) }
+					val modifier = when {
+						expandBiography && biography.length <= 150 -> Modifier.wrapContentHeight()
+						expandBiography -> Modifier.weight(1f)
+						else -> Modifier
+					}.animateContentSize(tween(300))
 
-					Text(
-						text = stringResource(R.string.biography),
-						modifier = Modifier.padding(start = PADDING_WIDTH, top = 14.dp),
-						fontSize = 18.sp,
-						fontStyle = FontStyle.Italic,
-						fontWeight = FontWeight.Bold
-					)
-					Text(
-						text = biography,
-						modifier = Modifier
-							.padding(12.dp)
-							.animateContentSize()
-							.clickable(
-								interactionSource = remember { MutableInteractionSource() },
-								indication = null
-							) { expandBiography = !expandBiography }
-							.verticalScroll(rememberScrollState())
-							.then(
-								if (expandBiography) Modifier.weight(1f) else Modifier
-							),
-						overflow = TextOverflow.Ellipsis,
-						maxLines = if (expandBiography) Int.MAX_VALUE else 2
-					)
+					if (biography.isNotEmpty()) {
+						CastBiography(
+							biography = biography,
+							expandBiography = expandBiography,
+							modifier = modifier,
+							onExpandBiography = { expandBiography = it }
+						)
+					}
 				}
 				HorizontalPosters(
 					movieList = castDetails.moviesAndShowsActed.refactor(),
 					header = stringResource(R.string.filmography),
-					onItemClick = {}
+					onMovieClick = onMovieClick
 				)
 			}
 		}
@@ -134,24 +127,56 @@ fun CastDetailsSheet(
 
 @Composable
 private fun Details(castDetails: CastDetails) {
-	Column {
+	Column(Modifier.padding(end = PADDING_WIDTH)) {
 		Text(
 			text = castDetails.name,
 			modifier = Modifier.padding(top = 10.dp, bottom = 4.dp),
-			fontSize = 20.sp,
+			fontSize = 18.sp,
 			fontWeight = FontWeight.Bold
 		)
 		Row(Modifier.padding(top = 6.dp, bottom = 10.dp)) {
 			Text(
 				text = stringResource(R.string.known_for),
 				modifier = Modifier.padding(end = 4.dp),
+				fontSize = 14.sp,
 				fontStyle = FontStyle.Italic
 			)
 			Text(
 				text = castDetails.knownForDepartment,
+				fontSize = 14.sp,
 				maxLines = 2
 			)
 		}
+	}
+}
+
+@Composable
+private fun CastBiography(
+	biography: String,
+	expandBiography: Boolean,
+	modifier: Modifier,
+	onExpandBiography: (Boolean) -> Unit
+) {
+	Column(modifier) {
+		Text(
+			text = stringResource(R.string.biography),
+			modifier = Modifier.padding(start = PADDING_WIDTH, top = 14.dp),
+			fontSize = 18.sp,
+			fontStyle = FontStyle.Italic,
+			fontWeight = FontWeight.Bold
+		)
+		Text(
+			text = biography,
+			modifier = Modifier
+				.padding(start = 12.dp, top = 12.dp, end = 12.dp)
+				.clickable(
+					interactionSource = remember { MutableInteractionSource() },
+					indication = null
+				) { onExpandBiography(!expandBiography) }
+				.verticalScroll(rememberScrollState()),
+			overflow = TextOverflow.Ellipsis,
+			maxLines = if (expandBiography) Int.MAX_VALUE else 2
+		)
 	}
 }
 
@@ -160,7 +185,7 @@ private fun Details(castDetails: CastDetails) {
 private fun CastDetailsSheetPreview() {
 	FlickTheme {
 		val castDetails = State.Success(CastDetailsModel(movieCastDetails))
-		var uiState: State.Success<CastDetailsModel>? = castDetails
+		var uiState by remember { mutableStateOf<State.Success<CastDetailsModel>?>(castDetails) }
 
 		Column(
 			Modifier
@@ -169,7 +194,8 @@ private fun CastDetailsSheetPreview() {
 		) {
 			if (uiState != null) {
 				CastDetailsSheet(
-					uiState = uiState
+					uiState = uiState,
+					onMovieClick = {}
 				) { uiState = null }
 			}
 		}

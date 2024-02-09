@@ -223,31 +223,31 @@ fun HomeScreen(
 				HorizontalPosters(
 					pagingData = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
 					header = stringResource(if (selectedCategory == MOVIES) R.string.in_theatres else R.string.new_releases),
-					onItemClick = { clickedMovieItem.value = it }
+					onMovieClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
 
 				HorizontalPosters(
 					pagingData = if (selectedCategory == MOVIES) movieData1.topRated else showData1.topRated,
 					header = stringResource(R.string.top_rated),
-					onItemClick = { clickedMovieItem.value = it }
+					onMovieClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) TOP_RATED_MOVIES else TOP_RATED_SERIES) }
 
 				HorizontalPosters(
 					pagingData = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
 					header = stringResource(R.string.anime_collection),
-					onItemClick = { clickedMovieItem.value = it }
+					onMovieClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) ANIME else ANIME_SERIES) }
 
 				HorizontalPosters(
 					pagingData = if (selectedCategory == MOVIES) movieData2.bollywood else showData2.bollywood,
 					header = stringResource(R.string.bollywood),
-					onItemClick = { clickedMovieItem.value = it }
+					onMovieClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) BOLLYWOOD_MOVIES else BOLLYWOOD_SERIES) }
 
 				HorizontalPosters(
 					pagingData = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
 					header = stringResource(R.string.most_popular),
-					onItemClick = { clickedMovieItem.value = it }
+					onMovieClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
 
 				Spacer(Modifier.height(50.dp + NavigationBarHeight))

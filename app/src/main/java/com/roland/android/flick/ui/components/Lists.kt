@@ -124,7 +124,7 @@ fun HorizontalPosters(
 	header2: String? = null,
 	selectedHeader: Int = 0,
 	onHeaderClick: (Int) -> Unit = {},
-	onItemClick: (Movie) -> Unit,
+	onMovieClick: (Movie) -> Unit,
 	seeMore: () -> Unit
 ) {
 	val movieList = pagingData.collectAsLazyPagingItems()
@@ -175,7 +175,7 @@ fun HorizontalPosters(
 						SmallItemPoster(
 							movie = movie,
 							modifier = Modifier.padding(end = 12.dp),
-							onClick = onItemClick
+							onClick = onMovieClick
 						)
 					}
 				}
@@ -185,7 +185,7 @@ fun HorizontalPosters(
 						SmallItemPoster(
 							movie = movie,
 							modifier = Modifier.padding(end = 12.dp),
-							onClick = onItemClick
+							onClick = onMovieClick
 						)
 					}
 				}
@@ -201,7 +201,7 @@ fun HorizontalPosters(
 fun HorizontalPosters(
 	movieList: List<Movie>,
 	header: String,
-	onItemClick: (Movie) -> Unit
+	onMovieClick: (Movie) -> Unit
 ) {
 	Column(
 		modifier = Modifier
@@ -226,7 +226,7 @@ fun HorizontalPosters(
 				SmallItemPoster(
 					movie = movieList[index],
 					modifier = Modifier.padding(end = 12.dp),
-					onClick = onItemClick
+					onClick = onMovieClick
 				)
 			}
 		}

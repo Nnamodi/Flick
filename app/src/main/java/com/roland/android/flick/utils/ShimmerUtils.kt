@@ -17,10 +17,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -40,7 +43,11 @@ import com.roland.android.flick.utils.Constants.POSTER_WIDTH_SMALL
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_X_LARGE
 
 @Composable
-fun RowItems(header: String, isLoading: Boolean) {
+fun RowItems(
+	header: String,
+	isLoading: Boolean,
+	content: @Composable () -> Unit = { SmallBoxItem(isLoading) }
+) {
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()
@@ -55,10 +62,37 @@ fun RowItems(header: String, isLoading: Boolean) {
 				.padding(bottom = 16.dp)
 		) {
 			Spacer(Modifier.width(PADDING_WIDTH))
-			repeat(10) {
-				SmallBoxItem(isLoading)
-			}
+			repeat(10) { content() }
 		}
+	}
+}
+
+@Composable
+fun CircleItem(
+	isLoading: Boolean,
+	modifier: Modifier = Modifier
+) {
+	Column(
+		modifier = modifier.width(120.dp),
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		Box(Modifier
+			.size(100.dp)
+			.clip(CircleShape)
+			.shimmerModifier(isLoading)
+		)
+		Spacer(
+			modifier = Modifier
+				.padding(vertical = 8.dp)
+				.size(70.dp, 16.dp)
+				.shimmerModifier(isLoading)
+		)
+		Spacer(
+			modifier = Modifier
+				.size(55.dp, 14.dp)
+				.alpha(0.8f)
+				.shimmerModifier(isLoading)
+		)
 	}
 }
 
@@ -113,14 +147,10 @@ private fun ShimmerBoxItem(
 	isLoading: Boolean,
 	modifier: Modifier = Modifier
 ) {
-	val backgroundModifier = if (isLoading) {
-		Modifier.background(rememberAnimatedShimmerBrush())
-	} else Modifier.background(Color.LightGray.copy(alpha = 0.6f))
-
 	Box(
 		modifier = modifier
 			.clip(MaterialTheme.shapes.large)
-			.then(backgroundModifier)
+			.then(Modifier.shimmerModifier(isLoading))
 	)
 }
 
@@ -130,6 +160,14 @@ fun Modifier.painterPlaceholder(state: AsyncImagePainter.State): Modifier = comp
 		is AsyncImagePainter.State.Success -> drawBehind { drawRect(color) }
 		is AsyncImagePainter.State.Error -> background(color)
 		else -> background(rememberAnimatedShimmerBrush())
+	}
+}
+
+fun Modifier.shimmerModifier(isLoading: Boolean): Modifier = composed {
+	if (isLoading) {
+		background(rememberAnimatedShimmerBrush())
+	} else {
+		background(Color.LightGray.copy(alpha = 0.6f))
 	}
 }
 

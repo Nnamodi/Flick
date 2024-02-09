@@ -23,12 +23,19 @@ import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration.Indefinite
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,7 +78,6 @@ import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.RatingBar
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScreen
-import com.roland.android.flick.ui.screens.LoadingScreen
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
@@ -79,6 +85,7 @@ import com.roland.android.flick.utils.Constants.YEAR
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.bounceClickable
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 @Composable
 fun MovieDetailsScreen(
@@ -88,14 +95,44 @@ fun MovieDetailsScreen(
 	navigate: (Screens) -> Unit
 ) {
 	val scrollState = rememberScrollState()
+	val snackbarHostState = remember { SnackbarHostState() }
+	val scope = rememberCoroutineScope()
 	val openSeasonSelectionSheet = remember { mutableStateOf(false) }
+	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 
 	Scaffold(
-		topBar = { MovieDetailsTopBar(!openSeasonSelectionSheet.value) { navigate(it) } }
+		topBar = { MovieDetailsTopBar(!openSeasonSelectionSheet.value) { navigate(it) } },
+		snackbarHost = {
+			SnackbarHost(snackbarHostState) { data ->
+				errorMessage.value?.let {
+					Snackbar(
+						modifier = Modifier.padding(16.dp),
+						action = {
+							data.visuals.actionLabel?.let { label ->
+								TextButton(
+									onClick = { request(DetailsRequest.Retry) }
+								) { Text(label) }
+							}
+						}
+					) {
+						Text(data.visuals.message)
+					}
+				}
+			}
+		}
 	) { paddingValues ->
 		CommonScreen(
 			state = if (isMovie) uiState.movieDetails else uiState.tvShowDetails,
-			loadingScreen = { LoadingScreen(it) }
+			loadingScreen = { error ->
+				MovieDetailsLoadingUi(scrollState, isLoading = error == null)
+				errorMessage.value = error
+				error?.let {
+					val actionLabel = stringResource(R.string.retry)
+					scope.launch {
+						snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
+					}
+				}
+			}
 		) { details ->
 			val screenHeight = LocalConfiguration.current.screenWidthDp.dp
 
@@ -214,7 +251,7 @@ private fun MovieDetails(
 			header2 = stringResource(R.string.similar),
 			selectedHeader = selectedCategory,
 			onHeaderClick = { selectedCategory = it },
-			onItemClick = { clickedMovieItem.value = it }
+			onMovieClick = { clickedMovieItem.value = it }
 		) {}
 		Spacer(Modifier.height(50.dp))
 	}
@@ -225,7 +262,7 @@ private fun MovieDetails(
 		MovieDetailsSheet(
 			movie = clickedMovieItem.value!!,
 			genreList = if (itemIsMovie) genres[0] else genres[1],
-			viewMore = navigate,
+			viewMore = { navigate(it); openCastDetailsSheet.value = false },
 			closeSheet = { clickedMovieItem.value = null }
 		)
 	}
@@ -233,6 +270,7 @@ private fun MovieDetails(
 	if (openCastDetailsSheet.value) {
 		CastDetailsSheet(
 			uiState = castDetails,
+			onMovieClick = { clickedMovieItem.value = it },
 			closeSheet = { openCastDetailsSheet.value = false }
 		)
 	}

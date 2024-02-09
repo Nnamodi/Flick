@@ -13,4 +13,6 @@ sealed class DetailsRequest {
 
 	data class GetCastDetails(val personId: Int) : DetailsRequest()
 
+	object Retry : DetailsRequest()
+
 }
