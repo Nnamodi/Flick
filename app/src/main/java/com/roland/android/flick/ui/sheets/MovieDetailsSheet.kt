@@ -2,7 +2,6 @@ package com.roland.android.flick.ui.sheets
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -55,9 +54,7 @@ fun MovieDetailsSheet(
 
 	ModalBottomSheet(
 		onDismissRequest = closeSheet,
-		modifier = Modifier
-			.absoluteOffset(y = 16.dp)
-			.padding(horizontal = 12.dp),
+		modifier = Modifier.padding(horizontal = 12.dp),
 		sheetState = sheetState,
 		shape = RoundedCornerShape(28.dp),
 		dragHandle = {}

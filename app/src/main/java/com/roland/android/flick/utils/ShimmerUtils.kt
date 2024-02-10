@@ -68,6 +68,22 @@ fun RowItems(
 }
 
 @Composable
+fun EpisodeLoadingUi(isLoading: Boolean) {
+	Row(Modifier.horizontalScroll(rememberScrollState())) {
+		Spacer(Modifier.width(PADDING_WIDTH))
+		repeat(10) {
+			ShimmerBoxItem(
+				isLoading = isLoading,
+				modifier = Modifier
+					.padding(end = 12.dp)
+					.size(180.dp, 130.dp)
+			)
+		}
+		Spacer(Modifier.width(PADDING_WIDTH - 12.dp))
+	}
+}
+
+@Composable
 fun CircleItem(
 	isLoading: Boolean,
 	modifier: Modifier = Modifier

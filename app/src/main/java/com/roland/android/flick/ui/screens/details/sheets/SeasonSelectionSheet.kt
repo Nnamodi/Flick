@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.screens.details
+package com.roland.android.flick.ui.screens.details.sheets
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.roland.android.flick.R
+import com.roland.android.flick.ui.screens.details.DetailsRequest
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.bounceClickable
 
@@ -46,7 +47,7 @@ fun SeasonSelectionSheet(
 	selectedSeasonNumber: Int,
 	numberOfSeasons: Int,
 	onSeasonSelected: (DetailsRequest) -> Unit,
-	closeSheet: (Int?) -> Unit
+	closeSheet: () -> Unit
 ) {
 	AnimatedVisibility(
 		visible = showSheet,
@@ -65,7 +66,7 @@ fun SeasonSelectionSheet(
 			LazyColumn(
 				modifier = Modifier.weight(1f),
 				state = lazyListState,
-				contentPadding = PaddingValues(top = 50.dp),
+				contentPadding = PaddingValues(top = 100.dp),
 				reverseLayout = true
 			) {
 				val seasons = (1..numberOfSeasons).toList()
@@ -75,7 +76,7 @@ fun SeasonSelectionSheet(
 						seasonNumber = seasons[index],
 						selectedSeasonNumber = selectedSeasonNumber,
 						seriesId = seriesId,
-						onSeasonSelected = { onSeasonSelected(it); closeSheet(index + 1) }
+						onSeasonSelected = { onSeasonSelected(it); closeSheet() }
 					)
 				}
 			}
@@ -84,7 +85,7 @@ fun SeasonSelectionSheet(
 				contentDescription = stringResource(androidx.compose.ui.R.string.close_sheet),
 				modifier = Modifier
 					.size(100.dp)
-					.bounceClickable { closeSheet(null) }
+					.bounceClickable { closeSheet() }
 					.padding(vertical = 10.dp),
 				tint = MaterialTheme.colorScheme.onBackground
 			)
@@ -97,7 +98,7 @@ fun SeasonSelectionSheet(
 	}
 
 	if (showSheet) {
-		BackHandler { closeSheet(null) }
+		BackHandler { closeSheet() }
 	}
 }
 

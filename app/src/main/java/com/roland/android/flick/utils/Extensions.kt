@@ -16,17 +16,19 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.filter
+import com.roland.android.data_remote.utils.Constants.DEFAULT_PATTERN
 import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.usecase.Category
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.PosterType
-import com.roland.android.flick.utils.Constants.DEFAULT_PATTERN
+import com.roland.android.flick.utils.Constants.DAY
 import com.roland.android.flick.utils.Constants.RELEASE_DATE_PATTERN
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 object Extensions {
@@ -57,7 +59,17 @@ object Extensions {
 		val dateFormat = SimpleDateFormat(DEFAULT_PATTERN, Locale.getDefault())
 		val parsedDate = dateFormat.parse(this)
 		val formatter = SimpleDateFormat(pattern, Locale.getDefault())
-		return parsedDate?.let { formatter.format(it) } ?: this
+		if (pattern != RELEASE_DATE_PATTERN) {
+			return parsedDate?.let { formatter.format(it) } ?: this
+		}
+
+		val weekFormatter = SimpleDateFormat(DAY, Locale.getDefault())
+		val thisWeek = Calendar.getInstance()
+		thisWeek.add(Calendar.WEEK_OF_MONTH, 1)
+
+		return parsedDate?.let {
+			if (parsedDate <= thisWeek.time) weekFormatter.format(it) else formatter.format(it)
+		} ?: this
 	}
 
 	fun String.getName(): Int {

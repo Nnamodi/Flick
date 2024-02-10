@@ -2,6 +2,7 @@ package com.roland.android.flick.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,14 +23,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,6 +50,7 @@ import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
+import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_SMALL
 import com.roland.android.flick.utils.Extensions.appendStateUi
 import com.roland.android.flick.utils.Extensions.loadStateUi
 import com.roland.android.flick.utils.Extensions.refine
@@ -113,6 +122,21 @@ fun MovieLists(
 		}
 		item {
 			movies.appendStateUi()
+		}
+	}
+
+	var scrollIndex by rememberSaveable { mutableIntStateOf(0) }
+	var scrollOffset by rememberSaveable { mutableIntStateOf(0) }
+
+	LaunchedEffect(true) {
+		if (scrollIndex == 0) return@LaunchedEffect
+		scrollState.animateScrollToItem(scrollIndex, scrollOffset)
+	}
+
+	DisposableEffect(Unit) {
+		onDispose {
+			scrollIndex = scrollState.firstVisibleItemIndex
+			scrollOffset = scrollState.firstVisibleItemScrollOffset
 		}
 	}
 }
@@ -194,6 +218,9 @@ fun HorizontalPosters(
 				movieList.loadStateUi(PosterType.Small)
 			}
 		}
+		if ((movieList.itemCount == 0) && (movieList.loadState.refresh is LoadState.NotLoading)) {
+			EmptyRow()
+		}
 	}
 }
 
@@ -230,6 +257,22 @@ fun HorizontalPosters(
 				)
 			}
 		}
+		if (movieList.isEmpty()) { EmptyRow() }
+	}
+}
+
+@Composable
+private fun EmptyRow() {
+	Box(
+		modifier = Modifier
+			.fillMaxWidth()
+			.height(POSTER_HEIGHT_SMALL),
+		contentAlignment = Alignment.Center
+	) {
+		Text(
+			text = stringResource(R.string.nothing_here),
+			fontStyle = FontStyle.Italic
+		)
 	}
 }
 

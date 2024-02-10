@@ -251,18 +251,20 @@ fun ItemDetails(
 			fontSize = if (inBottomSheet) 20.sp else 22.sp,
 			fontWeight = FontWeight.Bold
 		)
-		if (inBottomSheet) {
-			Text(
-				text = movie.genreIds.genres(genreList),
-				modifier = Modifier
-					.padding(bottom = 4.dp)
-					.horizontalScroll(rememberScrollState()),
-				color = MaterialTheme.colorScheme.surfaceTint,
-				fontSize = 14.sp,
-				softWrap = false
-			)
-		} else {
-			GenreRowItems(movie.genreIds.genres(genreList))
+		if (movie.genreIds.isNotEmpty()) {
+			if (inBottomSheet) {
+				Text(
+					text = movie.genreIds.genres(genreList),
+					modifier = Modifier
+						.padding(bottom = 4.dp)
+						.horizontalScroll(rememberScrollState()),
+					color = MaterialTheme.colorScheme.surfaceTint,
+					fontSize = 14.sp,
+					softWrap = false
+				)
+			} else {
+				GenreRowItems(movie.genreIds.genres(genreList))
+			}
 		}
 		(movie.releaseDate ?: movie.firstAirDate)?.let { date ->
 			Text(

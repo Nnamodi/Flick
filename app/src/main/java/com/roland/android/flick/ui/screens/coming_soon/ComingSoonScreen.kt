@@ -170,7 +170,7 @@ fun ComingSoonScreen(
 					pageSpacing = 14.dp,
 					flingBehavior = PagerDefaults.flingBehavior(
 						state = pagerState,
-						pagerSnapDistance = PagerSnapDistance.atMost(5)
+						pagerSnapDistance = PagerSnapDistance.atMost(movies.itemCount)
 					),
 					pageSize = PageSize.Fixed(pageSize),
 					userScrollEnabled = !expanded

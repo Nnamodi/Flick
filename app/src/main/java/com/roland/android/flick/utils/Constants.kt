@@ -16,8 +16,8 @@ object Constants {
 	const val SERIES = "series"
 
 	// Date patterns
-	const val DEFAULT_PATTERN = "yyyy-MM-dd"
 	const val RELEASE_DATE_PATTERN = "MMMM d, yyyy"
+	const val DAY = "EEEE"
 	const val YEAR = "yyyy"
 
 	// Dimensions

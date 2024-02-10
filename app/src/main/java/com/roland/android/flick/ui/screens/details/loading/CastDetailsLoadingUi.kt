@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.screens.details
+package com.roland.android.flick.ui.screens.details.loading
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

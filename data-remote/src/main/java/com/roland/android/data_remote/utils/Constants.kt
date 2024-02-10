@@ -11,12 +11,12 @@ object Constants {
 	const val INITIAL_PAGE = 1
 
 	// Date patterns
-	private const val DATE_PATTERN = "yyyy-MM-dd"
+	const val DEFAULT_PATTERN = "yyyy-MM-dd"
 
 	fun date(span: Int): String {
 		val calendar = Calendar.getInstance()
 		calendar.add(span, 1)
-		val formatter = SimpleDateFormat(DATE_PATTERN, Locale.getDefault())
+		val formatter = SimpleDateFormat(DEFAULT_PATTERN, Locale.getDefault())
 		return formatter.format(calendar.time)
 	}
 }

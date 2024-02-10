@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.Category
 import com.roland.android.domain.usecase.GetMovieListUseCase
 import com.roland.android.flick.state.MovieListUiState
+import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,7 @@ class MovieListViewModel @Inject constructor(
 
 	private val _movieListUiState = MutableStateFlow(MovieListUiState())
 	var movieListUiState by mutableStateOf(_movieListUiState.value); private set
+	private var lastCategoryFetched by mutableStateOf<Category?>(null)
 
 	init {
 		viewModelScope.launch {
@@ -41,12 +43,14 @@ class MovieListViewModel @Inject constructor(
 	}
 
 	private fun loadMovieList(category: Category) {
+		if (category == lastCategoryFetched) return
 		_movieListUiState.value = MovieListUiState()
 		viewModelScope.launch {
 			movieListUseCase.execute(GetMovieListUseCase.Request(category))
 				.map { converter.convertMovieListData(it) }
 				.collect { data ->
 					_movieListUiState.update { it.copy(movieData = data) }
+					if (data is State.Success) lastCategoryFetched = category
 				}
 		}
 	}

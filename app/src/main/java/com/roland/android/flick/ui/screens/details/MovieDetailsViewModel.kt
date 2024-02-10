@@ -11,6 +11,7 @@ import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.flick.state.MovieDetailsUiState
+import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,11 @@ class MovieDetailsViewModel @Inject constructor(
 	private var _movieDetailsUiState = MutableStateFlow(MovieDetailsUiState())
 	var movieDetailsUiState by mutableStateOf(_movieDetailsUiState.value); private set
 	private var lastRequest by mutableStateOf<DetailsRequest?>(null)
+
+	// cache details info to avoid unnecessary reload
+	private var lastMovieIdFetched by mutableStateOf<Int?>(null)
+	private var lastSeriesIdFetched by mutableStateOf<Int?>(null)
+	private var lastCastIdFetched by mutableStateOf<Int?>(null)
 
 	init {
 		viewModelScope.launch {
@@ -54,23 +60,27 @@ class MovieDetailsViewModel @Inject constructor(
 	}
 
 	private fun getMovieDetails(movieId: Int) {
+		if (movieId == lastMovieIdFetched) return
 		_movieDetailsUiState.update { it.copy(movieDetails = null) }
 		viewModelScope.launch {
 			movieDetailsUseCase.execute(GetMovieDetailsUseCase.Request(movieId))
 				.map { converter.convertMovieDetailsData(it) }
 				.collect { data ->
 					_movieDetailsUiState.update { it.copy(movieDetails = data) }
+					if (data is State.Success) lastMovieIdFetched = movieId
 				}
 		}
 	}
 
 	private fun getTvShowDetails(seriesId: Int) {
+		if (seriesId == lastSeriesIdFetched) return
 		_movieDetailsUiState.update { it.copy(tvShowDetails = null) }
 		viewModelScope.launch {
 			tvShowDetailsUseCase.execute(GetTvShowDetailsUseCase.Request(seriesId))
 				.map { converter.convertTvShowDetailsData(it) }
 				.collect { data ->
 					_movieDetailsUiState.update { it.copy(tvShowDetails = data) }
+					if (data is State.Success) lastSeriesIdFetched = seriesId
 				}
 		}
 		getSeasonDetails(seriesId = seriesId, seasonNumber = 1)
@@ -89,12 +99,15 @@ class MovieDetailsViewModel @Inject constructor(
 			)
 				.map { converter.convertSeasonDetailsData(it) }
 				.collect { data ->
-					_movieDetailsUiState.update { it.copy(seasonDetails = data) }
+					_movieDetailsUiState.update {
+						it.copy(seasonDetails = data, selectedSeasonNumber = seasonNumber)
+					}
 				}
 		}
 	}
 
 	private fun getCastDetails(personId: Int) {
+		if (personId == lastCastIdFetched) return
 		_movieDetailsUiState.update { it.copy(castDetails = null) }
 		viewModelScope.launch {
 			castDetailsUseCase.execute(
@@ -103,6 +116,7 @@ class MovieDetailsViewModel @Inject constructor(
 				.map { converter.convertCastDetailsData(it) }
 				.collect { data ->
 					_movieDetailsUiState.update { it.copy(castDetails = data) }
+					if (data is State.Success) lastCastIdFetched = personId
 				}
 		}
 	}

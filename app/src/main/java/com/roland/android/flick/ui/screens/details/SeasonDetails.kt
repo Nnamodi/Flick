@@ -43,9 +43,9 @@ import com.roland.android.flick.ui.components.Header
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.RatingBar
 import com.roland.android.flick.ui.screens.CommonScreen
-import com.roland.android.flick.ui.screens.LoadingScreen
 import com.roland.android.flick.utils.Constants
 import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W500
+import com.roland.android.flick.utils.EpisodeLoadingUi
 import com.roland.android.flick.utils.painterPlaceholder
 
 @Composable
@@ -88,7 +88,9 @@ fun SeasonDetails(
 
 		CommonScreen(
 			state = seasonUiState,
-			loadingScreen = { LoadingScreen(it) }
+			loadingScreen = { error ->
+				EpisodeLoadingUi(isLoading = error == null)
+			}
 		) { data ->
 			val lazyListState = rememberLazyListState()
 

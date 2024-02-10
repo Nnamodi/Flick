@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.screens.details
 
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ScrollState
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -73,11 +75,13 @@ import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.DotSeparator
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.MovieDetailsPoster
-import com.roland.android.flick.ui.components.MovieDetailsTopBar
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.RatingBar
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScreen
+import com.roland.android.flick.ui.screens.details.loading.MovieDetailsLoadingUi
+import com.roland.android.flick.ui.screens.details.sheets.CastDetailsSheet
+import com.roland.android.flick.ui.screens.details.sheets.SeasonSelectionSheet
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
@@ -97,11 +101,9 @@ fun MovieDetailsScreen(
 	val scrollState = rememberScrollState()
 	val snackbarHostState = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
-	val openSeasonSelectionSheet = remember { mutableStateOf(false) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 
 	Scaffold(
-		topBar = { MovieDetailsTopBar(!openSeasonSelectionSheet.value) { navigate(it) } },
 		snackbarHost = {
 			SnackbarHost(snackbarHostState) { data ->
 				errorMessage.value?.let {
@@ -124,7 +126,7 @@ fun MovieDetailsScreen(
 		CommonScreen(
 			state = if (isMovie) uiState.movieDetails else uiState.tvShowDetails,
 			loadingScreen = { error ->
-				MovieDetailsLoadingUi(scrollState, isLoading = error == null)
+				MovieDetailsLoadingUi(scrollState, isLoading = error == null, navigate)
 				errorMessage.value = error
 				error?.let {
 					val actionLabel = stringResource(R.string.retry)
@@ -146,7 +148,8 @@ fun MovieDetailsScreen(
 
 					MovieDetailsPoster(
 						backdropPath = movie.details.backdropPath,
-						modifier = Modifier.height(screenHeight * 0.6f)
+						modifier = Modifier.height(screenHeight * 0.6f),
+						navigateUp = navigate
 					)
 					MovieDetails(
 						movie = movie.details,
@@ -167,12 +170,14 @@ fun MovieDetailsScreen(
 					)
 				) {
 					val show = details as TvShowDetailsModel
-					val selectedSeasonNumber = remember { mutableIntStateOf(1) }
+					val openSeasonSelectionSheet = rememberSaveable { mutableStateOf(false) }
 
 					Column {
 						MovieDetailsPoster(
 							backdropPath = show.details.backdropPath,
-							modifier = Modifier.height(screenHeight * 0.6f)
+							modifier = Modifier.height(screenHeight * 0.6f),
+							enabled = !openSeasonSelectionSheet.value,
+							navigateUp = navigate
 						)
 						MovieDetails(
 							series = show.details,
@@ -182,7 +187,7 @@ fun MovieDetailsScreen(
 							recommendedMovies = show.recommendedShows,
 							similarMovies = show.similarShows,
 							genres = arrayOf(show.movieGenres, show.seriesGenres),
-							selectedSeasonNumber = selectedSeasonNumber.intValue,
+							selectedSeasonNumber = uiState.selectedSeasonNumber,
 							openSeasonSelectionSheet = { openSeasonSelectionSheet.value = true },
 							castDetailsRequest = request,
 							navigate = navigate,
@@ -193,13 +198,11 @@ fun MovieDetailsScreen(
 					SeasonSelectionSheet(
 						showSheet = openSeasonSelectionSheet.value,
 						seriesId = show.details.id,
-						selectedSeasonNumber = selectedSeasonNumber.intValue,
+						selectedSeasonNumber = uiState.selectedSeasonNumber,
 						numberOfSeasons = show.details.numberOfSeasons,
-						onSeasonSelected = request
-					) { number ->
-						openSeasonSelectionSheet.value = false
-						number?.let { selectedSeasonNumber.intValue = it }
-					}
+						onSeasonSelected = request,
+						closeSheet = { openSeasonSelectionSheet.value = false }
+					)
 				}
 			}
 		}
@@ -319,16 +322,18 @@ private fun Details(
 			fillMaxWidth = false
 		)
 	}
-	Text(
-		text = (movie?.genres ?: series?.genres)
-			?.joinToString(", ") { it.name } ?: "",
-		modifier = Modifier
-			.padding(horizontal = PADDING_WIDTH)
-			.horizontalScroll(rememberScrollState()),
-		color = MaterialTheme.colorScheme.surfaceTint,
-		fontSize = 14.sp,
-		softWrap = false
-	)
+	if ((movie?.genres ?: series?.genres)?.isEmpty() == false) {
+		Text(
+			text = (movie?.genres ?: series?.genres)
+				?.joinToString(", ") { it.name } ?: "",
+			modifier = Modifier
+				.padding(horizontal = PADDING_WIDTH)
+				.horizontalScroll(rememberScrollState()),
+			color = MaterialTheme.colorScheme.surfaceTint,
+			fontSize = 14.sp,
+			softWrap = false
+		)
+	}
 	Text(
 		text = movie?.overview ?: series?.overview ?: "",
 		modifier = Modifier
@@ -351,13 +356,20 @@ private fun ActionButtonsRow() {
 			.padding(vertical = 12.dp),
 		horizontalArrangement = Arrangement.SpaceAround
 	) {
+		val context = LocalContext.current
+
 		ActionButtons.values().forEach { button ->
 			val buttonName = stringResource(button.buttonName)
 
 			Column(
 				modifier = Modifier
 					.padding(horizontal = 10.dp)
-					.bounceClickable { button.action },
+					.bounceClickable {
+						Toast
+							.makeText(context, context.getString(R.string.coming_soon), Toast.LENGTH_SHORT)
+							.show()
+						button.action
+					},
 				verticalArrangement = Arrangement.spacedBy(4.dp),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {

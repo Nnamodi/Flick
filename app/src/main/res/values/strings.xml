@@ -49,6 +49,7 @@
     <string name="known_for">Known for:</string>
     <string name="biography">Biography:</string>
     <string name="filmography">Filmography</string>
+    <string name="nothing_here">Oops… Nothing here</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

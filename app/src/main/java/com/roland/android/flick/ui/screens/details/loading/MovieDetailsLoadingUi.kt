@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.screens.details
+package com.roland.android.flick.ui.screens.details.loading
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBackIos
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.DotSeparator
+import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.CircleItem
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
@@ -33,7 +38,8 @@ import com.roland.android.flick.utils.shimmerModifier
 @Composable
 fun MovieDetailsLoadingUi(
 	scrollState: ScrollState,
-	isLoading: Boolean
+	isLoading: Boolean,
+	navigateUp: (Screens) -> Unit
 ) {
 	Column {
 		val screenHeight = LocalConfiguration.current.screenWidthDp.dp
@@ -42,7 +48,14 @@ fun MovieDetailsLoadingUi(
 			.height(screenHeight * 0.6f)
 			.fillMaxWidth()
 			.shimmerModifier(isLoading)
-		)
+		) {
+			IconButton(
+				onClick = { navigateUp(Screens.Back) },
+				modifier = Modifier.padding(start = 2.dp, top = 46.dp)
+			) {
+				Icon(Icons.Rounded.ArrowBackIos, stringResource(R.string.back))
+			}
+		}
 
 		Column(Modifier.verticalScroll(scrollState)) {
 			Column(Modifier.padding(horizontal = PADDING_WIDTH)) {
@@ -118,7 +131,7 @@ fun MovieDetailsLoadingUi(
 fun MovieDetailsLoadingUiPreview() {
 	FlickTheme(true) {
 		Surface {
-			MovieDetailsLoadingUi(rememberScrollState(), true)
+			MovieDetailsLoadingUi(rememberScrollState(), true) {}
 		}
 	}
 }

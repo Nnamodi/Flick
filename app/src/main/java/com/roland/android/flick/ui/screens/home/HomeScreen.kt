@@ -136,6 +136,9 @@ fun HomeScreen(
 				}
 			}
 		) { movieData1, movieData2, showData1, showData2 ->
+			val trendingMovies = (if (selectedCategory == MOVIES)
+				movieData1.trending else showData1.trending
+			).collectAsLazyPagingItems()
 			val moviesPagerState = rememberPagerState { 20 }
 			val seriesPagerState = rememberPagerState { 20 }
 			val pagerState = if (selectedCategory == MOVIES) moviesPagerState else seriesPagerState
@@ -181,14 +184,10 @@ fun HomeScreen(
 					pageSpacing = 14.dp,
 					flingBehavior = PagerDefaults.flingBehavior(
 						state = pagerState,
-						pagerSnapDistance = PagerSnapDistance.atMost(3)
+						pagerSnapDistance = PagerSnapDistance.atMost(20)
 					),
 					pageSize = PageSize.Fixed(dynamicPageWidth(POSTER_WIDTH_LARGE))
 				) { page ->
-					val trendingMovies = (if (selectedCategory == MOVIES)
-						movieData1.trending else showData1.trending
-					).collectAsLazyPagingItems()
-
 					if (trendingMovies.itemCount > 0) {
 						trendingMovies[page]?.let { movie ->
 							LargeItemPoster(

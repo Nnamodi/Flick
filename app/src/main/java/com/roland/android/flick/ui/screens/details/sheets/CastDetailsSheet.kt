@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.screens.details
+package com.roland.android.flick.ui.screens.details.sheets
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -48,6 +47,7 @@ import com.roland.android.flick.ui.components.CastPoster
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.screens.CommonScreen
+import com.roland.android.flick.ui.screens.details.loading.CastDetailsLoadingUi
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Extensions.refactor
@@ -63,9 +63,7 @@ fun CastDetailsSheet(
 
 	ModalBottomSheet(
 		onDismissRequest = closeSheet,
-		modifier = Modifier
-			.absoluteOffset(y = 16.dp)
-			.padding(horizontal = 12.dp),
+		modifier = Modifier.padding(horizontal = 12.dp),
 		sheetState = rememberModalBottomSheetState(true),
 		shape = RoundedCornerShape(28.dp),
 		dragHandle = null
