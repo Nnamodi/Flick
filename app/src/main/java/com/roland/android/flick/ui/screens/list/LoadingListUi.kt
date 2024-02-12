@@ -15,8 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.roland.android.flick.ui.components.ChipSet
 import com.roland.android.flick.ui.theme.FlickTheme
+import com.roland.android.flick.utils.DynamicContainer
 import com.roland.android.flick.utils.MediumBoxItem
-import com.roland.android.flick.utils.PosterContainer
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.rememberWindowSize
 
@@ -33,7 +33,7 @@ fun LoadingListUi(
 		Modifier.fillMaxWidth()
 	} else Modifier.fillMaxHeight()
 
-	PosterContainer(Modifier.padding(paddingValues)) {
+	DynamicContainer(Modifier.padding(paddingValues)) {
 		if (isSearchScreen) {
 			ChipSet(
 				modifier = chipModifier,

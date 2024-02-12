@@ -19,6 +19,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +36,8 @@ import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.CircleItem
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.RowItems
+import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.rememberWindowSize
 import com.roland.android.flick.utils.shimmerModifier
 
 @Composable
@@ -41,11 +46,18 @@ fun MovieDetailsLoadingUi(
 	isLoading: Boolean,
 	navigateUp: (Screens) -> Unit
 ) {
-	Column {
-		val screenHeight = LocalConfiguration.current.screenWidthDp.dp
+	val screenHeight = LocalConfiguration.current.screenWidthDp.dp
+	val windowSize = rememberWindowSize()
+	val inPortraitMode by remember(windowSize.width) {
+		derivedStateOf { windowSize.width == WindowType.Portrait }
+	}
+	val screenModifier = if (!inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
+	val columnModifier = if (inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
+	val videoHeightDivisor = if (inPortraitMode) 0.6f else 0.5f
 
+	Column(screenModifier) {
 		Box(Modifier
-			.height(screenHeight * 0.6f)
+			.height(screenHeight * videoHeightDivisor)
 			.fillMaxWidth()
 			.shimmerModifier(isLoading)
 		) {
@@ -57,7 +69,7 @@ fun MovieDetailsLoadingUi(
 			}
 		}
 
-		Column(Modifier.verticalScroll(scrollState)) {
+		Column(columnModifier) {
 			Column(Modifier.padding(horizontal = PADDING_WIDTH)) {
 				Spacer(Modifier
 					.padding(vertical = 10.dp)

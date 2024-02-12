@@ -37,7 +37,7 @@ import com.roland.android.flick.ui.screens.search.SearchCategory.MOVIES
 import com.roland.android.flick.ui.screens.search.SearchCategory.TV_SHOWS
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
-import com.roland.android.flick.utils.PosterContainer
+import com.roland.android.flick.utils.DynamicContainer
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.launch
@@ -111,7 +111,7 @@ fun SearchScreen(
 				Modifier.fillMaxWidth()
 			} else Modifier.fillMaxHeight()
 
-			PosterContainer(Modifier.padding(paddingValues)) {
+			DynamicContainer(Modifier.padding(paddingValues)) {
 				ChipSet(
 					modifier = chipModifier,
 					selectedCategory = searchCategory,

@@ -6,22 +6,27 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,7 +55,10 @@ import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.screens.details.loading.CastDetailsLoadingUi
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
+import com.roland.android.flick.utils.DynamicContainer
 import com.roland.android.flick.utils.Extensions.refactor
+import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.rememberWindowSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +68,10 @@ fun CastDetailsSheet(
 	closeSheet: () -> Unit
 ) {
 	val screenHeight = LocalConfiguration.current.screenHeightDp
+	val windowSize = rememberWindowSize()
+	val inPortraitMode by remember(windowSize.width) {
+		derivedStateOf { windowSize.width == WindowType.Portrait }
+	}
 
 	ModalBottomSheet(
 		onDismissRequest = closeSheet,
@@ -76,7 +88,7 @@ fun CastDetailsSheet(
 		) {	data ->
 			val castDetails = data.castDetails
 
-			Column(Modifier.heightIn(100.dp, (screenHeight - 80).dp)) {
+			DynamicContainer(Modifier.heightIn(100.dp, (screenHeight - 80).dp)) {
 				Row(verticalAlignment = Alignment.CenterVertically) {
 					Card(
 						modifier = Modifier
@@ -96,6 +108,13 @@ fun CastDetailsSheet(
 					}
 					Details(castDetails)
 				}
+				if (!inPortraitMode) {
+					Divider(Modifier
+						.padding(vertical = PADDING_WIDTH)
+						.fillMaxHeight()
+						.width(2.dp)
+					)
+				}
 				castDetails.biography?.let { biography ->
 					var expandBiography by remember { mutableStateOf(false) }
 					val modifier = when {
@@ -104,7 +123,7 @@ fun CastDetailsSheet(
 						else -> Modifier
 					}.animateContentSize(tween(300))
 
-					if (biography.isNotEmpty()) {
+					if (biography.isNotEmpty() && inPortraitMode) {
 						CastBiography(
 							biography = biography,
 							expandBiography = expandBiography,
@@ -181,11 +200,11 @@ private fun CastBiography(
 @Preview(showBackground = true)
 @Composable
 private fun CastDetailsSheetPreview() {
-	FlickTheme {
+	FlickTheme(true) {
 		val castDetails = State.Success(CastDetailsModel(movieCastDetails))
 		var uiState by remember { mutableStateOf<State.Success<CastDetailsModel>?>(castDetails) }
 
-		Column(
+		Surface(
 			Modifier
 				.fillMaxSize()
 				.clickable { uiState = castDetails }

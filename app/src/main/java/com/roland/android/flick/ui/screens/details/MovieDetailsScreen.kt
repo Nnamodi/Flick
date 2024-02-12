@@ -3,7 +3,6 @@ package com.roland.android.flick.ui.screens.details
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -31,6 +30,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -87,7 +87,9 @@ import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.YEAR
 import com.roland.android.flick.utils.Extensions.dateFormat
+import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.bounceClickable
+import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -137,10 +139,17 @@ fun MovieDetailsScreen(
 			}
 		) { details ->
 			val screenHeight = LocalConfiguration.current.screenWidthDp.dp
+			val windowSize = rememberWindowSize()
+			val inPortraitMode by remember(windowSize.width) {
+				derivedStateOf { windowSize.width == WindowType.Portrait }
+			}
+			val screenModifier = if (!inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
+			val columnModifier = if (inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
+			val videoHeightDivisor = if (inPortraitMode) 0.6f else 0.5f
 
 			if (isMovie) {
 				Column(
-					modifier = Modifier.padding(
+					modifier = screenModifier.padding(
 						bottom = paddingValues.calculateBottomPadding()
 					)
 				) {
@@ -160,7 +169,7 @@ fun MovieDetailsScreen(
 						genres = arrayOf(movie.movieGenres, movie.seriesGenres),
 						castDetailsRequest = request,
 						navigate = navigate,
-						scrollState = scrollState
+						modifier = columnModifier
 					)
 				}
 			} else {
@@ -172,10 +181,10 @@ fun MovieDetailsScreen(
 					val show = details as TvShowDetailsModel
 					val openSeasonSelectionSheet = rememberSaveable { mutableStateOf(false) }
 
-					Column {
+					Column(screenModifier) {
 						MovieDetailsPoster(
 							backdropPath = show.details.backdropPath,
-							modifier = Modifier.height(screenHeight * 0.6f),
+							modifier = Modifier.height(screenHeight * videoHeightDivisor),
 							enabled = !openSeasonSelectionSheet.value,
 							navigateUp = navigate
 						)
@@ -191,7 +200,7 @@ fun MovieDetailsScreen(
 							openSeasonSelectionSheet = { openSeasonSelectionSheet.value = true },
 							castDetailsRequest = request,
 							navigate = navigate,
-							scrollState = scrollState
+							modifier = columnModifier
 						)
 					}
 
@@ -223,13 +232,13 @@ private fun MovieDetails(
 	openSeasonSelectionSheet: () -> Unit = {},
 	castDetailsRequest: (DetailsRequest) -> Unit,
 	navigate: (Screens) -> Unit,
-	scrollState: ScrollState
+	modifier: Modifier
 ) {
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val openCastDetailsSheet = remember { mutableStateOf(false) }
 	var selectedCategory by remember { mutableIntStateOf(1) }
 
-	Column(Modifier.verticalScroll(scrollState)) {
+	Column(modifier) {
 		Details(movie, series)
 		ActionButtonsRow()
 		MovieCastList(
@@ -365,9 +374,11 @@ private fun ActionButtonsRow() {
 				modifier = Modifier
 					.padding(horizontal = 10.dp)
 					.bounceClickable {
-						Toast
-							.makeText(context, context.getString(R.string.coming_soon), Toast.LENGTH_SHORT)
-							.show()
+						Toast.makeText(
+							context,
+							context.getString(R.string.coming_soon),
+							Toast.LENGTH_SHORT
+						).show()
 						button.action
 					},
 				verticalArrangement = Arrangement.spacedBy(4.dp),

@@ -81,10 +81,10 @@ import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_X_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_X_LARGE
 import com.roland.android.flick.utils.Constants.SERIES
 import com.roland.android.flick.utils.Constants.YEAR
+import com.roland.android.flick.utils.DynamicContainer
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.genres
 import com.roland.android.flick.utils.Extensions.releaseDateRes
-import com.roland.android.flick.utils.PosterContainer
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.animatePagerItem
 import com.roland.android.flick.utils.dynamicPageHeight
@@ -214,7 +214,7 @@ fun ComingSoonItem(
 				}.using(SizeTransform(false))
 			}
 		) { targetState ->
-			PosterContainer {
+			DynamicContainer {
 				ComingSoonItemPoster(
 					movie = movie,
 					modifier = Modifier

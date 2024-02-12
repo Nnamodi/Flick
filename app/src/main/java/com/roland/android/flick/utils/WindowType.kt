@@ -104,7 +104,7 @@ fun String?.getPoster(isBackdrop: Boolean = false): String {
 }
 
 @Composable
-fun PosterContainer(
+fun DynamicContainer(
 	modifier: Modifier = Modifier,
 	content: @Composable () -> Unit
 ) {

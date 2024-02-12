@@ -30,7 +30,7 @@ import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.coming_soon.ItemDetails
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
-import com.roland.android.flick.utils.PosterContainer
+import com.roland.android.flick.utils.DynamicContainer
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.rememberWindowSize
 
@@ -59,7 +59,7 @@ fun MovieDetailsSheet(
 		shape = RoundedCornerShape(28.dp),
 		dragHandle = {}
 	) {
-		PosterContainer(
+		DynamicContainer(
 			modifier = Modifier
 				.clip(BottomSheetDefaults.ExpandedShape)
 				.padding(12.dp)
