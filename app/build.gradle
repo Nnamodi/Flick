@@ -79,6 +79,10 @@ dependencies {
     implementation material.icons
     implementation material.material3
 
+    // media3
+    implementation media3.exoplayer
+    implementation media3.ui
+
     // navigation
     implementation compose.navigation
 

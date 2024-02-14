@@ -58,6 +58,7 @@ import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.Series
+import com.roland.android.domain.entity.Video
 import com.roland.android.flick.R
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.MovieDetailsModel
@@ -87,6 +88,7 @@ import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.YEAR
 import com.roland.android.flick.utils.Extensions.dateFormat
+import com.roland.android.flick.utils.Extensions.getTrailer
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.bounceClickable
 import com.roland.android.flick.utils.rememberWindowSize
@@ -155,9 +157,9 @@ fun MovieDetailsScreen(
 				) {
 					val movie = details as MovieDetailsModel
 
-					MovieDetailsPoster(
-						backdropPath = movie.details.backdropPath,
-						modifier = Modifier.height(screenHeight * 0.6f),
+					VideoPlayer(
+						trailer = movie.details.videos.getTrailer(),
+						modifier = Modifier.height(screenHeight * videoHeightDivisor),
 						navigateUp = navigate
 					)
 					MovieDetails(
@@ -374,11 +376,13 @@ private fun ActionButtonsRow() {
 				modifier = Modifier
 					.padding(horizontal = 10.dp)
 					.bounceClickable {
-						Toast.makeText(
-							context,
-							context.getString(R.string.coming_soon),
-							Toast.LENGTH_SHORT
-						).show()
+						Toast
+							.makeText(
+								context,
+								context.getString(R.string.coming_soon),
+								Toast.LENGTH_SHORT
+							)
+							.show()
 						button.action
 					},
 				verticalArrangement = Arrangement.spacedBy(4.dp),

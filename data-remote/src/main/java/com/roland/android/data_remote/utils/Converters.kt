@@ -195,27 +195,25 @@ object Converters {
 		movieModel.originCountry
 	)
 
-	private fun convertToMovie(multiModel: MultiModel): Movie {
-		return Movie(
-			multiModel.id,
-			multiModel.title,
-			multiModel.overview ?: "",
-			multiModel.genreIds ?: emptyList(),
-			multiModel.backdropPath,
-			multiModel.posterPath,
-			multiModel.language!!,
-			multiModel.popularity,
-			multiModel.movieType,
-			multiModel.videoAvailable,
-			multiModel.voteAverage ?: 0.0,
-			multiModel.voteCount ?: 0,
-			multiModel.adult,
-			multiModel.releaseDate,
-			multiModel.tvName,
-			multiModel.firstAirDate,
-			multiModel.originCountry
-		)
-	}
+	private fun convertToMovie(multiModel: MultiModel) = Movie(
+		multiModel.id,
+		multiModel.title,
+		multiModel.overview ?: "",
+		multiModel.genreIds ?: emptyList(),
+		multiModel.backdropPath,
+		multiModel.posterPath,
+		multiModel.language!!,
+		multiModel.popularity,
+		multiModel.movieType,
+		multiModel.videoAvailable,
+		multiModel.voteAverage ?: 0.0,
+		multiModel.voteCount ?: 0,
+		multiModel.adult,
+		multiModel.releaseDate,
+		multiModel.tvName,
+		multiModel.firstAirDate,
+		multiModel.originCountry
+	)
 
 	private fun convertToCast(castModel: CastModel) = Cast(
 		castModel.id,

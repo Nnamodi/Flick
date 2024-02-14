@@ -28,10 +28,12 @@ fun FlickTheme(
 		else -> LightColorScheme
 	}
 	val view = LocalView.current
-	SideEffect {
-		val window = (view.context as Activity).window
-		window.statusBarColor = Color.Transparent.toArgb()
-		WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+	if (!view.isInEditMode){
+		SideEffect {
+			val window = (view.context as Activity).window
+			window.statusBarColor = Color.Transparent.toArgb()
+			WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+		}
 	}
 
 	MaterialTheme(

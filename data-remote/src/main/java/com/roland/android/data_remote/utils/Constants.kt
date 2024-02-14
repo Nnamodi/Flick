@@ -12,6 +12,8 @@ object Constants {
 
 	// Date patterns
 	const val DEFAULT_PATTERN = "yyyy-MM-dd"
+	const val TOMORROW = Calendar.DAY_OF_YEAR
+	const val NEXT_MONTH = Calendar.MONTH
 
 	fun date(span: Int): String {
 		val calendar = Calendar.getInstance()

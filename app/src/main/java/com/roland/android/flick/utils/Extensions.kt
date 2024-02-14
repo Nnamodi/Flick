@@ -19,6 +19,7 @@ import androidx.paging.filter
 import com.roland.android.data_remote.utils.Constants.DEFAULT_PATTERN
 import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
+import com.roland.android.domain.entity.Video
 import com.roland.android.domain.usecase.Category
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.PosterType
@@ -116,6 +117,14 @@ object Extensions {
 		it.voteAverage > 5.0 &&
 			it.posterPath != null &&
 				it.backdropPath != null
+	}
+
+	fun List<Video>.getTrailer(): Video? {
+		val trailers = filter { video ->
+			video.type == Constants.TRAILER && video.site == Constants.YOUTUBE
+		}
+		if (isEmpty()) return null
+		return if (trailers.isNotEmpty()) trailers[0] else this[0]
 	}
 
 	@Composable

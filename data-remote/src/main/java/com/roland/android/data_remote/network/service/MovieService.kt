@@ -4,11 +4,12 @@ import com.roland.android.data_remote.network.model.GenreListModel
 import com.roland.android.data_remote.network.model.MovieDetailsModel
 import com.roland.android.data_remote.network.model.MovieListModel
 import com.roland.android.data_remote.network.model.MultiListModel
+import com.roland.android.data_remote.utils.Constants.NEXT_MONTH
+import com.roland.android.data_remote.utils.Constants.TOMORROW
 import com.roland.android.data_remote.utils.Constants.date
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.util.Calendar
 
 interface MovieService {
 
@@ -39,8 +40,8 @@ interface MovieService {
 	@GET("/3/discover/movie")
 	suspend fun fetchUpcomingMovies(
 		@Query("include_adult") includeAdult: Boolean = false,
-		@Query("primary_release_date.gte") fromDate: String = date(Calendar.DAY_OF_YEAR),
-		@Query("primary_release_date.lte") toDate: String = date(Calendar.MONTH),
+		@Query("primary_release_date.gte") fromDate: String = date(TOMORROW),
+		@Query("primary_release_date.lte") toDate: String = date(NEXT_MONTH),
 		@Query("language") language: String = "en_US",
 		@Query("page") page: Int = 1,
 		@Query("sort_by") sortBy: String = "popularity.desc"
