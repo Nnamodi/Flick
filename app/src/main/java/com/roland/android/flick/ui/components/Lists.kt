@@ -1,6 +1,9 @@
 package com.roland.android.flick.ui.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +20,13 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerSnapDistance
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
@@ -29,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -36,10 +47,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.LoadState
@@ -47,7 +60,9 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
+import com.roland.android.domain.entity.Video
 import com.roland.android.flick.R
+import com.roland.android.flick.ui.screens.details.VideoPlayer
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_SMALL
@@ -58,6 +73,8 @@ import com.roland.android.flick.utils.MediumBoxItem
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 @Composable
 fun MovieLists(
@@ -156,11 +173,7 @@ fun HorizontalPosters(
 	val listState2 = rememberLazyListState()
 	val lazyListState = if (selectedHeader == 2) listState2 else listState1
 
-	Column(
-		modifier = Modifier
-			.fillMaxWidth()
-			.padding(bottom = 12.dp)
-	) {
+	Column(Modifier.padding(bottom = 12.dp)) {
 		Row(
 			modifier = Modifier
 				.fillMaxWidth()
@@ -230,19 +243,11 @@ fun HorizontalPosters(
 	header: String,
 	onMovieClick: (Movie) -> Unit
 ) {
-	Column(
-		modifier = Modifier
-			.fillMaxWidth()
-			.padding(bottom = 12.dp)
-	) {
-		Row(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(PADDING_WIDTH),
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			Header(header)
-		}
+	Column(Modifier.padding(bottom = 12.dp)) {
+		Header(
+			header = header,
+			modifier = Modifier.padding(PADDING_WIDTH)
+		)
 		LazyRow(
 			contentPadding = PaddingValues(
 				start = PADDING_WIDTH,
@@ -261,8 +266,94 @@ fun HorizontalPosters(
 	}
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun EmptyRow() {
+fun VideoList(videos: List<Video>) {
+	val pagerState = rememberPagerState { videos.size }
+	val scope = rememberCoroutineScope()
+	val screenWidth = LocalConfiguration.current.screenWidthDp
+
+	Column(Modifier
+		.padding(bottom = 12.dp)
+		.height(52.dp + POSTER_HEIGHT_SMALL + 8.dp + 42.dp + 16.dp + 12.dp)
+	) {
+		Header(
+			header = stringResource(R.string.more_videos),
+			modifier = Modifier.padding(PADDING_WIDTH)
+		)
+		HorizontalPager(
+			state = pagerState,
+			contentPadding = PaddingValues(horizontal = PADDING_WIDTH),
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(bottom = 16.dp),
+			pageSpacing = 8.dp,
+			verticalAlignment = Alignment.Top,
+			flingBehavior = PagerDefaults.flingBehavior(
+				state = pagerState,
+				pagerSnapDistance = PagerSnapDistance.atMost(videos.size)
+			),
+			pageSize = PageSize.Fixed(screenWidth.dp - (PADDING_WIDTH * 2))
+		) { page ->
+			VideoPlayer(
+				video = videos[page],
+				modifier = Modifier.fillMaxWidth()
+			)
+		}
+		Spacer(Modifier.weight(1f))
+		HorizontalPagerIndicator(
+			pageCount = videos.size,
+			pagerState = pagerState,
+			onClick = { scope.launch { pagerState.animateScrollToPage(it) } }
+		)
+		if (videos.isEmpty()) {
+			EmptyRow(stringResource(R.string.no_videos))
+		}
+	}
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun HorizontalPagerIndicator(
+	pageCount: Int,
+	pagerState: PagerState,
+	indicatorColor: Color = MaterialTheme.colorScheme.surfaceTint,
+	unselectedIndicatorSize: Dp = 8.dp,
+	selectedIndicatorSize: Dp = 12.dp,
+	onClick: (Int) -> Unit
+) {
+	Row(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(horizontal = 30.dp)
+			.horizontalScroll(rememberScrollState()),
+		horizontalArrangement = Arrangement.Center,
+		verticalAlignment = Alignment.CenterVertically
+	) {
+		repeat(pageCount) { index ->
+			val (color, size) = if (pagerState.currentPage == index || pagerState.targetPage == index) {
+				val pageOffset = ((pagerState.currentPage - index) + pagerState.currentPageOffsetFraction).absoluteValue
+				val offsetPercentage = 1f - pageOffset.coerceIn(0f, 1f)
+				val size = unselectedIndicatorSize + ((selectedIndicatorSize - unselectedIndicatorSize) * offsetPercentage)
+				indicatorColor.copy(alpha = offsetPercentage) to size
+			} else {
+				indicatorColor.copy(alpha = 0.1f) to unselectedIndicatorSize
+			}
+
+			Box(
+				modifier = Modifier
+					.padding(horizontal = 6.dp)
+					.size(width = size, height = size / 2)
+					.clip(MaterialTheme.shapes.small)
+					.background(color)
+					.clickable { onClick(index) }
+			)
+		}
+	}
+}
+
+@Composable
+private fun EmptyRow(text: String = stringResource(R.string.nothing_here)) {
 	Box(
 		modifier = Modifier
 			.fillMaxWidth()
@@ -270,7 +361,7 @@ private fun EmptyRow() {
 		contentAlignment = Alignment.Center
 	) {
 		Text(
-			text = stringResource(R.string.nothing_here),
+			text = text,
 			fontStyle = FontStyle.Italic
 		)
 	}

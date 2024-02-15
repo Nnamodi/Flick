@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBackIos
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,12 +28,10 @@ import coil.compose.AsyncImagePainter
 import coil.compose.AsyncImagePainter.State.Empty
 import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.Movie
-import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.PosterType.BackdropPoster
 import com.roland.android.flick.ui.components.PosterType.FullScreen
 import com.roland.android.flick.ui.components.PosterType.Large
 import com.roland.android.flick.ui.components.PosterType.Small
-import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.utils.Constants.CAST_IMAGE_BASE_URL_W185
 import com.roland.android.flick.utils.Constants.CAST_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W342
@@ -84,31 +77,6 @@ fun ItemBackdropPoster(
 		modifier = modifier.fillMaxWidth(),
 		posterType = posterType
 	) {}
-}
-
-@Composable
-fun MovieDetailsPoster(
-	backdropPath: String,
-	modifier: Modifier = Modifier,
-	enabled: Boolean = true,
-	navigateUp: (Screens) -> Unit
-) {
-	Box {
-		Poster(
-			model = MOVIE_IMAGE_BASE_URL_W780 + backdropPath,
-			contentDescription = null,
-			voteAverage = 0.0,
-			modifier = modifier.fillMaxWidth(),
-			posterType = FullScreen
-		) {}
-		IconButton(
-			onClick = { navigateUp(Screens.Back) },
-			modifier = Modifier.padding(start = 2.dp, top = 46.dp),
-			enabled = enabled
-		) {
-			Icon(Icons.Rounded.ArrowBackIos, stringResource(R.string.back))
-		}
-	}
 }
 
 @Composable

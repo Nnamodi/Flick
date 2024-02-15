@@ -11,6 +11,7 @@ import com.roland.android.domain.entity.MovieCredits
 import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.Season
 import com.roland.android.domain.entity.Series
+import com.roland.android.domain.entity.Video
 import com.roland.android.flick.utils.Extensions.refactor
 
 object SampleData {
@@ -78,6 +79,12 @@ object SampleData {
 		),
 		voteAverage = movie5.voteAverage,
 		releaseDate = movie5.releaseDate,
+		videos = listOf(
+			Video(id = "0", name = "First Trailer"),
+			Video(id = "1", name = "Behind the scene"),
+			Video(id = "2", name = "Documentary"),
+			Video(id = "3", name = "Interview of top casts")
+		),
 		credits = MovieCredits(
 			cast = listOf(
 				Cast(name = "Jack Jones", character = "Red"),
@@ -114,6 +121,12 @@ object SampleData {
 		),
 		numberOfSeasons = 16,
 		voteAverage = movie3.voteAverage,
+		videos = listOf(
+			Video(id = "0", name = "First Trailer"),
+			Video(id = "1", name = "Behind the scene"),
+			Video(id = "2", name = "Documentary"),
+			Video(id = "3", name = "Interview of top casts")
+		),
 		credits = MovieCredits(
 			cast = listOf(
 				Cast(name = "Roland Nnam", character = "Nnamodi"),

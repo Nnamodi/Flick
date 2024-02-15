@@ -75,9 +75,9 @@ import com.roland.android.flick.state.MovieDetailsUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.DotSeparator
 import com.roland.android.flick.ui.components.HorizontalPosters
-import com.roland.android.flick.ui.components.MovieDetailsPoster
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.RatingBar
+import com.roland.android.flick.ui.components.VideoList
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.screens.details.loading.MovieDetailsLoadingUi
@@ -169,9 +169,10 @@ fun MovieDetailsScreen(
 						recommendedMovies = movie.recommendedMovies,
 						similarMovies = movie.similarMovies,
 						genres = arrayOf(movie.movieGenres, movie.seriesGenres),
+						videos = movie.details.videos,
+						modifier = columnModifier,
 						castDetailsRequest = request,
-						navigate = navigate,
-						modifier = columnModifier
+						navigate = navigate
 					)
 				}
 			} else {
@@ -184,8 +185,8 @@ fun MovieDetailsScreen(
 					val openSeasonSelectionSheet = rememberSaveable { mutableStateOf(false) }
 
 					Column(screenModifier) {
-						MovieDetailsPoster(
-							backdropPath = show.details.backdropPath,
+						VideoPlayer(
+							trailer = show.details.videos.getTrailer(),
 							modifier = Modifier.height(screenHeight * videoHeightDivisor),
 							enabled = !openSeasonSelectionSheet.value,
 							navigateUp = navigate
@@ -199,10 +200,11 @@ fun MovieDetailsScreen(
 							similarMovies = show.similarShows,
 							genres = arrayOf(show.movieGenres, show.seriesGenres),
 							selectedSeasonNumber = uiState.selectedSeasonNumber,
+							videos = show.details.videos,
+							modifier = columnModifier,
 							openSeasonSelectionSheet = { openSeasonSelectionSheet.value = true },
 							castDetailsRequest = request,
-							navigate = navigate,
-							modifier = columnModifier
+							navigate = navigate
 						)
 					}
 
@@ -231,14 +233,16 @@ private fun MovieDetails(
 	similarMovies: MutableStateFlow<PagingData<Movie>>,
 	genres: Array<GenreList>,
 	selectedSeasonNumber: Int? = null,
+	videos: List<Video>,
+	modifier: Modifier,
 	openSeasonSelectionSheet: () -> Unit = {},
 	castDetailsRequest: (DetailsRequest) -> Unit,
-	navigate: (Screens) -> Unit,
-	modifier: Modifier
+	navigate: (Screens) -> Unit
 ) {
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val openCastDetailsSheet = remember { mutableStateOf(false) }
 	var selectedCategory by remember { mutableIntStateOf(1) }
+	val moreVideos = videos.filterNot { it == videos.getTrailer() }
 
 	Column(modifier) {
 		Details(movie, series)
@@ -267,6 +271,7 @@ private fun MovieDetails(
 			onHeaderClick = { selectedCategory = it },
 			onMovieClick = { clickedMovieItem.value = it }
 		) {}
+		VideoList(moreVideos)
 		Spacer(Modifier.height(50.dp))
 	}
 
