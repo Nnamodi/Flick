@@ -89,6 +89,7 @@ import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.YEAR
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.getTrailer
+import com.roland.android.flick.utils.Extensions.getTrailerKey
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.bounceClickable
 import com.roland.android.flick.utils.rememberWindowSize
@@ -158,7 +159,7 @@ fun MovieDetailsScreen(
 					val movie = details as MovieDetailsModel
 
 					VideoPlayer(
-						trailer = movie.details.videos.getTrailer(),
+						trailerKey = movie.details.videos.getTrailerKey(),
 						modifier = Modifier.height(screenHeight * videoHeightDivisor),
 						navigateUp = navigate
 					)
@@ -186,7 +187,7 @@ fun MovieDetailsScreen(
 
 					Column(screenModifier) {
 						VideoPlayer(
-							trailer = show.details.videos.getTrailer(),
+							trailerKey = show.details.videos.getTrailerKey(),
 							modifier = Modifier.height(screenHeight * videoHeightDivisor),
 							enabled = !openSeasonSelectionSheet.value,
 							navigateUp = navigate

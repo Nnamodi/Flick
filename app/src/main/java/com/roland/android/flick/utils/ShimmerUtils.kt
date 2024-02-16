@@ -153,8 +153,8 @@ fun SmallBoxItem(
 	ShimmerBoxItem(
 		isLoading = isLoading,
 		modifier = modifier
-			.size(POSTER_WIDTH_SMALL, POSTER_HEIGHT_SMALL)
 			.padding(end = 12.dp)
+			.size(POSTER_WIDTH_SMALL, POSTER_HEIGHT_SMALL)
 	)
 }
 

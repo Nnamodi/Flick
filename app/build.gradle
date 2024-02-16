@@ -97,6 +97,9 @@ dependencies {
     // splash_screen
     implementation androidx.splashScreen
 
+    // youtube player
+    implementation youtube.player
+
     // unit testing
     testImplementation test.junit
     androidTestImplementation androidTest.espressoCore

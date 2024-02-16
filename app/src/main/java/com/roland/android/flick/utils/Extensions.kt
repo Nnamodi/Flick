@@ -25,6 +25,8 @@ import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.utils.Constants.DAY
 import com.roland.android.flick.utils.Constants.RELEASE_DATE_PATTERN
+import com.roland.android.flick.utils.Constants.TRAILER
+import com.roland.android.flick.utils.Constants.YOUTUBE
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -119,12 +121,17 @@ object Extensions {
 				it.backdropPath != null
 	}
 
+	fun List<Video>.getTrailerKey(): String? = getTrailer()?.key
+
 	fun List<Video>.getTrailer(): Video? {
 		val trailers = filter { video ->
-			video.type == Constants.TRAILER && video.site == Constants.YOUTUBE
+			video.type == TRAILER && video.site == YOUTUBE
 		}
-		if (isEmpty()) return null
-		return if (trailers.isNotEmpty()) trailers[0] else this[0]
+		return when {
+			isEmpty() -> null
+			trailers.isNotEmpty() -> trailers[0]
+			else -> this[0]
+		}
 	}
 
 	@Composable

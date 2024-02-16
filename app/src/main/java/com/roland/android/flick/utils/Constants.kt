@@ -19,7 +19,7 @@ object Constants {
 	const val YOUTUBE_VIDEO_BASE_URL = "https://www.youtube.com/watch?v="
 	const val VIMEO_BASE_URL = "https://vimeo.com/"
 	const val TRAILER = "Trailer"
-	const val YOUTUBE = "Youtube"
+	const val YOUTUBE = "YouTube"
 
 	// Date patterns
 	const val RELEASE_DATE_PATTERN = "MMMM d, yyyy"

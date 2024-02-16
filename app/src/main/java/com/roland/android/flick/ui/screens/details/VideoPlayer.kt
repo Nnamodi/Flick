@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -25,6 +26,9 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.roland.android.domain.entity.Video
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.navigation.Screens
@@ -35,11 +39,14 @@ import com.roland.android.flick.utils.Constants.YOUTUBE_VIDEO_BASE_URL
 fun VideoPlayer(
 	video: Video,
 	modifier: Modifier = Modifier,
+	canPlay: Boolean
 ) {
 	Column(modifier) {
 		Player(
-			video = video,
-			modifier = Modifier.height(POSTER_HEIGHT_SMALL)
+			videoKey = video.key,
+			modifier = Modifier.height(POSTER_HEIGHT_SMALL),
+			autoPlay = false,
+			canPlay = canPlay
 		)
 		Text(
 			text = video.name,
@@ -52,14 +59,14 @@ fun VideoPlayer(
 
 @Composable
 fun VideoPlayer(
-	trailer: Video?,
+	trailerKey: String?,
 	modifier: Modifier = Modifier,
 	enabled: Boolean = true,
 	navigateUp: (Screens) -> Unit
 ) {
 	Box {
 		Player(
-			video = trailer,
+			videoKey = trailerKey,
 			modifier = modifier.fillMaxWidth()
 		)
 		IconButton(
@@ -67,19 +74,59 @@ fun VideoPlayer(
 			modifier = Modifier.padding(start = 2.dp, top = 46.dp),
 			enabled = enabled
 		) {
-			Icon(Icons.Rounded.ArrowBackIos, stringResource(R.string.back))
+			Icon(
+				imageVector = Icons.Rounded.ArrowBackIos,
+				contentDescription = stringResource(R.string.back),
+				tint = Color.White
+			)
 		}
+	}
+}
+
+@Composable
+private fun Player(
+	videoKey: String?,
+	modifier: Modifier = Modifier,
+	autoPlay: Boolean = true,
+	canPlay: Boolean = true
+) {
+	val view = YouTubePlayerView(LocalContext.current)
+
+	AndroidView(
+		modifier = modifier,
+		factory = {
+			view.addYouTubePlayerListener(
+				object : AbstractYouTubePlayerListener() {
+					override fun onReady(youTubePlayer: YouTubePlayer) {
+						super.onReady(youTubePlayer)
+						youTubePlayer.apply {
+							if (autoPlay) {
+								loadVideo(videoId = videoKey ?: "", startSeconds = 0f)
+							} else {
+								cueVideo(videoId = videoKey ?: "", startSeconds = 0f)
+							}
+							if (!canPlay) pause()
+						}
+					}
+				}
+			)
+			view
+		}
+	)
+
+	DisposableEffect(Unit) {
+		onDispose(view::release)
 	}
 }
 
 @OptIn(UnstableApi::class)
 @Composable
-private fun Player(
-	video: Video?,
+private fun ExoPlayer(
+	videoKey: String?,
 	modifier: Modifier = Modifier
 ) {
 	val context = LocalContext.current
-	val url = Uri.parse(YOUTUBE_VIDEO_BASE_URL + video?.key)
+	val url = Uri.parse(YOUTUBE_VIDEO_BASE_URL + videoKey)
 	val exoPlayer = remember {
 		ExoPlayer.Builder(context).build().apply {
 			setMediaItem(MediaItem.fromUri(url))

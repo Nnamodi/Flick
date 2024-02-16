@@ -275,7 +275,7 @@ fun VideoList(videos: List<Video>) {
 
 	Column(Modifier
 		.padding(bottom = 12.dp)
-		.height(52.dp + POSTER_HEIGHT_SMALL + 8.dp + 42.dp + 16.dp + 12.dp)
+		.height(52.dp + POSTER_HEIGHT_SMALL + 12.dp + 42.dp + 16.dp + 16.dp)
 	) {
 		Header(
 			header = stringResource(R.string.more_videos),
@@ -287,6 +287,7 @@ fun VideoList(videos: List<Video>) {
 			modifier = Modifier
 				.fillMaxWidth()
 				.padding(bottom = 16.dp),
+			beyondBoundsPageCount = videos.size,
 			pageSpacing = 8.dp,
 			verticalAlignment = Alignment.Top,
 			flingBehavior = PagerDefaults.flingBehavior(
@@ -297,7 +298,8 @@ fun VideoList(videos: List<Video>) {
 		) { page ->
 			VideoPlayer(
 				video = videos[page],
-				modifier = Modifier.fillMaxWidth()
+				modifier = Modifier.fillMaxWidth(),
+				canPlay = page == pagerState.currentPage
 			)
 		}
 		Spacer(Modifier.weight(1f))
@@ -322,11 +324,13 @@ private fun HorizontalPagerIndicator(
 	selectedIndicatorSize: Dp = 12.dp,
 	onClick: (Int) -> Unit
 ) {
+	val scrollState = rememberScrollState()
+
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
 			.padding(horizontal = 30.dp)
-			.horizontalScroll(rememberScrollState()),
+			.horizontalScroll(scrollState),
 		horizontalArrangement = Arrangement.Center,
 		verticalAlignment = Alignment.CenterVertically
 	) {
@@ -349,6 +353,10 @@ private fun HorizontalPagerIndicator(
 					.clickable { onClick(index) }
 			)
 		}
+	}
+
+	LaunchedEffect(pagerState.currentPage) {
+		scrollState.animateScrollTo(pagerState.currentPage)
 	}
 }
 

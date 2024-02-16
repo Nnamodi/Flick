@@ -189,7 +189,7 @@ fun ComingSoonScreen(
 									if (page != pagerState.currentPage) scope.launch {
 										pagerState.animateScrollToPage(
 											page = page,
-											animationSpec = tween(durationMillis = 1000)
+											animationSpec = tween(500)
 										)
 									} else itemExpanded(true)
 								},

@@ -147,7 +147,8 @@ private fun EpisodePoster(
 					.padding(6.dp)
 					.clip(MaterialTheme.shapes.large)
 					.background(Color.Black.copy(alpha = 0.5f))
-					.padding(8.dp, 2.dp)
+					.padding(8.dp, 2.dp),
+				color = Color.White
 			)
 			RatingBar(PosterType.Small, episode.voteAverage)
 		}
