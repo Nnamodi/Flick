@@ -95,6 +95,15 @@ interface MovieService {
 		@Query("page") page: Int = 1
 	): MultiListModel
 
+	@GET("/3/discover/movie")
+	suspend fun fetchMoviesByGenre(
+		@Query("with_genres") genreIds: String,
+		@Query("include_adult") includeAdult: Boolean = false,
+		@Query("language") language: String = "en_US",
+		@Query("page") page: Int = 1,
+		@Query("sort_by") sortBy: String = "popularity.desc"
+	): MovieListModel
+
 	@GET("/3/movie/{movie_id}")
 	suspend fun fetchMovieDetails(
 		@Path("movie_id") movieId: Int,

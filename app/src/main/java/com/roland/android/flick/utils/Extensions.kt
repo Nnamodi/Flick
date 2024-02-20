@@ -17,7 +17,7 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.filter
 import com.roland.android.data_remote.utils.Constants.DEFAULT_PATTERN
-import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.Video
 import com.roland.android.domain.usecase.Category
@@ -43,9 +43,9 @@ object Extensions {
 		return if ('.' !in value) "$value.0" else value
 	}
 
-	fun List<Int>.genres(genreList: GenreList): String {
+	fun List<Int>.genres(genreList: List<Genre>): String {
 		return map { id ->
-			genreList.genres.find { it.id == id }?.name
+			genreList.find { it.id == id }?.name
 		}.joinToString(", ")
 	}
 
@@ -94,6 +94,7 @@ object Extensions {
 
 	fun String.refine() = when {
 		"UnknownHostException" in this -> "No Internet Connection"
+		"Failed to connect" in this -> "No Internet Connection"
 		"SocketTimeoutException" in this -> "Connection Timeout"
 		"timeout" in this -> "Connection Timeout"
 		"ConnectException" in this -> "Connection Interrupted"

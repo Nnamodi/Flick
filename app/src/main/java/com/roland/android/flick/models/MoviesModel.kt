@@ -2,7 +2,7 @@ package com.roland.android.flick.models
 
 import androidx.paging.PagingData
 import com.roland.android.domain.entity.CastDetails
-import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,36 +18,42 @@ data class MoviesModel(
 data class FurtherMoviesModel(
 	val bollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val anime: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val genres: GenreList = GenreList()
+	val genres: List<Genre> = emptyList()
 )
 
 data class MovieListModel(
 	val movieList: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val movieGenres: GenreList = GenreList(),
-	val seriesGenres: GenreList = GenreList()
+	val movieGenres: List<Genre> = emptyList(),
+	val seriesGenres: List<Genre> = emptyList()
 )
 
 data class SearchModel(
 	val moviesAndShows: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val movies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val tvShows: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val movieGenres: GenreList = GenreList(),
-	val seriesGenres: GenreList = GenreList()
+	val movieGenres: List<Genre> = emptyList(),
+	val seriesGenres: List<Genre> = emptyList()
+)
+
+data class CategorySelectionModel(
+	val movieList: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val movieGenres: List<Genre> = emptyList(),
+	val seriesGenres: List<Genre> = emptyList()
 )
 
 data class ComingSoonModel(
 	val upcomingMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val upcomingShows: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val movieGenres: GenreList = GenreList(),
-	val seriesGenres: GenreList = GenreList()
+	val movieGenres: List<Genre> = emptyList(),
+	val seriesGenres: List<Genre> = emptyList()
 )
 
 data class MovieDetailsModel(
 	val details: MovieDetails = MovieDetails(),
 	val recommendedMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val similarMovies: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val movieGenres: GenreList = GenreList(),
-	val seriesGenres: GenreList = GenreList()
+	val movieGenres: List<Genre> = emptyList(),
+	val seriesGenres: List<Genre> = emptyList()
 )
 
 data class CastDetailsModel(val castDetails: CastDetails = CastDetails())

@@ -2,7 +2,7 @@ package com.roland.android.flick.models
 
 import androidx.paging.PagingData
 import com.roland.android.domain.entity.Episode
-import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieCredits
 import com.roland.android.domain.entity.Season
@@ -20,15 +20,15 @@ data class TvShowsModel(
 data class FurtherTvShowsModel(
 	val bollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val anime: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val genres: GenreList = GenreList(),
+	val genres: List<Genre> = emptyList(),
 )
 
 data class TvShowDetailsModel(
 	val details: Series = Series(),
 	val recommendedShows: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val similarShows: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val movieGenres: GenreList = GenreList(),
-	val seriesGenres: GenreList = GenreList()
+	val movieGenres: List<Genre> = emptyList(),
+	val seriesGenres: List<Genre> = emptyList()
 )
 
 data class SeasonDetailsModel(

@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.PagingData
 import com.roland.android.domain.entity.Cast
-import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.Series
@@ -232,7 +232,7 @@ private fun MovieDetails(
 	castDetails: State<CastDetailsModel>? = null,
 	recommendedMovies: MutableStateFlow<PagingData<Movie>>,
 	similarMovies: MutableStateFlow<PagingData<Movie>>,
-	genres: Array<GenreList>,
+	genres: Array<List<Genre>>,
 	selectedSeasonNumber: Int? = null,
 	videos: List<Video>,
 	modifier: Modifier,
@@ -313,16 +313,41 @@ private fun Details(
 		modifier = Modifier.padding(horizontal = PADDING_WIDTH),
 		verticalAlignment = Alignment.CenterVertically
 	) {
-		(movie?.releaseDate ?: series?.firstAirDate)?.let { date ->
+		val releaseDate = (movie?.releaseDate ?: series?.firstAirDate)?.dateFormat(YEAR)
+		val lastAirDate = series?.lastAirDate?.dateFormat(YEAR)
+
+		releaseDate?.let {
 			Text(
-				text = date.dateFormat(YEAR),
+				text = releaseDate,
 				modifier = Modifier.alpha(0.8f),
 				fontSize = 12.sp,
 				fontStyle = FontStyle.Italic,
 				fontWeight = FontWeight.Light
 			)
-			DotSeparator()
 		}
+		lastAirDate?.let {
+			if (!series.inProduction && (lastAirDate != releaseDate)) {
+				Text(
+					text = "-$lastAirDate",
+					modifier = Modifier.alpha(0.8f),
+					fontSize = 12.sp,
+					fontStyle = FontStyle.Italic,
+					fontWeight = FontWeight.Light
+				)
+			}
+		}
+		if (series?.inProduction == true) {
+			Text(
+				text = stringResource(R.string.in_production),
+				modifier = Modifier
+					.padding(start = 2.dp)
+					.alpha(0.8f),
+				fontSize = 12.sp,
+				fontStyle = FontStyle.Italic,
+				fontWeight = FontWeight.Light
+			)
+		}
+		DotSeparator()
 		series?.let {
 			Text(
 				text = pluralStringResource(R.plurals.number_of_seasons, series.numberOfSeasons, series.numberOfSeasons),

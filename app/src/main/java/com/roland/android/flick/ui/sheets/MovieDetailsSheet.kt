@@ -21,7 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.models.SampleData.genreList
 import com.roland.android.flick.models.SampleData.movie5
@@ -38,7 +38,7 @@ import com.roland.android.flick.utils.rememberWindowSize
 @Composable
 fun MovieDetailsSheet(
 	movie: Movie,
-	genreList: GenreList,
+	genreList: List<Genre>,
 	viewMore: (Screens) -> Unit,
 	closeSheet: () -> Unit
 ) {

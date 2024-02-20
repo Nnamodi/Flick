@@ -4,7 +4,6 @@ import com.roland.android.data_remote.network.model.CastDetailsModel
 import com.roland.android.data_remote.network.model.CastModel
 import com.roland.android.data_remote.network.model.DatesModel
 import com.roland.android.data_remote.network.model.EpisodeModel
-import com.roland.android.data_remote.network.model.GenreListModel
 import com.roland.android.data_remote.network.model.GenreModel
 import com.roland.android.data_remote.network.model.LanguageModel
 import com.roland.android.data_remote.network.model.MovieCreditsModel
@@ -23,7 +22,6 @@ import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.Dates
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.Genre
-import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Language
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieCredits
@@ -75,13 +73,9 @@ object Converters {
 		detailsModel.productionCompanies.map { convertToProductionCompany(it) },
 		detailsModel.productionCountries.map { convertToProductionCountry(it) },
 		detailsModel.releaseDate,
-		detailsModel.revenue,
 		detailsModel.spokenLanguages.map { convertToLanguage(it) },
 		detailsModel.status,
 		detailsModel.tagline,
-		detailsModel.tvName,
-		detailsModel.firstAirDate,
-		detailsModel.originalCountry,
 		detailsModel.videos.results.map { convertToVideo(it) },
 		convertToMovieCredits(detailsModel.credits)
 	)
@@ -166,9 +160,9 @@ object Converters {
 		castDetailsModel.combinedCredits.moviesActed.map { convertToMovie(it) }
 	)
 
-	fun convertToGenreList(genreListModel: GenreListModel) = GenreList(
-		genreListModel.genres.map { convertToGenre(it) }
-	)
+	fun convertToGenreList(genreListModel: List<GenreModel>) = genreListModel.map {
+		convertToGenre(it)
+	}
 
 	private fun convertToGenre(genreModel: GenreModel) = Genre(
 		genreModel.id,

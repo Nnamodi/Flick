@@ -59,7 +59,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
 import com.roland.android.flick.models.SampleData.genreList
@@ -95,7 +95,7 @@ import com.roland.android.flick.utils.rememberWindowSize
 @Composable
 fun ComingSoonItem(
 	movie: Movie,
-	genreList: GenreList,
+	genreList: List<Genre>,
 	expanded: Boolean,
 	itemPage: Int,
 	pagerState: PagerState,
@@ -240,7 +240,7 @@ fun ComingSoonItem(
 @Composable
 fun ItemDetails(
 	movie: Movie,
-	genreList: GenreList,
+	genreList: List<Genre>,
 	inBottomSheet: Boolean = false,
 	viewMore: (Screens) -> Unit
 ) {
@@ -313,7 +313,7 @@ fun ItemDetails(
 @Composable
 private fun FullScreenComingSoonItem(
 	movie: Movie,
-	genreList: GenreList,
+	genreList: List<Genre>,
 	viewMore: (Int) -> Unit,
 	minimize: () -> Unit
 ) {

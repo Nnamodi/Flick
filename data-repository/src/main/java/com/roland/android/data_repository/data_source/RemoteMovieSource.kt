@@ -1,7 +1,7 @@
 package com.roland.android.data_repository.data_source
 
 import androidx.paging.PagingData
-import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails
 import kotlinx.coroutines.flow.Flow
@@ -28,10 +28,12 @@ interface RemoteMovieSource {
 
 	fun searchMovies(query: String): Flow<PagingData<Movie>>
 
+	fun fetchMoviesByGenre(genreIds: String): Flow<PagingData<Movie>>
+
 	fun searchMoviesAndShows(query: String): Flow<PagingData<Movie>>
 
 	fun fetchMovieDetails(movieId: Int): Flow<MovieDetails>
 
-	fun fetchMovieGenres(): Flow<GenreList>
+	fun fetchMovieGenres(): Flow<List<Genre>>
 
 }

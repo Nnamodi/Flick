@@ -7,6 +7,7 @@ import androidx.paging.cachedIn
 import com.roland.android.data_remote.network.service.MovieService
 import com.roland.android.data_remote.paging.AnimeCollectionPagingSource
 import com.roland.android.data_remote.paging.BollywoodMoviesPagingSource
+import com.roland.android.data_remote.paging.MoviesByGenrePagingSource
 import com.roland.android.data_remote.paging.NowPlayingMoviesPagingSource
 import com.roland.android.data_remote.paging.PopularMoviesPagingSource
 import com.roland.android.data_remote.paging.RecommendedMoviesPagingSource
@@ -20,7 +21,7 @@ import com.roland.android.data_remote.utils.Constants.MAX_PAGE_SIZE
 import com.roland.android.data_remote.utils.Converters.convertToGenreList
 import com.roland.android.data_remote.utils.Converters.convertToMovieDetails
 import com.roland.android.data_repository.data_source.RemoteMovieSource
-import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.UseCaseException
@@ -177,6 +178,20 @@ class RemoteMovieSourceImpl @Inject constructor(
 			.cachedIn(scope)
 	}
 
+	override fun fetchMoviesByGenre(genreIds: String): Flow<PagingData<Movie>> {
+		return Pager(
+			config = PagingConfig(
+				pageSize = MAX_PAGE_SIZE,
+				prefetchDistance = MAX_PAGE_SIZE / 2
+			),
+			pagingSourceFactory = {
+				MoviesByGenrePagingSource(movieService, genreIds)
+			}
+		).flow
+			.distinctUntilChanged()
+			.cachedIn(scope)
+	}
+
 	override fun searchMoviesAndShows(query: String): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
@@ -199,10 +214,10 @@ class RemoteMovieSourceImpl @Inject constructor(
 		throw UseCaseException.MovieException(it)
 	}
 
-	override fun fetchMovieGenres(): Flow<GenreList> = flow {
+	override fun fetchMovieGenres(): Flow<List<Genre>> = flow {
 		emit(movieService.fetchMovieGenres())
 	}.map { genreListModel ->
-		convertToGenreList(genreListModel)
+		convertToGenreList(genreListModel.genres)
 	}.catch {
 		throw UseCaseException.MovieException(it)
 	}

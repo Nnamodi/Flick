@@ -20,20 +20,11 @@ data class MovieDetails(
 	val productionCompanies: List<ProductionCompany> = emptyList(),
 	val productionCountries: List<ProductionCountry> = emptyList(),
 	val releaseDate: String? = null,
-	val revenue: Int = 0,
 	val spokenLanguages: List<Language> = emptyList(),
 	val status: String = "",
 	val tagline: String = "",
-	//tv-specific params
-	val tvName: String? = null,
-	val firstAirDate: String? = null,
-	val originalCountry: List<String>? = null,
 	val videos: List<Video> = emptyList(),
 	val credits: MovieCredits = MovieCredits()
-)
-
-data class GenreList(
-	val genres: List<Genre> = emptyList()
 )
 
 data class Genre(

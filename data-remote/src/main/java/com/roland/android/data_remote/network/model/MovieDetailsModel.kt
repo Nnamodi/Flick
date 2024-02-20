@@ -41,21 +41,12 @@ data class MovieDetailsModel(
 	val productionCountries: List<ProductionCountryModel> = emptyList(),
 	@Json(name = "release_date")
 	val releaseDate: String? = null,
-	@Json(name = "revenue")
-	val revenue: Int = 0,
 	@Json(name = "spoken_languages")
 	val spokenLanguages: List<LanguageModel> = emptyList(),
 	@Json(name = "status")
 	val status: String = "",
 	@Json(name = "tagline")
 	val tagline: String = "",
-	//tv-specific params
-	@Json(name = "tv_name")
-	val tvName: String? = null,
-	@Json(name = "first_air_date")
-	val firstAirDate: String? = null,
-	@Json(name = "original_country")
-	val originalCountry: List<String>? = null,
 	@Json(name = "videos")
 	val videos: VideoListModel = VideoListModel(),
 	@Json(name = "credits")

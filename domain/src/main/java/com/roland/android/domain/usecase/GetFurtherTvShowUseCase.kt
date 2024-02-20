@@ -1,7 +1,7 @@
 package com.roland.android.domain.usecase
 
 import androidx.paging.PagingData
-import com.roland.android.domain.entity.GenreList
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.repository.TvShowRepository
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +26,7 @@ class GetFurtherTvShowUseCase @Inject constructor(
 	data class Response(
 		val bollywoodShows: PagingData<Movie>,
 		val animeShows: PagingData<Movie>,
-		val genres: GenreList
+		val showGenres: List<Genre>
 	) : UseCase.Response
 
 }

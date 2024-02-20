@@ -5,7 +5,6 @@ import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.Genre
-import com.roland.android.domain.entity.GenreList
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieCredits
 import com.roland.android.domain.entity.MovieDetails
@@ -153,14 +152,14 @@ object SampleData {
 	val episodeDetails = Episode(episodeNumber = 1)
 
 	// Other
-	val genreList = GenreList(listOf(
+	val genreList = listOf(
 		Genre(11, "Action"),
 		Genre(16, "Animation"),
 		Genre(5, "Comedy"),
 		Genre(15, "Drama"),
 		Genre(24, "Adventure"),
 		Genre(7, "Thriller")
-	))
+	)
 	private val movieCredits = MovieCredits(
 		cast = listOf(
 			Cast(name = "Jack Jones", character = "Red"),

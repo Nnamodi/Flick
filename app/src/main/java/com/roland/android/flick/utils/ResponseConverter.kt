@@ -123,7 +123,7 @@ class ResponseConverter @Inject constructor() {
 					FurtherTvShowsModel(
 						result.data.bollywoodShows.refactor(),
 						result.data.animeShows.refactor(),
-						result.data.genres
+						result.data.showGenres
 					)
 				)
 			}
