@@ -1,6 +1,8 @@
 package com.roland.android.flick.state
 
+import com.roland.android.domain.usecase.Collection
 import com.roland.android.flick.models.CastDetailsModel
+import com.roland.android.flick.models.CategorySelectionModel
 import com.roland.android.flick.models.ComingSoonModel
 import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.FurtherTvShowsModel
@@ -25,6 +27,12 @@ data class HomeUiState(
 data class ComingSoonUiState(
 	val movieData: State<ComingSoonModel>? = null,
 	val selectedCategory: String = MOVIES
+)
+
+data class CategorySelectionUiState(
+	val movieData: State<CategorySelectionModel>? = null,
+	val selectedGenreIds: List<String> = emptyList(),
+	val selectedCollection: Collection = Collection.MOVIES
 )
 
 data class MovieDetailsUiState(

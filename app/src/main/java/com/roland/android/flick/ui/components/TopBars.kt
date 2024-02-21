@@ -13,7 +13,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material.icons.rounded.Category
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +25,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -48,7 +53,7 @@ import com.roland.android.flick.utils.Constants.MOVIES
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopBar(navigateToSearch: (Screens) -> Unit) {
+fun HomeTopBar(navigate: (Screens) -> Unit) {
 	TopAppBar(
 		title = {
 			Text(
@@ -57,8 +62,11 @@ fun HomeTopBar(navigateToSearch: (Screens) -> Unit) {
 			)
 		},
 		actions = {
-			IconButton(onClick = { navigateToSearch(Screens.SearchScreen) }) {
+			IconButton(onClick = { navigate(Screens.SearchScreen) }) {
 				Icon(Icons.Rounded.Search, stringResource(R.string.search))
+			}
+			IconButton(onClick = { navigate(Screens.CategorySelectionScreen) }) {
+				Icon(Icons.Rounded.Category, stringResource(R.string.select_categories))
 			}
 		},
 		colors = TopAppBarDefaults.topAppBarColors(
@@ -114,10 +122,37 @@ private fun MinimizedComingSoonTopBar(
 	)
 }
 
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun CategorySelectionTopBar(
+	clearButtonEnabled: Boolean,
+	clearSelection: () -> Unit,
+	closeSheet: () -> Unit
+) {
+	CenterAlignedTopAppBar(
+		title = { Text(stringResource(R.string.select_categories)) },
+		navigationIcon = {
+			IconButton(onClick = closeSheet) {
+				Icon(Icons.Rounded.Close, stringResource(R.string.close))
+			}
+		},
+		actions = {
+			TextButton(
+				onClick = clearSelection,
+				enabled = clearButtonEnabled
+			) {
+				Text(stringResource(R.string.clear))
+			}
+		}
+	)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieListTopBar(
 	title: String,
+	categoryScreen: Boolean = false,
+	openSelectionSheet: () -> Unit = {},
 	navigateUp: (Screens) -> Unit
 ) {
 	TopAppBar(
@@ -125,6 +160,13 @@ fun MovieListTopBar(
 		navigationIcon = {
 			IconButton(onClick = { navigateUp(Screens.Back) }) {
 				Icon(Icons.Rounded.ArrowBackIos, stringResource(R.string.back))
+			}
+		},
+		actions = {
+			if (categoryScreen) {
+				IconButton(onClick = openSelectionSheet) {
+					Icon(Icons.Rounded.FilterList, stringResource(R.string.select_categories))
+				}
 			}
 		}
 	)

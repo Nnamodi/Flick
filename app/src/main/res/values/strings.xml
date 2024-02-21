@@ -52,6 +52,10 @@
     <string name="nothing_here">Oops… Nothing here</string>
     <string name="more_videos">More Videos</string>
     <string name="no_videos">No videos to show</string>
+    <string name="in_production">[In production]</string>
+    <string name="select_categories">Select Categories</string>
+    <string name="close">Close</string>
+    <string name="get_results">GET RESULTS</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

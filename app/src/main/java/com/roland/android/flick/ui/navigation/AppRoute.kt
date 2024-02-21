@@ -6,6 +6,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.roland.android.domain.usecase.Category
+import com.roland.android.flick.ui.screens.category_selection.CategorySelectionScreen
+import com.roland.android.flick.ui.screens.category_selection.CategorySelectionViewModel
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonViewModel
 import com.roland.android.flick.ui.screens.details.DetailsRequest
 import com.roland.android.flick.ui.screens.details.MovieDetailsScreen
@@ -28,8 +30,9 @@ fun AppRoute(
 	comingSoonViewModel: ComingSoonViewModel = hiltViewModel(),
 	movieListViewModel: MovieListViewModel = hiltViewModel(),
 	searchViewModel: SearchViewModel = hiltViewModel(),
+	categorySelectionViewModel: CategorySelectionViewModel = hiltViewModel(),
 	movieDetailsViewModel: MovieDetailsViewModel = hiltViewModel(),
-	inFullScreen: (Boolean) -> Unit
+	inFullScreen: (Boolean) -> Unit,
 ) {
 	NavHost(
 		navController = navController,
@@ -59,6 +62,16 @@ fun AppRoute(
 			SearchScreen(
 				uiState = searchViewModel.searchUiState,
 				action = searchViewModel::searchActions,
+				navigate = navActions::navigate
+			)
+		}
+		animatedComposable(
+			route = AppRoute.CategorySelectionScreen.route,
+			animationDirection = AnimationDirection.UpDown
+		) {
+			CategorySelectionScreen(
+				uiState = categorySelectionViewModel.categorySelectionUiState,
+				action = categorySelectionViewModel::categorySelectionActions,
 				navigate = navActions::navigate
 			)
 		}

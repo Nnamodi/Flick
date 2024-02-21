@@ -10,6 +10,7 @@ class NavActions(private val navController: NavHostController) {
 			Screens.ComingSoonScreen -> navigateToComingSoonScreen()
 			is Screens.MovieListScreen -> navigateToMovieListScreen(screen.categoryName)
 			Screens.SearchScreen -> navigateToSearchScreen()
+			Screens.CategorySelectionScreen -> navigateToCategorySelectionScreen()
 			is Screens.MovieDetailsScreen -> navigateToMovieDetailsScreen(screen.movieType, screen.movieId)
 			Screens.Back -> navController.navigateUp()
 		}
@@ -33,6 +34,10 @@ class NavActions(private val navController: NavHostController) {
 		navController.navigate(AppRoute.SearchScreen.route)
 	}
 
+	private fun navigateToCategorySelectionScreen() {
+		navController.navigate(AppRoute.CategorySelectionScreen.route)
+	}
+
 	private fun navigateToMovieDetailsScreen(
 		movieType: String,
 		movieId: String
@@ -52,6 +57,7 @@ sealed class AppRoute(val route: String) {
 		fun routeWithCategory(category: String) = String.format("movie_list_screen/%s", category)
 	}
 	object SearchScreen: AppRoute("search_screen")
+	object CategorySelectionScreen: AppRoute("category_selection_screen")
 	object MovieDetailsScreen: AppRoute("movie_details_screen/{movieType}/{movieId}") {
 		fun routeWithInfo(
 			movieType: String,
@@ -65,6 +71,7 @@ sealed class Screens {
 	object ComingSoonScreen : Screens()
 	data class MovieListScreen(val categoryName: String) : Screens()
 	object SearchScreen : Screens()
+	object CategorySelectionScreen : Screens()
 	data class MovieDetailsScreen(
 		val movieType: String,
 		val movieId: String

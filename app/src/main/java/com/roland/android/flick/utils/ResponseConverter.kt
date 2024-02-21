@@ -6,6 +6,7 @@ import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
 import com.roland.android.domain.usecase.GetFurtherTvShowUseCase
 import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetMovieListUseCase
+import com.roland.android.domain.usecase.GetMoviesAndShowByGenreUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.domain.usecase.GetSearchedMoviesUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
@@ -13,6 +14,7 @@ import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.domain.usecase.GetUpcomingMoviesUseCase
 import com.roland.android.flick.models.CastDetailsModel
+import com.roland.android.flick.models.CategorySelectionModel
 import com.roland.android.flick.models.ComingSoonModel
 import com.roland.android.flick.models.FurtherMoviesModel
 import com.roland.android.flick.models.FurtherTvShowsModel
@@ -163,6 +165,25 @@ class ResponseConverter @Inject constructor() {
 						result.data.movieList.refactor(),
 						result.data.movieGenre,
 						result.data.seriesGenre
+					)
+				)
+			}
+		}
+	}
+
+	fun convertCategorySelectionData(
+		result: Result<GetMoviesAndShowByGenreUseCase.Response>
+	): State<CategorySelectionModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					CategorySelectionModel(
+						result.data.movieList.refactor(),
+						result.data.movieGenres,
+						result.data.seriesGenres
 					)
 				)
 			}

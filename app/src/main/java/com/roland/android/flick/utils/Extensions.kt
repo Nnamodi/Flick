@@ -21,6 +21,7 @@ import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.Video
 import com.roland.android.domain.usecase.Category
+import com.roland.android.domain.usecase.Collection
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.utils.Constants.DAY
@@ -89,6 +90,13 @@ object Extensions {
 			Category.BOLLYWOOD_SERIES -> R.string.bollywood_series
 			Category.POPULAR_MOVIES -> R.string.popular_movies
 			Category.POPULAR_SERIES -> R.string.popular_series
+		}
+	}
+
+	fun Collection.getName(): Int {
+		return when (this) {
+			Collection.MOVIES -> R.string.movies
+			Collection.SERIES -> R.string.series
 		}
 	}
 
