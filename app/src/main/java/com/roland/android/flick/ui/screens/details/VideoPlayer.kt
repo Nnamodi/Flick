@@ -26,14 +26,13 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.roland.android.domain.entity.Video
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_SMALL
 import com.roland.android.flick.utils.Constants.YOUTUBE_VIDEO_BASE_URL
+import com.roland.android.flick.utils.PlayerListener
 
 @Composable
 fun VideoPlayer(
@@ -95,27 +94,16 @@ private fun Player(
 	AndroidView(
 		modifier = modifier,
 		factory = {
-			view.addYouTubePlayerListener(
-				object : AbstractYouTubePlayerListener() {
-					override fun onReady(youTubePlayer: YouTubePlayer) {
-						super.onReady(youTubePlayer)
-						youTubePlayer.apply {
-							if (autoPlay) {
-								loadVideo(videoId = videoKey ?: "", startSeconds = 0f)
-							} else {
-								cueVideo(videoId = videoKey ?: "", startSeconds = 0f)
-							}
-							if (!canPlay) pause()
-						}
-					}
-				}
-			)
+			view.addYouTubePlayerListener(PlayerListener(videoKey, autoPlay, canPlay))
 			view
 		}
 	)
 
 	DisposableEffect(Unit) {
-		onDispose(view::release)
+		onDispose {
+			view.removeYouTubePlayerListener(PlayerListener(videoKey, autoPlay, canPlay))
+			view.release()
+		}
 	}
 }
 

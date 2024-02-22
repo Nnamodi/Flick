@@ -10,12 +10,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.usecase.Collection
+import com.roland.android.domain.usecase.Collection.MOVIES
+import com.roland.android.domain.usecase.Collection.SERIES
 import com.roland.android.flick.R
 import com.roland.android.flick.models.SampleData.genreList
 import com.roland.android.flick.ui.components.CategorySelectionTopBar
@@ -109,8 +115,8 @@ private fun SelectionSheet(
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
 			var collectionName by rememberSaveable { mutableStateOf(selectedCollection.name) }
-			val collection = Collection.valueOf(collectionName)
-			val genres = if (collection == Collection.MOVIES) movieGenres else seriesGenres
+			val newCollection = Collection.valueOf(collectionName)
+			val genres = if (newCollection == MOVIES) movieGenres else seriesGenres
 
 			LazyColumn(
 				modifier = Modifier.weight(1f),
@@ -120,6 +126,7 @@ private fun SelectionSheet(
 				items(genres.size) { index ->
 					val genre = genres[index]
 					val selected = genre.id in selectedGenres.map { it.toInt() }
+
 					GenreItem(
 						genre = genre,
 						modifier = Modifier.padding(10.dp),
@@ -130,16 +137,62 @@ private fun SelectionSheet(
 					)
 				}
 			}
-			Button(
-				onClick = {
-					val action = LoadMovieList(selectedGenres, collection)
-					onCategoriesSelected(action); closeSheet()
-				},
-				modifier = Modifier.padding(vertical = 10.dp),
-				enabled = selectedGenres.isNotEmpty() && (selectedGenreIds != selectedGenres)
+			Row(
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(horizontal = 6.dp),
+				verticalAlignment = Alignment.CenterVertically
 			) {
-				Text(stringResource(R.string.get_results), Modifier.padding(horizontal = 10.dp))
+				CollectionTabs(
+					selectedCollection = newCollection,
+					modifier = Modifier.weight(1f),
+					onCollectionSelected = { collectionName = it }
+				)
+
+				val newSelectedGenres = selectedGenres.filter { genreId ->
+					genreId in genres.map { "${it.id}" }
+				}
+				val newCategoriesSelected = (selectedGenreIds != newSelectedGenres) || (selectedCollection != newCollection)
+				Button(
+					onClick = {
+						val action = LoadMovieList(newSelectedGenres, newCollection)
+						onCategoriesSelected(action); closeSheet()
+					},
+					modifier = Modifier.padding(vertical = 10.dp),
+					enabled = newSelectedGenres.isNotEmpty() && newCategoriesSelected
+				) {
+					Text(stringResource(R.string.get_results), Modifier.padding(horizontal = 10.dp))
+				}
 			}
+		}
+	}
+}
+
+@Composable
+private fun CollectionTabs(
+	selectedCollection: Collection,
+	modifier: Modifier,
+	onCollectionSelected: (String) -> Unit
+) {
+	ScrollableTabRow(
+		selectedTabIndex = if (selectedCollection == MOVIES) 0 else 1,
+		modifier = modifier,
+		edgePadding = 0.dp,
+		divider = {}
+	) {
+		Collection.values().forEachIndexed { index, collection ->
+			Tab(
+				selected = collection == selectedCollection,
+				onClick = {
+					val newCollection = if (index == 0) MOVIES else SERIES
+					onCollectionSelected(newCollection.name)
+				},
+				unselectedContentColor = MaterialTheme.colorScheme.outline,
+				content = {
+					val collectionName = if (collection == MOVIES) R.string.movies else R.string.series
+					Text(stringResource(collectionName), Modifier.padding(vertical = 12.dp))
+				}
+			)
 		}
 	}
 }
@@ -170,15 +223,15 @@ private fun GenreItem(
 	}
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun CategorySelectionSheetPreview() {
-	FlickTheme {
+	FlickTheme(true) {
 		SelectionSheet(
 			movieGenres = genreList,
 			seriesGenres = genreList,
 			selectedGenreIds = listOf("16", "15", "24"),
-			selectedCollection = Collection.MOVIES,
+			selectedCollection = MOVIES,
 			onCategoriesSelected = {},
 			closeSheet = {}
 		) {}

@@ -2,6 +2,7 @@ package com.roland.android.domain
 
 import com.roland.android.domain.SampleTestData.genreList
 import com.roland.android.domain.SampleTestData.trendingMovies
+import com.roland.android.domain.SampleTestData.trendingShows
 import com.roland.android.domain.repository.MovieRepository
 import com.roland.android.domain.repository.TvShowRepository
 import com.roland.android.domain.usecase.Collection.MOVIES
@@ -25,6 +26,7 @@ class GetMoviesAndShowsByGenreUseCaseTest {
 	@Test
 	fun testProcess() = runTest {
 		whenever(movieRepository.fetchMoviesByGenre("")).thenReturn(flowOf(trendingMovies))
+		whenever(tvShowRepository.fetchShowsByGenre("")).thenReturn(flowOf(trendingShows))
 		whenever(movieRepository.fetchMovieGenres()).thenReturn(flowOf(genreList))
 		whenever(tvShowRepository.fetchTvShowGenres()).thenReturn(flowOf(genreList))
 

@@ -147,9 +147,11 @@ fun SearchScreen(
 			}
 
 			LaunchedEffect(searchQuery) {
-				allScrollState.animateScrollToItem(0)
-				moviesScrollState.animateScrollToItem(0)
-				seriesScrollState.animateScrollToItem(0)
+				scope.launch {
+					allScrollState.animateScrollToItem(0)
+					moviesScrollState.animateScrollToItem(0)
+					seriesScrollState.animateScrollToItem(0)
+				}
 			}
 		}
 	}

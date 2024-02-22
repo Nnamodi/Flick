@@ -148,7 +148,7 @@ fun MovieDetailsScreen(
 			}
 			val screenModifier = if (!inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
 			val columnModifier = if (inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
-			val videoHeightDivisor = if (inPortraitMode) 0.6f else 0.5f
+			val videoHeightDivisor = if (inPortraitMode) 0.6f else 0.45f
 
 			if (isMovie) {
 				Column(

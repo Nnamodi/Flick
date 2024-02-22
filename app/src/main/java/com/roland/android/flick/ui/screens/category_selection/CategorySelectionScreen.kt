@@ -4,9 +4,22 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CellTower
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Indefinite
@@ -19,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +41,11 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.usecase.Collection
 import com.roland.android.flick.R
+import com.roland.android.flick.models.CategorySelectionModel
+import com.roland.android.flick.models.SampleData.genreList
+import com.roland.android.flick.models.SampleData.trendingMovies
 import com.roland.android.flick.state.CategorySelectionUiState
+import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.MovieListTopBar
 import com.roland.android.flick.ui.components.MovieLists
 import com.roland.android.flick.ui.navigation.Screens
@@ -36,6 +54,8 @@ import com.roland.android.flick.ui.screens.list.LoadingListUi
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Extensions.getName
+import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.launch
 
 @Composable
@@ -55,9 +75,9 @@ fun CategorySelectionScreen(
 	Scaffold(
 		topBar = {
 			CategorySelectionScreenTopBar(
-				selectionSheetClosed = !showSheet.value,
+				selectionSheetClosed = !showSheet.value || errorMessage.value != null,
 				selectedCollection = selectedCollection,
-				openSelectionSheet = { showSheet.value = true },
+				openSelectionSheet = { if (errorMessage.value == null) showSheet.value = true },
 				navigateUp = navigate
 			)
 		},
@@ -85,8 +105,11 @@ fun CategorySelectionScreen(
 			loadingScreen = { error ->
 				if (selectedGenreIds.isNotEmpty()) {
 					LoadingListUi(scrollState, paddingValues, error == null)
+				} else {
+					CategorySelectionSheetLoadingUi(error, paddingValues, action)
 				}
 				errorMessage.value = error
+				if (selectedGenreIds.isEmpty()) return@CommonScreen
 				error?.let {
 					val actionLabel = stringResource(R.string.retry)
 					scope.launch {
@@ -117,7 +140,10 @@ fun CategorySelectionScreen(
 					seriesGenres = data.seriesGenres,
 					selectedGenreIds = selectedGenreIds,
 					selectedCollection = selectedCollection,
-					onCategoriesSelected = action,
+					onCategoriesSelected = { scope.launch {
+						action(it)
+						scrollState.animateScrollToItem(0)
+					} },
 					closeSheet = { showSheet.value = false },
 					navigateUp = navigate
 				)
@@ -158,12 +184,52 @@ private fun CategorySelectionScreenTopBar(
 	}
 }
 
+@Composable
+private fun CategorySelectionSheetLoadingUi(
+	errorMessage: String?,
+	paddingValues: PaddingValues,
+	retry: (CategorySelectionActions) -> Unit
+) {
+	val windowSize = rememberWindowSize()
+	val iconSize = if (windowSize.width == WindowType.Portrait) 200.dp else 100.dp
+
+	Column(
+		modifier = Modifier
+			.fillMaxSize()
+			.padding(paddingValues)
+			.verticalScroll(rememberScrollState()),
+		verticalArrangement = Arrangement.Center,
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		if (errorMessage == null) {
+			CircularProgressIndicator()
+		} else {
+			Icon(
+				imageVector = Icons.Rounded.CellTower,
+				contentDescription = errorMessage,
+				modifier = Modifier.size(iconSize)
+			)
+			Text(
+				text = errorMessage,
+				modifier = Modifier.padding(vertical = 30.dp),
+				style = MaterialTheme.typography.titleLarge
+			)
+			Button(onClick = { retry(CategorySelectionActions.Retry) }) {
+				Text(stringResource(R.string.retry))
+			}
+		}
+	}
+}
+
 @Preview
 @Composable
 fun CategorySelectionScreenPreview() {
-	FlickTheme {
+	FlickTheme(true) {
+		val movieData = State.Success(
+			CategorySelectionModel(trendingMovies, genreList, genreList)
+		)
 		CategorySelectionScreen(
-			uiState = CategorySelectionUiState(),
+			uiState = CategorySelectionUiState(movieData, listOf("")),
 			action = {}
 		) {}
 	}

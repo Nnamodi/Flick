@@ -88,6 +88,15 @@ interface TvShowService {
 		@Query("page") page: Int = 1
 	): MovieListModel
 
+	@GET("/3/discover/tv")
+	suspend fun fetchShowsByGenre(
+		@Query("with_genres") genreIds: String,
+		@Query("include_adult") includeAdult: Boolean = false,
+		@Query("language") language: String = "en_US",
+		@Query("page") page: Int = 1,
+		@Query("sort_by") sortBy: String = "popularity.desc"
+	): MovieListModel
+
 	@GET("/3/tv/{series_id}")
 	suspend fun fetchTvShowDetails(
 		@Path("series_id") seriesId: Int,

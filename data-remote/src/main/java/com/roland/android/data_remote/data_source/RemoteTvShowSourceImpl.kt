@@ -11,6 +11,7 @@ import com.roland.android.data_remote.paging.NowAiringShowsPagingSource
 import com.roland.android.data_remote.paging.PopularShowsPagingSource
 import com.roland.android.data_remote.paging.RecommendedShowsPagingSource
 import com.roland.android.data_remote.paging.SearchedShowsPagingSource
+import com.roland.android.data_remote.paging.ShowsByGenrePagingSource
 import com.roland.android.data_remote.paging.SimilarShowsPagingSource
 import com.roland.android.data_remote.paging.TopRatedShowsPagingSource
 import com.roland.android.data_remote.paging.TrendingShowsPagingSource
@@ -174,6 +175,20 @@ class RemoteTvShowSourceImpl @Inject constructor(
 			),
 			pagingSourceFactory = {
 				SearchedShowsPagingSource(tvShowService, query)
+			}
+		).flow
+			.distinctUntilChanged()
+			.cachedIn(scope)
+	}
+
+	override fun fetchShowsByGenre(genreIds: String): Flow<PagingData<Movie>> {
+		return Pager(
+			config = PagingConfig(
+				pageSize = MAX_PAGE_SIZE,
+				prefetchDistance = MAX_PAGE_SIZE / 2
+			),
+			pagingSourceFactory = {
+				ShowsByGenrePagingSource(tvShowService, genreIds)
 			}
 		).flow
 			.distinctUntilChanged()

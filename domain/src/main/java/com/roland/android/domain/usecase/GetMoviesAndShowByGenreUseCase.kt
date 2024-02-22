@@ -5,6 +5,8 @@ import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.repository.MovieRepository
 import com.roland.android.domain.repository.TvShowRepository
+import com.roland.android.domain.usecase.Collection.MOVIES
+import com.roland.android.domain.usecase.Collection.SERIES
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -17,8 +19,12 @@ class GetMoviesAndShowByGenreUseCase @Inject constructor(
 
 	override fun process(request: Request): Flow<Response> {
 		if (request.collection != null) {
+			val movieListFlow = when (request.collection) {
+				MOVIES -> movieRepository.fetchMoviesByGenre(request.genreIds)
+				SERIES -> tvShowRepository.fetchShowsByGenre(request.genreIds)
+			}
 			return combine(
-				movieRepository.fetchMoviesByGenre(request.genreIds),
+				movieListFlow,
 				movieRepository.fetchMovieGenres(),
 				tvShowRepository.fetchTvShowGenres()
 			) { movieList, movieGenres, seriesGenres ->
