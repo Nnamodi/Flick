@@ -69,13 +69,14 @@ fun CategorySelectionScreen(
 	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
+	val dataLoadedSuccessfully = rememberSaveable { mutableStateOf(false) }
 	val scrollState = rememberLazyGridState()
 	val showSheet = rememberSaveable { mutableStateOf(selectedGenreIds.isEmpty()) }
 
 	Scaffold(
 		topBar = {
 			CategorySelectionScreenTopBar(
-				selectionSheetClosed = !showSheet.value || errorMessage.value != null,
+				selectionSheetClosed = !(showSheet.value && dataLoadedSuccessfully.value),
 				selectedCollection = selectedCollection,
 				openSelectionSheet = { if (errorMessage.value == null) showSheet.value = true },
 				navigateUp = navigate
@@ -103,6 +104,7 @@ fun CategorySelectionScreen(
 		CommonScreen(
 			state = movieData,
 			loadingScreen = { error ->
+				dataLoadedSuccessfully.value = false
 				if (selectedGenreIds.isNotEmpty()) {
 					LoadingListUi(scrollState, paddingValues, error == null)
 				} else {
@@ -117,7 +119,7 @@ fun CategorySelectionScreen(
 					}
 				}
 			}
-		) { data ->
+		) { data -> dataLoadedSuccessfully.value = true
 			Box {
 				MovieLists(
 					paddingValues = paddingValues,

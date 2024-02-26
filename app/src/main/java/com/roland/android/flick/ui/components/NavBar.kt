@@ -133,7 +133,7 @@ fun SideNavRail(navController: NavHostController) {
 					icon = { Icon(item.icon, null) },
 					modifier = Modifier.padding(bottom = if (itemIsNotLast) 4.dp else 0.dp),
 					label = { Text(stringResource(item.title)) },
-					alwaysShowLabel = selected
+					alwaysShowLabel = true
 				)
 			}
 		}
@@ -163,7 +163,7 @@ private fun BottomNavBar(navController: NavHostController) {
 				},
 				icon = { Icon(item.icon, null) },
 				label = { Text(stringResource(item.title)) },
-				alwaysShowLabel = selected
+				alwaysShowLabel = true
 			)
 		}
 	}

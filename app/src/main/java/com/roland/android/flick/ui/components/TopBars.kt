@@ -5,9 +5,11 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -49,7 +51,6 @@ import com.roland.android.flick.state.SearchUiState
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonActions
 import com.roland.android.flick.ui.screens.search.SearchActions
-import com.roland.android.flick.utils.Constants.MOVIES
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,25 +102,21 @@ private fun MinimizedComingSoonTopBar(
 	selectedCategory: String,
 	onCategorySelected: (ComingSoonActions) -> Unit
 ) {
-	TopAppBar(
-		title = {
-			Text(
-				text = stringResource(R.string.coming_soon),
-				fontWeight = FontWeight.Bold
-			)
-		},
-		actions = {
-			val nextCategory = if (selectedCategory == MOVIES) Chips.TvShows else Chips.Movies
-
-			ChipSet(
-				modifier = Modifier.padding(end = 12.dp),
-				selectedCategory = null,
-				chips = arrayOf(nextCategory),
-				onValueChanged = { onCategorySelected(ComingSoonActions.ToggleCategory) }
-			)
-		},
-		colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-	)
+	Row(
+		modifier = Modifier
+			.fillMaxWidth()
+			.windowInsetsPadding(TopAppBarDefaults.windowInsets),
+		verticalAlignment = Alignment.CenterVertically
+	) {
+		Text(
+			text = stringResource(R.string.coming_soon),
+			modifier = Modifier.padding(start = 16.dp, end = 8.dp),
+			fontWeight = FontWeight.Bold,
+			style = MaterialTheme.typography.titleLarge
+		)
+		Spacer(Modifier.weight(1f))
+		CustomDropDown(selectedCategory, onCategorySelected)
+	}
 }
 
 @Composable

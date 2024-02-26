@@ -34,7 +34,7 @@ object Constants {
 	val POSTER_WIDTH_MEDIUM = 130.dp
 	val POSTER_HEIGHT_MEDIUM = 250.dp
 	val POSTER_WIDTH_SMALL = 130.dp
-	val POSTER_HEIGHT_SMALL = 180.dp
+	val POSTER_HEIGHT_SMALL = 195.dp
 	val PADDING_WIDTH = 16.dp
 	val ROUNDED_EDGE = 12.dp
 

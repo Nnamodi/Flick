@@ -130,7 +130,7 @@ fun MovieDetailsScreen(
 	) { paddingValues ->
 		CommonScreen(
 			state = if (isMovie) uiState.movieDetails else uiState.tvShowDetails,
-			loadingScreen = { error ->
+			paddingValues, loadingScreen = { error ->
 				MovieDetailsLoadingUi(scrollState, isLoading = error == null, navigate)
 				errorMessage.value = error
 				error?.let {

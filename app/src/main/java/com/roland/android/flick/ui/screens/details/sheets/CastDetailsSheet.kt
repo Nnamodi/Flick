@@ -177,15 +177,14 @@ private fun CastBiography(
 	Column(modifier) {
 		Text(
 			text = stringResource(R.string.biography),
-			modifier = Modifier.padding(start = PADDING_WIDTH, top = 14.dp),
-			fontSize = 18.sp,
+			modifier = Modifier.padding(start = PADDING_WIDTH, top = 10.dp),
 			fontStyle = FontStyle.Italic,
 			fontWeight = FontWeight.Bold
 		)
 		Text(
 			text = biography,
 			modifier = Modifier
-				.padding(start = 12.dp, top = 12.dp, end = 12.dp)
+				.padding(start = 12.dp, top = 8.dp, end = 12.dp)
 				.clickable(
 					interactionSource = remember { MutableInteractionSource() },
 					indication = null

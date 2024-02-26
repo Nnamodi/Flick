@@ -110,7 +110,7 @@ fun ComingSoonScreen(
 		}
 	) { paddingValues ->
 		CommonScreen(
-			movieData,
+			movieData, paddingValues,
 			loadingScreen = { error ->
 				ComingSoonLoadingUi(scrollState, isLoading = error == null)
 				errorMessage.value = error

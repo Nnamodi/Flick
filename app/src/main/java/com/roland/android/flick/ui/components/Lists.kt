@@ -243,10 +243,10 @@ fun HorizontalPosters(
 	header: String,
 	onMovieClick: (Movie) -> Unit
 ) {
-	Column(Modifier.padding(bottom = 12.dp)) {
+	Column(Modifier.padding(vertical = 12.dp)) {
 		Header(
 			header = header,
-			modifier = Modifier.padding(PADDING_WIDTH)
+			modifier = Modifier.padding(start = PADDING_WIDTH, end = PADDING_WIDTH, bottom = 12.dp)
 		)
 		LazyRow(
 			contentPadding = PaddingValues(
@@ -272,11 +272,13 @@ fun VideoList(videos: List<Video>) {
 	val pagerState = rememberPagerState { videos.size }
 	val scope = rememberCoroutineScope()
 	val screenWidth = LocalConfiguration.current.screenWidthDp
+	val columnModifier = if (videos.isNotEmpty()) {
+		Modifier
+			.padding(bottom = 12.dp)
+			.height(52.dp + POSTER_HEIGHT_SMALL + 12.dp + 42.dp + 16.dp + 16.dp)
+	} else Modifier.padding(bottom = 12.dp)
 
-	Column(Modifier
-		.padding(bottom = 12.dp)
-		.height(52.dp + POSTER_HEIGHT_SMALL + 12.dp + 42.dp + 16.dp + 16.dp)
-	) {
+	Column(columnModifier) {
 		Header(
 			header = stringResource(R.string.more_videos),
 			modifier = Modifier.padding(PADDING_WIDTH)
@@ -309,7 +311,10 @@ fun VideoList(videos: List<Video>) {
 			onClick = { scope.launch { pagerState.animateScrollToPage(it) } }
 		)
 		if (videos.isEmpty()) {
-			EmptyRow(stringResource(R.string.no_videos))
+			EmptyRow(
+				text = stringResource(R.string.no_videos),
+				height = POSTER_HEIGHT_SMALL / 2
+			)
 		}
 	}
 }
@@ -361,11 +366,14 @@ private fun HorizontalPagerIndicator(
 }
 
 @Composable
-private fun EmptyRow(text: String = stringResource(R.string.nothing_here)) {
+private fun EmptyRow(
+	text: String = stringResource(R.string.nothing_here),
+	height: Dp = POSTER_HEIGHT_SMALL
+) {
 	Box(
 		modifier = Modifier
 			.fillMaxWidth()
-			.height(POSTER_HEIGHT_SMALL),
+			.height(height),
 		contentAlignment = Alignment.Center
 	) {
 		Text(

@@ -125,7 +125,7 @@ fun HomeScreen(
 	) { paddingValues ->
 		CommonScreen(
 			movies, furtherMovies, shows, furtherShows,
-			loadingScreen = { error ->
+			paddingValues, loadingScreen = { error ->
 				HomeLoadingUi(paddingValues, scrollState, isLoading = error == null)
 				errorMessage.value = error
 				error?.let {
@@ -249,7 +249,9 @@ fun HomeScreen(
 					onMovieClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
 
-				Spacer(Modifier.height(50.dp + NavigationBarHeight))
+				Spacer(Modifier.height(
+					50.dp + (if (windowSize.width == WindowType.Portrait) NavigationBarHeight else 0.dp)
+				))
 			}
 
 			if (clickedMovieItem.value != null) {

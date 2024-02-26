@@ -2,12 +2,12 @@ package com.roland.android.flick.ui.screens.category_selection
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,7 +15,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
@@ -119,7 +122,9 @@ private fun SelectionSheet(
 			val genres = if (newCollection == MOVIES) movieGenres else seriesGenres
 
 			LazyColumn(
-				modifier = Modifier.weight(1f),
+				modifier = Modifier
+					.weight(1f)
+					.fillMaxWidth(),
 				contentPadding = PaddingValues(vertical = 50.dp),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
@@ -204,7 +209,7 @@ private fun GenreItem(
 	selected: Boolean = true,
 	onClick: (String) -> Unit = {}
 ) {
-	Box(
+	Row(
 		modifier = modifier
 			.clip(MaterialTheme.shapes.extraLarge)
 			.border(
@@ -212,14 +217,23 @@ private fun GenreItem(
 				color = if (selected) MaterialTheme.colorScheme.surfaceTint else MaterialTheme.colorScheme.outline,
 				shape = MaterialTheme.shapes.extraLarge
 			)
+			.padding(8.dp, 6.dp)
 			.bounceClickable { onClick("${genre.id}") }
+			.animateContentSize(),
+		verticalAlignment = Alignment.CenterVertically
 	) {
 		Text(
 			text = genre.name,
-			modifier = Modifier.padding(8.dp, 6.dp),
 			color = if (selected) MaterialTheme.colorScheme.surfaceTint else Color.Unspecified,
 			fontSize = 20.sp,
 		)
+		if (selected) {
+			Icon(
+				imageVector = Icons.Rounded.Done,
+				contentDescription = stringResource(coil.compose.base.R.string.selected),
+				tint = MaterialTheme.colorScheme.surfaceTint
+			)
+		}
 	}
 }
 
