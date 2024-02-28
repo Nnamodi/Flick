@@ -14,10 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -110,12 +113,35 @@ fun SearchScreen(
 			val chipModifier = if (windowSize.width == WindowType.Portrait) {
 				Modifier.fillMaxWidth()
 			} else Modifier.fillMaxHeight()
+			var allScrollIndex by rememberSaveable { mutableIntStateOf(0) }
+			var allScrollOffset by rememberSaveable { mutableIntStateOf(0) }
+			var moviesScrollIndex by rememberSaveable { mutableIntStateOf(0) }
+			var moviesScrollOffset by rememberSaveable { mutableIntStateOf(0) }
+			var seriesScrollIndex by rememberSaveable { mutableIntStateOf(0) }
+			var seriesScrollOffset by rememberSaveable { mutableIntStateOf(0) }
 
 			DynamicContainer(Modifier.padding(paddingValues)) {
 				ChipSet(
 					modifier = chipModifier,
 					selectedCategory = searchCategory,
-					onValueChanged = { action(SearchActions.ToggleCategory(it)) }
+					onValueChanged = {
+						// save scroll state first
+						when (searchCategory) {
+							ALL -> {
+								allScrollIndex = scrollState.firstVisibleItemIndex
+								allScrollOffset = scrollState.firstVisibleItemScrollOffset
+							}
+							MOVIES -> {
+								moviesScrollIndex = scrollState.firstVisibleItemIndex
+								moviesScrollOffset = scrollState.firstVisibleItemScrollOffset
+							}
+							TV_SHOWS -> {
+								seriesScrollIndex = scrollState.firstVisibleItemIndex
+								seriesScrollOffset = scrollState.firstVisibleItemScrollOffset
+							}
+						}
+						action(SearchActions.ToggleCategory(it))
+					}
 				)
 
 				MovieLists(
@@ -144,6 +170,23 @@ fun SearchScreen(
 					viewMore = navigate,
 					closeSheet = { clickedMovieItem.value = null }
 				)
+			}
+
+			LaunchedEffect(searchCategory) {
+				when (searchCategory) {
+					ALL -> {
+						if (allScrollIndex == 0) return@LaunchedEffect
+						allScrollState.animateScrollToItem(allScrollIndex, allScrollOffset)
+					}
+					MOVIES -> {
+						if (moviesScrollIndex == 0) return@LaunchedEffect
+						moviesScrollState.animateScrollToItem(moviesScrollIndex, moviesScrollOffset)
+					}
+					TV_SHOWS -> {
+						if (seriesScrollIndex == 0) return@LaunchedEffect
+						seriesScrollState.animateScrollToItem(seriesScrollIndex, seriesScrollOffset)
+					}
+				}
 			}
 
 			LaunchedEffect(searchQuery) {

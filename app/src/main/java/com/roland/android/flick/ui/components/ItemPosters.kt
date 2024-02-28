@@ -20,12 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.AsyncImagePainter.State.Empty
+import coil.request.ImageRequest
 import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.ui.components.PosterType.BackdropPoster
@@ -182,7 +184,10 @@ private fun Poster(
 			.clip(MaterialTheme.shapes.large)
 	) {
 		AsyncImage(
-			model = model,
+			model = ImageRequest.Builder(LocalContext.current)
+				.data(model)
+				.crossfade(true)
+				.build(),
 			contentDescription = contentDescription,
 			modifier = Modifier
 				.fillMaxSize()
@@ -233,7 +238,10 @@ fun CastPoster(
 
 	Box(modifier = imageModifier) {
 		AsyncImage(
-			model = baseUrl + cast.profilePath,
+			model = ImageRequest.Builder(LocalContext.current)
+				.data(baseUrl + cast.profilePath)
+				.crossfade(true)
+				.build(),
 			contentDescription = cast.name,
 			modifier = Modifier
 				.fillMaxSize()

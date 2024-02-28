@@ -29,16 +29,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.AsyncImagePainter.State.Empty
+import coil.request.ImageRequest
 import com.roland.android.domain.entity.Episode
 import com.roland.android.flick.R
 import com.roland.android.flick.models.SeasonDetailsModel
 import com.roland.android.flick.state.State
+import com.roland.android.flick.ui.components.EmptyRow
 import com.roland.android.flick.ui.components.Header
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.RatingBar
@@ -110,6 +113,12 @@ fun SeasonDetails(
 					}
 				}
 			}
+			if (data.season.episodes?.isEmpty() == true) {
+				EmptyRow(
+					text = stringResource(R.string.no_episode),
+					height = 130.dp
+				)
+			}
 
 			LaunchedEffect(data.season.seasonNumber) {
 				lazyListState.animateScrollToItem(0)
@@ -132,7 +141,10 @@ private fun EpisodePoster(
 				.height(130.dp)
 		) {
 			AsyncImage(
-				model = MOVIE_IMAGE_BASE_URL_W500 + episode.stillPath,
+				model = ImageRequest.Builder(LocalContext.current)
+					.data(MOVIE_IMAGE_BASE_URL_W500 + episode.stillPath)
+					.crossfade(true)
+					.build(),
 				contentDescription = episode.name,
 				modifier = Modifier
 					.fillMaxSize()

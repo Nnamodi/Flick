@@ -169,9 +169,11 @@ fun HorizontalPosters(
 	seeMore: () -> Unit
 ) {
 	val movieList = pagingData.collectAsLazyPagingItems()
-	val listState1 = rememberLazyListState()
-	val listState2 = rememberLazyListState()
-	val lazyListState = if (selectedHeader == 2) listState2 else listState1
+	val lazyListState = rememberLazyListState()
+	var scrollIndex1 by rememberSaveable { mutableIntStateOf(0) }
+	var scrollOffset1 by rememberSaveable { mutableIntStateOf(0) }
+	var scrollIndex2 by rememberSaveable { mutableIntStateOf(0) }
+	var scrollOffset2 by rememberSaveable { mutableIntStateOf(0) }
 
 	Column(Modifier.padding(bottom = 12.dp)) {
 		Row(
@@ -184,7 +186,16 @@ fun HorizontalPosters(
 				header = header,
 				header2 = header2,
 				selectedHeader = selectedHeader,
-				onHeaderClick = onHeaderClick
+				onHeaderClick = {
+					if (selectedHeader == 1) {
+						scrollIndex1 = lazyListState.firstVisibleItemIndex
+						scrollOffset1 = lazyListState.firstVisibleItemScrollOffset
+					} else {
+						scrollIndex2 = lazyListState.firstVisibleItemIndex
+						scrollOffset2 = lazyListState.firstVisibleItemScrollOffset
+					}
+					onHeaderClick(it)
+				}
 			)
 			Spacer(Modifier.weight(1f))
 			if ((header2 == null) && (movieList.loadState.refresh is LoadState.NotLoading)) {
@@ -233,6 +244,16 @@ fun HorizontalPosters(
 		}
 		if ((movieList.itemCount == 0) && (movieList.loadState.refresh is LoadState.NotLoading)) {
 			EmptyRow()
+		}
+	}
+
+	LaunchedEffect(selectedHeader) {
+		if (selectedHeader == 1) {
+			if (scrollIndex1 == 0) return@LaunchedEffect
+			lazyListState.animateScrollToItem(scrollIndex1, scrollOffset1)
+		} else {
+			if (scrollIndex2 == 0) return@LaunchedEffect
+			lazyListState.animateScrollToItem(scrollIndex2, scrollOffset2)
 		}
 	}
 }
@@ -366,7 +387,7 @@ private fun HorizontalPagerIndicator(
 }
 
 @Composable
-private fun EmptyRow(
+fun EmptyRow(
 	text: String = stringResource(R.string.nothing_here),
 	height: Dp = POSTER_HEIGHT_SMALL
 ) {

@@ -142,8 +142,8 @@ class ResponseConverter @Inject constructor() {
 			is Result.Success -> {
 				State.Success(
 					ComingSoonModel(
-						result.data.upcomingMovies.refactor(showsVoteAverage = false),
-						result.data.upcomingShows.refactor(showsVoteAverage = false),
+						result.data.upcomingMovies.refactor(),
+						result.data.upcomingShows.refactor(),
 						result.data.movieGenres,
 						result.data.seriesGenres
 					)
