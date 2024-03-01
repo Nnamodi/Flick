@@ -91,6 +91,9 @@ class MovieDetailsViewModel @Inject constructor(
 		seasonNumber: Int,
 		episodeNumber: Int = 1
 	) {
+		_movieDetailsUiState.update {
+			it.copy(seasonDetails = null, selectedSeasonNumber = seasonNumber)
+		}
 		viewModelScope.launch {
 			seasonDetailsUseCase.execute(
 				GetSeasonDetailsUseCase.Request(
@@ -99,9 +102,7 @@ class MovieDetailsViewModel @Inject constructor(
 			)
 				.map { converter.convertSeasonDetailsData(it) }
 				.collect { data ->
-					_movieDetailsUiState.update {
-						it.copy(seasonDetails = data, selectedSeasonNumber = seasonNumber)
-					}
+					_movieDetailsUiState.update { it.copy(seasonDetails = data) }
 				}
 		}
 	}

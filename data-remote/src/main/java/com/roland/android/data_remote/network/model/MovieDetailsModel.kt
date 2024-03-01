@@ -17,7 +17,7 @@ data class MovieDetailsModel(
 	val backdropPath: String = "",
 	@Json(name = "poster_path")
 	val posterPath: String = "",
-	@Json(name = "language")
+	@Json(name = "original_language")
 	val language: String = "",
 	@Json(name = "popularity")
 	val popularity: Double = 0.0,
@@ -25,8 +25,6 @@ data class MovieDetailsModel(
 	val budget: Int = 0,
 	@Json(name = "homepage")
 	val homePage: String = "",
-	@Json(name = "movie_type")
-	val movieType: String? = null,
 	@Json(name = "video")
 	val videoAvailable: Boolean? = null,
 	@Json(name = "vote_average")

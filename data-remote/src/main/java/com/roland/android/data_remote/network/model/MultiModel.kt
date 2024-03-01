@@ -16,12 +16,12 @@ data class MultiModel(
 	val backdropPath: String? = null,
 	@Json(name = "poster_path")
 	val posterPath: String? = null,
-	@Json(name = "language")
+	@Json(name = "original_language")
 	val language: String? = null,
 	@Json(name = "popularity")
 	val popularity: Double = 0.0,
-	@Json(name = "movie_type")
-	val movieType: String = "", // movie, tv, person
+	@Json(name = "media_type")
+	val mediaType: String = "", // movie, tv, person
 	@Json(name = "video")
 	val videoAvailable: Boolean? = null,
 	@Json(name = "vote_average")

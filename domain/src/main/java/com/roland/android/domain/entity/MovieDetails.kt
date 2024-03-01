@@ -12,7 +12,6 @@ data class MovieDetails(
 	val popularity: Double = 0.0,
 	val budget: Int = 0,
 	val homePage: String = "",
-	val movieType: String? = null,
 	val videoAvailable: Boolean? = null,
 	val voteAverage: Double = 0.0,
 	val voteCount: Int = 0,

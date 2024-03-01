@@ -9,7 +9,6 @@ data class Movie(
 	val posterPath: String? = null,
 	val language: String = "",
 	val popularity: Double = 0.0,
-	val movieType: String? = null,
 	val videoAvailable: Boolean? = null,
 	val voteAverage: Double = 0.0,
 	val voteCount: Int = 0,

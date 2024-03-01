@@ -47,7 +47,7 @@ object Converters {
 		null,
 		multiListModel.page,
 		multiListModel.results
-//			.filter { it.movieType != "person" }
+			.filter { it.mediaType != "person" }
 			.map { convertToMovie(it) },
 		multiListModel.totalPages,
 		multiListModel.totalResults
@@ -65,7 +65,6 @@ object Converters {
 		detailsModel.popularity,
 		detailsModel.budget,
 		detailsModel.homePage,
-		detailsModel.movieType,
 		detailsModel.videoAvailable,
 		detailsModel.voteAverage,
 		detailsModel.voteCount,
@@ -178,7 +177,6 @@ object Converters {
 		movieModel.posterPath,
 		movieModel.language,
 		movieModel.popularity,
-		movieModel.movieType,
 		movieModel.videoAvailable,
 		movieModel.voteAverage,
 		movieModel.voteCount,
@@ -196,9 +194,8 @@ object Converters {
 		multiModel.genreIds ?: emptyList(),
 		multiModel.backdropPath,
 		multiModel.posterPath,
-		multiModel.language!!,
+		multiModel.language ?: "",
 		multiModel.popularity,
-		multiModel.movieType,
 		multiModel.videoAvailable,
 		multiModel.voteAverage ?: 0.0,
 		multiModel.voteCount ?: 0,
