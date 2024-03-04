@@ -32,7 +32,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -242,7 +241,6 @@ private fun MovieDetails(
 ) {
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val openCastDetailsSheet = remember { mutableStateOf(false) }
-	var selectedCategory by remember { mutableIntStateOf(1) }
 	val moreVideos = videos.filterNot { it == videos.getTrailer() }
 
 	Column(modifier) {
@@ -265,13 +263,12 @@ private fun MovieDetails(
 			)
 		}
 		HorizontalPosters(
-			pagingData = if (selectedCategory == 1) recommendedMovies else similarMovies,
+			pagingData = recommendedMovies,
+			pagingData2 = similarMovies,
 			header = stringResource(R.string.recommended),
 			header2 = stringResource(R.string.similar),
-			selectedHeader = selectedCategory,
-			onHeaderClick = { selectedCategory = it },
 			onMovieClick = { clickedMovieItem.value = it }
-		) {}
+		)
 		VideoList(moreVideos)
 		Spacer(Modifier.height(50.dp))
 	}

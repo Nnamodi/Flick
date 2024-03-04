@@ -1,10 +1,12 @@
 package com.roland.android.flick.ui.screens.search
 
-import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Indefinite
@@ -13,16 +15,14 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -45,6 +45,7 @@ import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SearchScreen(
 	uiState: SearchUiState,
@@ -59,10 +60,15 @@ fun SearchScreen(
 	val allScrollState = rememberLazyGridState()
 	val moviesScrollState = rememberLazyGridState()
 	val seriesScrollState = rememberLazyGridState()
-	val scrollState = when (searchCategory) {
-		ALL -> allScrollState
-		MOVIES -> moviesScrollState
-		TV_SHOWS -> seriesScrollState
+	val context = LocalContext.current
+	val onError: (String?) -> Unit = { error ->
+		errorMessage.value = error
+		error?.let {
+			val actionLabel = context.getString(R.string.retry)
+			scope.launch {
+				snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
+			}
+		}
 	}
 
 	Scaffold(
@@ -90,75 +96,69 @@ fun SearchScreen(
 			state = movieData,
 			loadingScreen = { error ->
 				LoadingListUi(
-					scrollState = scrollState,
+					scrollState = rememberLazyGridState(),
 					paddingValues = paddingValues,
 					isLoading = error == null,
 					isSearchScreen = true
 				)
-				errorMessage.value = error
-				error?.let {
-					val actionLabel = stringResource(R.string.retry)
-					scope.launch {
-						snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
-					}
-				}
+				onError(error)
 			}
 		) { data ->
-			val movies = when (searchCategory) {
-				ALL -> data.moviesAndShows
-				MOVIES -> data.movies
-				TV_SHOWS -> data.tvShows
-			}.collectAsLazyPagingItems()
 			val windowSize = rememberWindowSize()
 			val chipModifier = if (windowSize.width == WindowType.Portrait) {
 				Modifier.fillMaxWidth()
 			} else Modifier.fillMaxHeight()
-			var allScrollIndex by rememberSaveable { mutableIntStateOf(0) }
-			var allScrollOffset by rememberSaveable { mutableIntStateOf(0) }
-			var moviesScrollIndex by rememberSaveable { mutableIntStateOf(0) }
-			var moviesScrollOffset by rememberSaveable { mutableIntStateOf(0) }
-			var seriesScrollIndex by rememberSaveable { mutableIntStateOf(0) }
-			var seriesScrollOffset by rememberSaveable { mutableIntStateOf(0) }
+			val searchQueryEntered = searchQuery.isNotEmpty()
+			val pagerState = rememberPagerState(
+				initialPage = SearchCategory.values().indexOf(searchCategory),
+				pageCount = { 3 }
+			)
 
 			DynamicContainer(Modifier.padding(paddingValues)) {
 				ChipSet(
 					modifier = chipModifier,
 					selectedCategory = searchCategory,
 					onValueChanged = {
-						// save scroll state first
-						when (searchCategory) {
-							ALL -> {
-								allScrollIndex = scrollState.firstVisibleItemIndex
-								allScrollOffset = scrollState.firstVisibleItemScrollOffset
-							}
-							MOVIES -> {
-								moviesScrollIndex = scrollState.firstVisibleItemIndex
-								moviesScrollOffset = scrollState.firstVisibleItemScrollOffset
-							}
-							TV_SHOWS -> {
-								seriesScrollIndex = scrollState.firstVisibleItemIndex
-								seriesScrollOffset = scrollState.firstVisibleItemScrollOffset
-							}
+						val pageIndex = when (it) {
+							ALL -> 0
+							MOVIES -> 1
+							TV_SHOWS -> 2
+						}
+						if (searchQueryEntered) {
+							scope.launch { pagerState.animateScrollToPage(pageIndex) }
 						}
 						action(SearchActions.ToggleCategory(it))
 					}
 				)
 
-				MovieLists(
-					scrollState = scrollState,
-					searchQueryEntered = searchQuery.isNotEmpty(),
-					movies = movies,
-					onItemClick = { clickedMovieItem.value = it }
-				) { error ->
-					errorMessage.value = error
-					error?.let {
-						val actionLabel = stringResource(R.string.retry)
-						scope.launch {
-							snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
-						}
+				HorizontalPager(
+					state = pagerState,
+					beyondBoundsPageCount = 3,
+					userScrollEnabled = false
+				) { page ->
+					when (page) {
+						0 -> MovieLists(
+							scrollState = allScrollState,
+							searchQueryEntered = searchQueryEntered,
+							movies = data.moviesAndShows.collectAsLazyPagingItems(),
+							onItemClick = { clickedMovieItem.value = it }
+						) { onError(it) }
+
+						1 -> MovieLists(
+							scrollState = moviesScrollState,
+							searchQueryEntered = searchQueryEntered,
+							movies = data.movies.collectAsLazyPagingItems(),
+							onItemClick = { clickedMovieItem.value = it }
+						) { onError(it) }
+
+						2 -> MovieLists(
+							scrollState = seriesScrollState,
+							searchQueryEntered = searchQueryEntered,
+							movies = data.tvShows.collectAsLazyPagingItems(),
+							onItemClick = { clickedMovieItem.value = it }
+						) { onError(it) }
 					}
 				}
-				Log.i("MoviesInfo", "$searchCategory --- ${movies.itemSnapshotList.items}")
 			}
 
 			if (clickedMovieItem.value != null) {
@@ -172,29 +172,21 @@ fun SearchScreen(
 				)
 			}
 
-			LaunchedEffect(searchCategory) {
-				when (searchCategory) {
-					ALL -> {
-						if (allScrollIndex == 0) return@LaunchedEffect
-						allScrollState.animateScrollToItem(allScrollIndex, allScrollOffset)
-					}
-					MOVIES -> {
-						if (moviesScrollIndex == 0) return@LaunchedEffect
-						moviesScrollState.animateScrollToItem(moviesScrollIndex, moviesScrollOffset)
-					}
-					TV_SHOWS -> {
-						if (seriesScrollIndex == 0) return@LaunchedEffect
-						seriesScrollState.animateScrollToItem(seriesScrollIndex, seriesScrollOffset)
-					}
-				}
-			}
-
+			val rememberScrollStates = rememberSaveable { mutableStateOf(false) }
 			LaunchedEffect(searchQuery) {
+				if (rememberScrollStates.value) {
+					rememberScrollStates.value = false
+					return@LaunchedEffect
+				}
 				scope.launch {
 					allScrollState.animateScrollToItem(0)
 					moviesScrollState.animateScrollToItem(0)
 					seriesScrollState.animateScrollToItem(0)
 				}
+			}
+
+			DisposableEffect(Unit) {
+				onDispose { rememberScrollStates.value = true }
 			}
 		}
 	}

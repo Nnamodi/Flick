@@ -68,7 +68,7 @@ fun Header(
 	header: String,
 	modifier: Modifier = Modifier,
 	header2: String? = null,
-	selectedHeader: Int = 0,
+	selectedHeader: Int? = null,
 	onHeaderClick: (Int) -> Unit = {}
 ) {
 	Row(
@@ -86,8 +86,8 @@ fun Header(
 			text = header,
 			modifier = Modifier
 				.padding(start = 4.dp)
-				.bounceClickable(header2 != null) { onHeaderClick(1) },
-			color = if (selectedHeader == 1) MaterialTheme.colorScheme.surfaceTint else Color.Unspecified,
+				.bounceClickable(header2 != null) { onHeaderClick(0) },
+			color = if (selectedHeader == 0) MaterialTheme.colorScheme.surfaceTint else Color.Unspecified,
 			fontWeight = FontWeight.Bold,
 			fontSize = 16.sp
 		)
@@ -95,8 +95,8 @@ fun Header(
 			DotSeparator()
 			Text(
 				text = header2,
-				modifier = Modifier.bounceClickable { onHeaderClick(2) },
-				color = if (selectedHeader == 2) MaterialTheme.colorScheme.surfaceTint else Color.Unspecified,
+				modifier = Modifier.bounceClickable { onHeaderClick(1) },
+				color = if (selectedHeader == 1) MaterialTheme.colorScheme.surfaceTint else Color.Unspecified,
 				fontWeight = FontWeight.Bold,
 				fontSize = 16.sp
 			)

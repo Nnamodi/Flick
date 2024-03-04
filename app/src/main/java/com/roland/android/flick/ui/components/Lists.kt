@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -75,6 +76,7 @@ import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
+import kotlin.math.min
 
 @Composable
 fun MovieLists(
@@ -89,9 +91,10 @@ fun MovieLists(
 	val windowSize = rememberWindowSize()
 	val dynamicGridSize = if (windowSize.width == WindowType.Landscape) 150.dp else 120.dp
 
-	if (showEmptyList.value) { EmptyList() }
-
-	if (!searchQueryEntered) { NothingSearched() }
+	when {
+		!searchQueryEntered -> { NothingSearched() }
+		showEmptyList.value -> { EmptyList() }
+	}
 
 	LazyVerticalGrid(
 		columns = GridCells.Adaptive(dynamicGridSize),
@@ -142,38 +145,18 @@ fun MovieLists(
 		}
 	}
 
-	var scrollIndex by rememberSaveable { mutableIntStateOf(0) }
-	var scrollOffset by rememberSaveable { mutableIntStateOf(0) }
-
-	LaunchedEffect(true) {
-		if (scrollIndex == 0) return@LaunchedEffect
-		scrollState.animateScrollToItem(scrollIndex, scrollOffset)
-	}
-
-	DisposableEffect(Unit) {
-		onDispose {
-			scrollIndex = scrollState.firstVisibleItemIndex
-			scrollOffset = scrollState.firstVisibleItemScrollOffset
-		}
-	}
+	ManageScrollState(gridState = scrollState)
 }
 
 @Composable
 fun HorizontalPosters(
 	pagingData: MutableStateFlow<PagingData<Movie>>,
 	header: String,
-	header2: String? = null,
-	selectedHeader: Int = 0,
-	onHeaderClick: (Int) -> Unit = {},
 	onMovieClick: (Movie) -> Unit,
 	seeMore: () -> Unit
 ) {
 	val movieList = pagingData.collectAsLazyPagingItems()
-	val lazyListState = rememberLazyListState()
-	var scrollIndex1 by rememberSaveable { mutableIntStateOf(0) }
-	var scrollOffset1 by rememberSaveable { mutableIntStateOf(0) }
-	var scrollIndex2 by rememberSaveable { mutableIntStateOf(0) }
-	var scrollOffset2 by rememberSaveable { mutableIntStateOf(0) }
+	val listState = rememberLazyListState()
 
 	Column(Modifier.padding(bottom = 12.dp)) {
 		Row(
@@ -182,23 +165,9 @@ fun HorizontalPosters(
 				.padding(PADDING_WIDTH),
 			verticalAlignment = Alignment.CenterVertically
 		) {
-			Header(
-				header = header,
-				header2 = header2,
-				selectedHeader = selectedHeader,
-				onHeaderClick = {
-					if (selectedHeader == 1) {
-						scrollIndex1 = lazyListState.firstVisibleItemIndex
-						scrollOffset1 = lazyListState.firstVisibleItemScrollOffset
-					} else {
-						scrollIndex2 = lazyListState.firstVisibleItemIndex
-						scrollOffset2 = lazyListState.firstVisibleItemScrollOffset
-					}
-					onHeaderClick(it)
-				}
-			)
+			Header(header)
 			Spacer(Modifier.weight(1f))
-			if ((header2 == null) && (movieList.loadState.refresh is LoadState.NotLoading)) {
+			if (movieList.loadState.refresh is LoadState.NotLoading) {
 				Text(
 					text = stringResource(R.string.more),
 					modifier = Modifier
@@ -209,52 +178,99 @@ fun HorizontalPosters(
 				)
 			}
 		}
-		LazyRow(
-			state = lazyListState,
-			contentPadding = PaddingValues(
-				start = PADDING_WIDTH,
-				end = PADDING_WIDTH - 12.dp
-			)
-		) {
-			if (header2 == null) {
-				val movies = movieList.itemSnapshotList.take(20)
-				items(movies.size) { index ->
-					movies[index]?.let { movie ->
-						SmallItemPoster(
-							movie = movie,
-							modifier = Modifier.padding(end = 12.dp),
-							onClick = onMovieClick
-						)
-					}
-				}
-			} else {
-				items(movieList.itemCount) { index ->
-					movieList[index]?.let { movie ->
-						SmallItemPoster(
-							movie = movie,
-							modifier = Modifier.padding(end = 12.dp),
-							onClick = onMovieClick
-						)
-					}
-				}
-			}
-			item {
-				movieList.loadStateUi(PosterType.Small)
-			}
-		}
-		if ((movieList.itemCount == 0) && (movieList.loadState.refresh is LoadState.NotLoading)) {
-			EmptyRow()
-		}
+
+		MovieListPage(
+			movieList = movieList,
+			listState = listState,
+			showFullList = false,
+			onMovieClick = onMovieClick
+		)
 	}
 
-	LaunchedEffect(selectedHeader) {
-		if (selectedHeader == 1) {
-			if (scrollIndex1 == 0) return@LaunchedEffect
-			lazyListState.animateScrollToItem(scrollIndex1, scrollOffset1)
-		} else {
-			if (scrollIndex2 == 0) return@LaunchedEffect
-			lazyListState.animateScrollToItem(scrollIndex2, scrollOffset2)
+	ManageScrollState(listState = listState)
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HorizontalPosters(
+	pagingData: MutableStateFlow<PagingData<Movie>>,
+	pagingData2: MutableStateFlow<PagingData<Movie>>,
+	header: String,
+	header2: String,
+	onMovieClick: (Movie) -> Unit
+) {
+	val movieList = pagingData.collectAsLazyPagingItems()
+	val movieList2 = pagingData2.collectAsLazyPagingItems()
+	val pagerState = rememberPagerState { 2 }
+	val scope = rememberCoroutineScope()
+	var selectedHeader by rememberSaveable { mutableIntStateOf(0) }
+
+	Column(Modifier.padding(bottom = 12.dp)) {
+		Header(
+			header = header,
+			modifier = Modifier.padding(PADDING_WIDTH),
+			header2 = header2,
+			selectedHeader = selectedHeader,
+			onHeaderClick = { header ->
+				scope.launch { pagerState.animateScrollToPage(header) }
+				selectedHeader = header
+			}
+		)
+
+		HorizontalPager(
+			state = pagerState,
+			userScrollEnabled = false
+		) { page ->
+			when (page) {
+				0 -> MovieListPage(
+					movieList = movieList,
+					showFullList = true,
+					onMovieClick = onMovieClick
+				)
+				1 -> MovieListPage(
+					movieList = movieList2,
+					showFullList = true,
+					onMovieClick = onMovieClick
+				)
+			}
 		}
+	}
+}
+
+@Composable
+private fun MovieListPage(
+	movieList: LazyPagingItems<Movie>,
+	listState: LazyListState = rememberLazyListState(),
+	showFullList: Boolean,
+	onMovieClick: (Movie) -> Unit,
+) {
+	LazyRow(
+		state = listState,
+		contentPadding = PaddingValues(
+			start = PADDING_WIDTH,
+			end = PADDING_WIDTH - 12.dp
+		)
+	) {
+		val listSize = if (showFullList) {
+			movieList.itemCount
+		} else {
+			min(20, movieList.itemCount)
+		}
+		items(listSize) { index ->
+			movieList[index]?.let { movie ->
+				SmallItemPoster(
+					movie = movie,
+					modifier = Modifier.padding(end = 12.dp),
+					onClick = onMovieClick
+				)
+			}
+		}
+		item {
+			movieList.loadStateUi(PosterType.Small)
+		}
+	}
+	if ((movieList.itemCount == 0) && (movieList.loadState.refresh is LoadState.NotLoading)) {
+		EmptyRow()
 	}
 }
 
@@ -445,5 +461,27 @@ private fun NothingSearched() {
 			fontSize = 24.sp,
 			fontWeight = FontWeight.SemiBold
 		)
+	}
+}
+
+@Composable
+private fun ManageScrollState(
+	gridState: LazyGridState? = null,
+	listState: LazyListState? = null
+) {
+	var scrollIndex by rememberSaveable { mutableIntStateOf(0) }
+	var scrollOffset by rememberSaveable { mutableIntStateOf(0) }
+
+	LaunchedEffect(true) {
+		if (scrollIndex == 0) return@LaunchedEffect
+		gridState?.animateScrollToItem(scrollIndex, scrollOffset)
+		listState?.animateScrollToItem(scrollIndex, scrollOffset)
+	}
+
+	DisposableEffect(Unit) {
+		onDispose {
+			scrollIndex = gridState?.firstVisibleItemIndex ?: listState?.firstVisibleItemIndex ?: 0
+			scrollOffset = gridState?.firstVisibleItemScrollOffset ?: listState?.firstVisibleItemScrollOffset ?: 0
+		}
 	}
 }

@@ -41,19 +41,18 @@ class SearchViewModel @Inject constructor(
 	}
 
 	private fun search(query: String, searchCategory: SearchCategory) {
-		_searchUiState.value = SearchUiState(movieData = null)
+		_searchUiState.update {
+			it.copy(
+				movieData = null,
+				searchCategory = searchCategory,
+				searchQuery = query
+			)
+		}
 		viewModelScope.launch {
 			searchedMoviesUseCase.execute(GetSearchedMoviesUseCase.Request(query))
 				.map { converter.convertSearchedMovieData(it) }
 				.collect { data ->
-					_searchUiState.update {
-						it.copy(
-							movieData = data,
-							searchCategory = searchCategory,
-							searchQuery = query
-						)
-					}
-					Log.i("SearchInfo", "$data ------- $searchCategory ------- $query")
+					_searchUiState.update { it.copy(movieData = data) }
 				}
 		}
 	}
