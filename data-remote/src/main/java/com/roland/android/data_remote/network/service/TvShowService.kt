@@ -22,19 +22,19 @@ interface TvShowService {
 	@GET("/3/tv/top_rated")
 	suspend fun fetchTopRatedShows(
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/tv/popular")
 	suspend fun fetchPopularShows(
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/tv/airing_today")
 	suspend fun fetchShowsAiringToday(
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/discover/tv")
@@ -43,7 +43,7 @@ interface TvShowService {
 		@Query("first_air_date.gte") fromDate: String = date(Calendar.DAY_OF_YEAR),
 		@Query("first_air_date.lte") toDate: String = date(Calendar.MONTH),
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1,
+		@Query("page") page: Int,
 		@Query("sort_by") sortBy: String = "popularity.desc"
 	): MovieListModel
 
@@ -71,14 +71,14 @@ interface TvShowService {
 	suspend fun fetchRecommendedTvShows(
 		@Path("series_id") seriesId: Int,
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/tv/{series_id}/similar")
 	suspend fun fetchSimilarTvShows(
 		@Path("series_id") seriesId: Int,
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/search/tv")

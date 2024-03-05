@@ -42,14 +42,14 @@ fun <T: Any>CommonScreen(
 }
 
 @Composable
-fun <T: Any, R: Any, B: Any, S: Any>CommonScreen(
-	state1: State<T>?,
-	state2: State<R>?,
-	state3: State<B>?,
-	state4: State<S>?,
+fun <T1: Any, T2: Any, T3: Any, T4: Any>CommonScreen(
+	state1: State<T1>?,
+	state2: State<T2>?,
+	state3: State<T3>?,
+	state4: State<T4>?,
 	paddingValues: PaddingValues = PaddingValues(0.dp),
 	loadingScreen: @Composable (String?) -> Unit,
-	successScreen: @Composable (T, R, B, S) -> Unit
+	successScreen: @Composable (T1, T2, T3, T4) -> Unit
 ) {
 	val layoutDirection = LocalLayoutDirection.current
 

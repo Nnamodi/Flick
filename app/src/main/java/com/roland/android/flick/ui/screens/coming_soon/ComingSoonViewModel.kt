@@ -54,7 +54,7 @@ class ComingSoonViewModel @Inject constructor(
 	}
 
 	private fun retry() {
-		_comingSoonUiState.value = ComingSoonUiState()
+		_comingSoonUiState.update { it.copy(movieData = null) }
 		loadComingSoonData()
 	}
 

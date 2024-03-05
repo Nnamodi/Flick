@@ -5,11 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
-import com.roland.android.domain.usecase.GetFurtherTvShowUseCase
+import com.roland.android.domain.usecase.GetMoviesByRegionUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
+import com.roland.android.domain.usecase.GetTvShowByRegionUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.flick.state.HomeUiState
+import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,6 +46,7 @@ class HomeViewModel @Inject constructor(
 
 	private fun loadMovies() {
 		viewModelScope.launch {
+			if (homeUiState.movies is State.Error) _homeUiState.update { it.copy(movies = null) }
 			moviesUseCase.execute(GetMoviesUseCase.Request)
 				.map { converter.convertMoviesData(it) }
 				.collect { data ->
@@ -55,6 +57,7 @@ class HomeViewModel @Inject constructor(
 
 	private fun loadFurtherMovieCollections() {
 		viewModelScope.launch {
+			if (homeUiState.moviesByRegion is State.Error) _homeUiState.update { it.copy(moviesByRegion = null) }
 			furtherMoviesUseCase.execute(GetFurtherMovieCollectionUseCase.Request)
 				.map { converter.convertFurtherMoviesData(it) }
 				.collect { data ->
@@ -65,6 +68,7 @@ class HomeViewModel @Inject constructor(
 
 	private fun loadTvShows() {
 		viewModelScope.launch {
+			if (homeUiState.tvShows is State.Error) _homeUiState.update { it.copy(tvShows = null) }
 			tvShowsUseCase.execute(GetTvShowUseCase.Request)
 				.map { converter.convertTvShowsData(it) }
 				.collect { data ->
@@ -75,6 +79,7 @@ class HomeViewModel @Inject constructor(
 
 	private fun loadFurtherTvShows() {
 		viewModelScope.launch {
+			if (homeUiState.tvShowsByRegion is State.Error) _homeUiState.update { it.copy(tvShowsByRegion = null) }
 			furtherTvShowsUseCase.execute(GetFurtherTvShowUseCase.Request)
 				.map { converter.convertFurtherTvShowsData(it) }
 				.collect { data ->
@@ -91,7 +96,6 @@ class HomeViewModel @Inject constructor(
 	}
 
 	private fun retry() {
-		_homeUiState.value = HomeUiState()
 		loadMovies()
 		loadFurtherMovieCollections()
 		loadTvShows()

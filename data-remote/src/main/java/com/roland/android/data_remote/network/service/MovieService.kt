@@ -22,19 +22,19 @@ interface MovieService {
 	@GET("/3/movie/top_rated")
 	suspend fun fetchTopRatedMovies(
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/movie/now_playing")
 	suspend fun fetchNowPlayingMovies(
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/movie/popular")
 	suspend fun fetchPopularMovies(
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/discover/movie")
@@ -43,7 +43,7 @@ interface MovieService {
 		@Query("primary_release_date.gte") fromDate: String = date(TOMORROW),
 		@Query("primary_release_date.lte") toDate: String = date(NEXT_MONTH),
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1,
+		@Query("page") page: Int,
 		@Query("sort_by") sortBy: String = "popularity.desc"
 	): MovieListModel
 
@@ -71,28 +71,28 @@ interface MovieService {
 	suspend fun fetchRecommendedMovies(
 		@Path("movie_id") movieId: Int,
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/movie/{movie_id}/similar")
 	suspend fun fetchSimilarMovies(
 		@Path("movie_id") movieId: Int,
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/search/movie")
 	suspend fun searchMovies(
 		@Query("query") query: String,
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/search/multi")
 	suspend fun searchMoviesAndShows(
 		@Query("query") query: String,
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
+		@Query("page") page: Int
 	): MultiListModel
 
 	@GET("/3/discover/movie")

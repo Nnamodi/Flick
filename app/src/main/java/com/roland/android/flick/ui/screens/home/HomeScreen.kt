@@ -18,6 +18,10 @@ import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Indefinite
@@ -115,6 +119,11 @@ fun HomeScreen(
 									onClick = { action(HomeActions.Retry) }
 								) { Text(it) }
 							}
+						},
+						dismissAction = {
+							IconButton(onClick = { errorMessage.value = null }) {
+								Icon(Icons.Rounded.Close, stringResource(R.string.close))
+							}
 						}
 					) {
 						Text(data.visuals.message)
@@ -131,7 +140,7 @@ fun HomeScreen(
 				error?.let {
 					val actionLabel = stringResource(R.string.retry)
 					scope.launch {
-						snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
+						snackbarHostState.showSnackbar(it, actionLabel, true, Indefinite)
 					}
 				}
 			}
