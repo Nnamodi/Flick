@@ -36,8 +36,8 @@ class TvShowRepositoryImplTest {
 		whenever(remoteTvShowSource.fetchShowsAiringToday()).thenReturn(flowOf(showsAiringToday))
 		whenever(remoteTvShowSource.fetchTopRatedShows()).thenReturn(flowOf(topRatedShows))
 		whenever(remoteTvShowSource.fetchShowsSoonToAir()).thenReturn(flowOf(showsSoonToAir))
-		whenever(remoteTvShowSource.fetchBollywoodShows()).thenReturn(flowOf(bollywoodShows))
-		whenever(remoteTvShowSource.fetchAnimeShows()).thenReturn(flowOf(animeShows))
+		whenever(remoteTvShowSource.fetchShowsByGenre("")).thenReturn(flowOf(animeShows))
+		whenever(remoteTvShowSource.fetchShowsByRegion("")).thenReturn(flowOf(bollywoodShows))
 		whenever(remoteTvShowSource.fetchRecommendedTvShows(0)).thenReturn(flowOf(recommendedShows))
 		whenever(remoteTvShowSource.fetchSimilarTvShows(0)).thenReturn(flowOf(similarShows))
 		whenever(remoteTvShowSource.searchTvShows("")).thenReturn(flowOf(trendingShows))
@@ -50,8 +50,8 @@ class TvShowRepositoryImplTest {
 		val airingToday = tvShowRepositoryImpl.fetchShowsAiringToday().first()
 		val topRated = tvShowRepositoryImpl.fetchTopRatedShows().first()
 		val soonToAir = tvShowRepositoryImpl.fetchShowsSoonToAir().first()
-		val bollywood = tvShowRepositoryImpl.fetchBollywoodShows().first()
-		val anime = tvShowRepositoryImpl.fetchAnimeShows().first()
+		val anime = tvShowRepositoryImpl.fetchShowsByGenre("").first()
+		val bollywood = tvShowRepositoryImpl.fetchShowsByRegion("").first()
 		val recommended = tvShowRepositoryImpl.fetchRecommendedTvShows(0).first()
 		val similar = tvShowRepositoryImpl.fetchSimilarTvShows(0).first()
 		val search = tvShowRepositoryImpl.searchTvShows("").first()
@@ -65,8 +65,8 @@ class TvShowRepositoryImplTest {
 			airingToday,
 			topRated,
 			soonToAir,
-			bollywood,
 			anime,
+			bollywood,
 			recommended,
 			similar,
 			search,
@@ -80,8 +80,8 @@ class TvShowRepositoryImplTest {
 			showsAiringToday,
 			topRatedShows,
 			showsSoonToAir,
-			bollywoodShows,
 			animeShows,
+			bollywoodShows,
 			recommendedShows,
 			similarShows,
 			trendingShows,

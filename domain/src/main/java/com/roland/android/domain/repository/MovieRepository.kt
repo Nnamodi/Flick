@@ -18,9 +18,9 @@ interface MovieRepository {
 
 	fun fetchUpcomingMovies(): Flow<PagingData<Movie>>
 
-	fun fetchAnimeCollection(): Flow<PagingData<Movie>>
+	fun fetchMoviesByGenre(genreIds: String): Flow<PagingData<Movie>>
 
-	fun fetchBollywoodMovies(): Flow<PagingData<Movie>>
+	fun fetchMoviesByRegion(region: String): Flow<PagingData<Movie>>
 
 	fun fetchRecommendedMovies(movieId: Int): Flow<PagingData<Movie>>
 
@@ -29,8 +29,6 @@ interface MovieRepository {
 	fun searchMovies(query: String): Flow<PagingData<Movie>>
 
 	fun searchMoviesAndShows(query: String): Flow<PagingData<Movie>>
-
-	fun fetchMoviesByGenre(genreIds: String): Flow<PagingData<Movie>>
 
 	fun fetchMovieDetails(movieId: Int): Flow<MovieDetails>
 

@@ -12,13 +12,13 @@ data class MoviesModel(
 	val popular: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val nowPlaying: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val topRated: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val upcoming: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty())
+	val genres: List<Genre> = emptyList()
 )
 
-data class FurtherMoviesModel(
-	val bollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val anime: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val genres: List<Genre> = emptyList()
+data class MoviesByRegionModel(
+	val nollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val korean: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val bollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty())
 )
 
 data class MovieListModel(

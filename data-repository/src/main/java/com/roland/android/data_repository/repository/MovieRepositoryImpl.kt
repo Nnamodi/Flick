@@ -23,9 +23,9 @@ class MovieRepositoryImpl @Inject constructor(
 
 	override fun fetchUpcomingMovies(): Flow<PagingData<Movie>> = remoteMovieSource.fetchUpcomingMovies()
 
-	override fun fetchAnimeCollection(): Flow<PagingData<Movie>> = remoteMovieSource.fetchAnimeCollection()
+	override fun fetchMoviesByGenre(genreIds: String): Flow<PagingData<Movie>> = remoteMovieSource.fetchMoviesByGenre(genreIds)
 
-	override fun fetchBollywoodMovies(): Flow<PagingData<Movie>> = remoteMovieSource.fetchBollywoodMovies()
+	override fun fetchMoviesByRegion(region: String): Flow<PagingData<Movie>> = remoteMovieSource.fetchMoviesByRegion(region)
 
 	override fun fetchRecommendedMovies(movieId: Int): Flow<PagingData<Movie>> = remoteMovieSource.fetchRecommendedMovies(movieId)
 
@@ -34,8 +34,6 @@ class MovieRepositoryImpl @Inject constructor(
 	override fun searchMovies(query: String): Flow<PagingData<Movie>> = remoteMovieSource.searchMovies(query)
 
 	override fun searchMoviesAndShows(query: String): Flow<PagingData<Movie>> = remoteMovieSource.searchMoviesAndShows(query)
-
-	override fun fetchMoviesByGenre(genreIds: String): Flow<PagingData<Movie>> = remoteMovieSource.fetchMoviesByGenre(genreIds)
 
 	override fun fetchMovieDetails(movieId: Int): Flow<MovieDetails> = remoteMovieSource.fetchMovieDetails(movieId)
 

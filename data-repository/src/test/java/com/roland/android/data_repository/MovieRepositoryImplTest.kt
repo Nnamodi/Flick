@@ -35,8 +35,8 @@ class MovieRepositoryImplTest {
 		whenever(remoteMovieSource.fetchNowPlayingMovies()).thenReturn(flowOf(nowPlayingMovies))
 		whenever(remoteMovieSource.fetchTopRatedMovies()).thenReturn(flowOf(topRatedMovies))
 		whenever(remoteMovieSource.fetchUpcomingMovies()).thenReturn(flowOf(upcomingMovies))
-		whenever(remoteMovieSource.fetchBollywoodMovies()).thenReturn(flowOf(bollywoodMovies))
-		whenever(remoteMovieSource.fetchAnimeCollection()).thenReturn(flowOf(animeCollections))
+		whenever(remoteMovieSource.fetchMoviesByGenre("")).thenReturn(flowOf(animeCollections))
+		whenever(remoteMovieSource.fetchMoviesByRegion("")).thenReturn(flowOf(bollywoodMovies))
 		whenever(remoteMovieSource.fetchRecommendedMovies(2)).thenReturn(flowOf(recommendedMovies))
 		whenever(remoteMovieSource.fetchSimilarMovies(2)).thenReturn(flowOf(similarMovies))
 		whenever(remoteMovieSource.searchMovies("")).thenReturn(flowOf(trendingMovies))
@@ -48,8 +48,8 @@ class MovieRepositoryImplTest {
 		val nowPlaying = movieRepositoryImpl.fetchNowPlayingMovies().first()
 		val topRated = movieRepositoryImpl.fetchTopRatedMovies().first()
 		val upcoming = movieRepositoryImpl.fetchUpcomingMovies().first()
-		val bollywood = movieRepositoryImpl.fetchBollywoodMovies().first()
-		val anime = movieRepositoryImpl.fetchAnimeCollection().first()
+		val anime = movieRepositoryImpl.fetchMoviesByGenre("").first()
+		val bollywood = movieRepositoryImpl.fetchMoviesByRegion("").first()
 		val recommended = movieRepositoryImpl.fetchRecommendedMovies(2).first()
 		val similar = movieRepositoryImpl.fetchSimilarMovies(2).first()
 		val search = movieRepositoryImpl.searchMovies("").first()
@@ -62,8 +62,8 @@ class MovieRepositoryImplTest {
 			nowPlaying,
 			topRated,
 			upcoming,
-			bollywood,
 			anime,
+			bollywood,
 			recommended,
 			similar,
 			search,
@@ -76,8 +76,8 @@ class MovieRepositoryImplTest {
 			nowPlayingMovies,
 			topRatedMovies,
 			upcomingMovies,
-			bollywoodMovies,
 			animeCollections,
+			bollywoodMovies,
 			recommendedMovies,
 			similarMovies,
 			trendingMovies,

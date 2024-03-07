@@ -142,14 +142,15 @@ class UpcomingShowsPagingSource(
 
 }
 
-class AnimeShowsPagingSource(
-	private val tvShowService: TvShowService
+class ShowsByGenrePagingSource(
+	private val tvShowService: TvShowService,
+	private val genreIds: String
 ) : PagingSource<Int, Movie>() {
 
 	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
 		return try {
 			val currentPage = params.key ?: INITIAL_PAGE
-			val movies = tvShowService.fetchAnimeShows(page = currentPage)
+			val movies = tvShowService.fetchShowsByGenre(genreIds, currentPage)
 			LoadResult.Page(
 				data = convertToMovieList(movies).results,
 				prevKey = if (currentPage == 1) null else currentPage - 1,
@@ -169,14 +170,15 @@ class AnimeShowsPagingSource(
 
 }
 
-class BollywoodShowsPagingSource(
-	private val tvShowService: TvShowService
+class ShowsByRegionPagingSource(
+	private val tvShowService: TvShowService,
+	private val region: String
 ) : PagingSource<Int, Movie>() {
 
 	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
 		return try {
 			val currentPage = params.key ?: INITIAL_PAGE
-			val movies = tvShowService.fetchBollywoodShows(page = currentPage)
+			val movies = tvShowService.fetchShowsByRegion(region, currentPage)
 			LoadResult.Page(
 				data = convertToMovieList(movies).results,
 				prevKey = if (currentPage == 1) null else currentPage - 1,
@@ -261,34 +263,6 @@ class SearchedShowsPagingSource(
 		return try {
 			val currentPage = params.key ?: INITIAL_PAGE
 			val movies = tvShowService.searchTvShows(query = query, page = currentPage)
-			LoadResult.Page(
-				data = convertToMovieList(movies).results,
-				prevKey = if (currentPage == 1) null else currentPage - 1,
-				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
-			)
-		} catch (e: Exception) {
-			LoadResult.Error(throwable = e)
-		}
-	}
-
-	override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {
-		return state.anchorPosition?.let { anchorPosition ->
-			state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
-				?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
-		}
-	}
-
-}
-
-class ShowsByGenrePagingSource(
-	private val tvShowService: TvShowService,
-	private val genreIds: String
-) : PagingSource<Int, Movie>() {
-
-	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
-		return try {
-			val currentPage = params.key ?: INITIAL_PAGE
-			val movies = tvShowService.fetchShowsByGenre(genreIds = genreIds, page = currentPage)
 			LoadResult.Page(
 				data = convertToMovieList(movies).results,
 				prevKey = if (currentPage == 1) null else currentPage - 1,

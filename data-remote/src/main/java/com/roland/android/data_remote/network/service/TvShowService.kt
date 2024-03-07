@@ -48,23 +48,21 @@ interface TvShowService {
 	): MovieListModel
 
 	@GET("/3/discover/tv")
-	suspend fun fetchAnimeShows(
+	suspend fun fetchShowsByGenre(
+		@Query("with_genres") genreIds: String,
+		@Query("page") page: Int,
 		@Query("include_adult") includeAdult: Boolean = false,
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1,
-		@Query("sort_by") sortBy: String = "popularity.desc",
-		@Query("with_genres") genre: String = "16"
+		@Query("sort_by") sortBy: String = "popularity.desc"
 	): MovieListModel
 
 	@GET("/3/discover/tv")
-	suspend fun fetchBollywoodShows(
+	suspend fun fetchShowsByRegion(
+		@Query("with_origin_country") region: String,
+		@Query("page") page: Int,
+		@Query("language") language: String = "en_US",
 		@Query("include_adult") includeAdult: Boolean = false,
-		@Query("language") language: String = "hi_IN",
-		@Query("page") page: Int = 1,
-		@Query("sort_by") sortBy: String = "popularity.desc",
-		@Query("region") region: String = "IN",
-		@Query("watch_region") watchRegion: String = "IN",
-		@Query("with_original_language") originalLang: String = "hi"
+		@Query("sort_by") sortBy: String = "popularity.desc"
 	): MovieListModel
 
 	@GET("/3/tv/{series_id}/recommendations")
@@ -85,16 +83,7 @@ interface TvShowService {
 	suspend fun searchTvShows(
 		@Query("query") query: String,
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1
-	): MovieListModel
-
-	@GET("/3/discover/tv")
-	suspend fun fetchShowsByGenre(
-		@Query("with_genres") genreIds: String,
-		@Query("include_adult") includeAdult: Boolean = false,
-		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1,
-		@Query("sort_by") sortBy: String = "popularity.desc"
+		@Query("page") page: Int
 	): MovieListModel
 
 	@GET("/3/tv/{series_id}")

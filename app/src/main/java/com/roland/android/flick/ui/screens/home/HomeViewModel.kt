@@ -22,9 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
 	private val moviesUseCase: GetMoviesUseCase,
-	private val furtherMoviesUseCase: GetFurtherMovieCollectionUseCase,
+	private val moviesByRegionUseCase: GetMoviesByRegionUseCase,
 	private val tvShowsUseCase: GetTvShowUseCase,
-	private val furtherTvShowsUseCase: GetFurtherTvShowUseCase,
+	private val tvShowByRegionUseCase: GetTvShowByRegionUseCase,
 	private val converter: ResponseConverter,
 ) : ViewModel() {
 
@@ -58,10 +58,10 @@ class HomeViewModel @Inject constructor(
 	private fun loadFurtherMovieCollections() {
 		viewModelScope.launch {
 			if (homeUiState.moviesByRegion is State.Error) _homeUiState.update { it.copy(moviesByRegion = null) }
-			furtherMoviesUseCase.execute(GetFurtherMovieCollectionUseCase.Request)
-				.map { converter.convertFurtherMoviesData(it) }
+			moviesByRegionUseCase.execute(GetMoviesByRegionUseCase.Request)
+				.map { converter.convertMoviesByRegionData(it) }
 				.collect { data ->
-					_homeUiState.update { it.copy(furtherMovies = data) }
+					_homeUiState.update { it.copy(moviesByRegion = data) }
 				}
 		}
 	}
@@ -80,10 +80,10 @@ class HomeViewModel @Inject constructor(
 	private fun loadFurtherTvShows() {
 		viewModelScope.launch {
 			if (homeUiState.tvShowsByRegion is State.Error) _homeUiState.update { it.copy(tvShowsByRegion = null) }
-			furtherTvShowsUseCase.execute(GetFurtherTvShowUseCase.Request)
-				.map { converter.convertFurtherTvShowsData(it) }
+			tvShowByRegionUseCase.execute(GetTvShowByRegionUseCase.Request)
+				.map { converter.convertTvShowsByRegionData(it) }
 				.collect { data ->
-					_homeUiState.update { it.copy(furtherTvShows = data) }
+					_homeUiState.update { it.copy(tvShowsByRegion = data) }
 				}
 		}
 	}

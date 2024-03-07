@@ -4,6 +4,8 @@
     <string name="most_popular">Most Popular</string>
     <string name="top_rated">Top Rated</string>
     <string name="anime_collection">Anime</string>
+    <string name="nollywood">Nollywood</string>
+    <string name="korean">Korean</string>
     <string name="bollywood">Bollywood</string>
     <string name="in_theatres">In Theatres</string>
     <string name="new_releases">New Releases</string>
@@ -23,6 +25,10 @@
     <string name="top_rated_series">Top Rated Series</string>
     <string name="anime">Anime</string>
     <string name="anime_series">Anime Series</string>
+    <string name="nollywood_movies">Nollywood Movies</string>
+    <string name="nollywood_series">Nollywood Series</string>
+    <string name="korean_movies">Korean Movies</string>
+    <string name="k_drama">K-drama</string>
     <string name="bollywood_movies">Bollywood Movies</string>
     <string name="bollywood_series">Bollywood Series</string>
     <string name="popular_movies">Popular Movies</string>

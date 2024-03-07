@@ -1,16 +1,21 @@
 package com.roland.android.domain.usecase
 
 import androidx.paging.PagingData
+import com.roland.android.domain.Constant.BOLLYWOOD
+import com.roland.android.domain.Constant.HALLYUWOOD
+import com.roland.android.domain.Constant.NOLLYWOOD
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.repository.MovieRepository
 import com.roland.android.domain.repository.TvShowRepository
-import com.roland.android.domain.usecase.Category.ANIME
-import com.roland.android.domain.usecase.Category.ANIME_SERIES
 import com.roland.android.domain.usecase.Category.BOLLYWOOD_MOVIES
 import com.roland.android.domain.usecase.Category.BOLLYWOOD_SERIES
 import com.roland.android.domain.usecase.Category.IN_THEATRES
+import com.roland.android.domain.usecase.Category.KOREAN_MOVIES
+import com.roland.android.domain.usecase.Category.K_DRAMA
 import com.roland.android.domain.usecase.Category.NEW_RELEASES
+import com.roland.android.domain.usecase.Category.NOLLYWOOD_MOVIES
+import com.roland.android.domain.usecase.Category.NOLLYWOOD_SERIES
 import com.roland.android.domain.usecase.Category.POPULAR_MOVIES
 import com.roland.android.domain.usecase.Category.POPULAR_SERIES
 import com.roland.android.domain.usecase.Category.TOP_RATED_MOVIES
@@ -35,10 +40,12 @@ class GetMovieListUseCase @Inject constructor(
 			NEW_RELEASES -> tvShowRepository.fetchShowsAiringToday()
 			TOP_RATED_MOVIES -> movieRepository.fetchTopRatedMovies()
 			TOP_RATED_SERIES -> tvShowRepository.fetchTopRatedShows()
-			ANIME -> movieRepository.fetchAnimeCollection()
-			ANIME_SERIES -> tvShowRepository.fetchAnimeShows()
-			BOLLYWOOD_MOVIES -> movieRepository.fetchBollywoodMovies()
-			BOLLYWOOD_SERIES -> tvShowRepository.fetchBollywoodShows()
+			NOLLYWOOD_MOVIES -> movieRepository.fetchMoviesByRegion(NOLLYWOOD)
+			NOLLYWOOD_SERIES -> tvShowRepository.fetchShowsByRegion(NOLLYWOOD)
+			KOREAN_MOVIES -> movieRepository.fetchMoviesByRegion(HALLYUWOOD)
+			K_DRAMA -> tvShowRepository.fetchShowsByRegion(HALLYUWOOD)
+			BOLLYWOOD_MOVIES -> movieRepository.fetchMoviesByRegion(BOLLYWOOD)
+			BOLLYWOOD_SERIES -> tvShowRepository.fetchShowsByRegion(BOLLYWOOD)
 			POPULAR_MOVIES -> movieRepository.fetchPopularMovies()
 			POPULAR_SERIES -> tvShowRepository.fetchPopularShows()
 		}
@@ -68,8 +75,10 @@ enum class Category {
 	NEW_RELEASES,
 	TOP_RATED_MOVIES,
 	TOP_RATED_SERIES,
-	ANIME,
-	ANIME_SERIES,
+	NOLLYWOOD_MOVIES,
+	NOLLYWOOD_SERIES,
+	KOREAN_MOVIES,
+	K_DRAMA,
 	BOLLYWOOD_MOVIES,
 	BOLLYWOOD_SERIES,
 	POPULAR_MOVIES,

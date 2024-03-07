@@ -1,15 +1,15 @@
 package com.roland.android.domain
 
-import com.roland.android.domain.SampleTestData.animeShows
 import com.roland.android.domain.SampleTestData.bollywoodShows
 import com.roland.android.domain.SampleTestData.genreList
+import com.roland.android.domain.SampleTestData.koreanShows
+import com.roland.android.domain.SampleTestData.nigerianShows
 import com.roland.android.domain.SampleTestData.popularShows
 import com.roland.android.domain.SampleTestData.showsAiringToday
-import com.roland.android.domain.SampleTestData.showsSoonToAir
 import com.roland.android.domain.SampleTestData.topRatedShows
 import com.roland.android.domain.SampleTestData.trendingShows
 import com.roland.android.domain.repository.TvShowRepository
-import com.roland.android.domain.usecase.GetFurtherTvShowUseCase
+import com.roland.android.domain.usecase.GetTvShowByRegionUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -24,7 +24,7 @@ class GetTvShowUseCaseTest {
 
 	private val tvShowRepository = mock<TvShowRepository>()
 	private val tvShowUseCase = GetTvShowUseCase(mock(), tvShowRepository)
-	private val furtherTvShowUseCase = GetFurtherTvShowUseCase(mock(), tvShowRepository)
+	private val tvShowByRegionUseCase = GetTvShowByRegionUseCase(mock(), tvShowRepository)
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
@@ -33,7 +33,7 @@ class GetTvShowUseCaseTest {
 		whenever(tvShowRepository.fetchPopularShows()).thenReturn(flowOf(popularShows))
 		whenever(tvShowRepository.fetchShowsAiringToday()).thenReturn(flowOf(showsAiringToday))
 		whenever(tvShowRepository.fetchTopRatedShows()).thenReturn(flowOf(topRatedShows))
-		whenever(tvShowRepository.fetchShowsSoonToAir()).thenReturn(flowOf(showsSoonToAir))
+		whenever(tvShowRepository.fetchTvShowGenres()).thenReturn(flowOf(genreList))
 
 		val response = tvShowUseCase.process(GetTvShowUseCase.Request).first()
 		assertEquals(
@@ -42,7 +42,7 @@ class GetTvShowUseCaseTest {
 				popularShows,
 				showsAiringToday,
 				topRatedShows,
-				showsSoonToAir
+				genreList
 			),
 			response
 		)
@@ -51,16 +51,14 @@ class GetTvShowUseCaseTest {
 	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
 	fun testProcess2() = runTest {
-		whenever(tvShowRepository.fetchBollywoodShows()).thenReturn(flowOf(bollywoodShows))
-		whenever(tvShowRepository.fetchAnimeShows()).thenReturn(flowOf(animeShows))
-		whenever(tvShowRepository.fetchTvShowGenres()).thenReturn(flowOf(genreList))
+		whenever(tvShowRepository.fetchShowsByRegion("NG")).thenReturn(flowOf(nigerianShows))
+		whenever(tvShowRepository.fetchShowsByRegion("KP")).thenReturn(flowOf(koreanShows))
+		whenever(tvShowRepository.fetchShowsByRegion("IN")).thenReturn(flowOf(bollywoodShows))
 
-		val response = furtherTvShowUseCase.process(GetFurtherTvShowUseCase.Request).first()
+		val response = tvShowByRegionUseCase.process(GetTvShowByRegionUseCase.Request).first()
 		assertEquals(
-			GetFurtherTvShowUseCase.Response(
-				bollywoodShows,
-				animeShows,
-				genreList
+			GetTvShowByRegionUseCase.Response(
+				nigerianShows, koreanShows, bollywoodShows
 			),
 			response
 		)

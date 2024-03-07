@@ -122,7 +122,7 @@ fun MovieListScreenPreview() {
 	FlickTheme {
 		MovieListScreen(
 			uiState = MovieListUiState(),
-			category = Category.ANIME.name,
+			category = Category.IN_THEATRES.name,
 			action = {},
 			navigate = {}
 		)

@@ -44,24 +44,26 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.usecase.Category
-import com.roland.android.domain.usecase.Category.ANIME
-import com.roland.android.domain.usecase.Category.ANIME_SERIES
 import com.roland.android.domain.usecase.Category.BOLLYWOOD_MOVIES
 import com.roland.android.domain.usecase.Category.BOLLYWOOD_SERIES
 import com.roland.android.domain.usecase.Category.IN_THEATRES
+import com.roland.android.domain.usecase.Category.KOREAN_MOVIES
+import com.roland.android.domain.usecase.Category.K_DRAMA
 import com.roland.android.domain.usecase.Category.NEW_RELEASES
+import com.roland.android.domain.usecase.Category.NOLLYWOOD_MOVIES
+import com.roland.android.domain.usecase.Category.NOLLYWOOD_SERIES
 import com.roland.android.domain.usecase.Category.POPULAR_MOVIES
 import com.roland.android.domain.usecase.Category.POPULAR_SERIES
 import com.roland.android.domain.usecase.Category.TOP_RATED_MOVIES
 import com.roland.android.domain.usecase.Category.TOP_RATED_SERIES
 import com.roland.android.flick.R
-import com.roland.android.flick.models.FurtherMoviesModel
-import com.roland.android.flick.models.FurtherTvShowsModel
+import com.roland.android.flick.models.MoviesByRegionModel
 import com.roland.android.flick.models.MoviesModel
-import com.roland.android.flick.models.SampleData.animeCollections
-import com.roland.android.flick.models.SampleData.animeShows
+import com.roland.android.flick.models.SampleData.bollywoodMovies
+import com.roland.android.flick.models.SampleData.bollywoodShows
 import com.roland.android.flick.models.SampleData.trendingMovies
 import com.roland.android.flick.models.SampleData.trendingShows
+import com.roland.android.flick.models.TvShowsByRegionModel
 import com.roland.android.flick.models.TvShowsModel
 import com.roland.android.flick.state.HomeUiState
 import com.roland.android.flick.state.State
@@ -241,10 +243,16 @@ fun HomeScreen(
 				) { seeMore(if (selectedCategory == MOVIES) TOP_RATED_MOVIES else TOP_RATED_SERIES) }
 
 				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
-					header = stringResource(R.string.anime_collection),
+					pagingData = if (selectedCategory == MOVIES) movieData2.nollywood else showData2.nollywood,
+					header = stringResource(R.string.nollywood),
 					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) ANIME else ANIME_SERIES) }
+				) { seeMore(if (selectedCategory == MOVIES) NOLLYWOOD_MOVIES else NOLLYWOOD_SERIES) }
+
+				HorizontalPosters(
+					pagingData = if (selectedCategory == MOVIES) movieData2.korean else showData2.kDrama,
+					header = stringResource(if (selectedCategory == MOVIES) R.string.korean else R.string.k_drama),
+					onMovieClick = { clickedMovieItem.value = it }
+				) { seeMore(if (selectedCategory == MOVIES) KOREAN_MOVIES else K_DRAMA) }
 
 				HorizontalPosters(
 					pagingData = if (selectedCategory == MOVIES) movieData2.bollywood else showData2.bollywood,
@@ -268,7 +276,7 @@ fun HomeScreen(
 
 				MovieDetailsSheet(
 					movie = clickedMovieItem.value!!,
-					genreList = if (clickedItemIsMovie) movieData2.genres else showData2.genres,
+					genreList = if (clickedItemIsMovie) movieData1.genres else showData1.genres,
 					viewMore = navigate,
 					closeSheet = { clickedMovieItem.value = null }
 				)
@@ -282,9 +290,9 @@ fun HomeScreen(
 fun HomeScreenPreview() {
 	FlickTheme {
 		val movies = State.Success(MoviesModel(trending = trendingMovies))
-		val furtherMovies = State.Success(FurtherMoviesModel(anime = animeCollections))
+		val furtherMovies = State.Success(MoviesByRegionModel(bollywood = bollywoodMovies))
 		val shows = State.Success(TvShowsModel(trending = trendingShows))
-		val furtherShows = State.Success(FurtherTvShowsModel(anime = animeShows))
+		val furtherShows = State.Success(TvShowsByRegionModel(bollywood = bollywoodShows))
 		val uiState = HomeUiState(movies, furtherMovies, shows, furtherShows)
 		HomeScreen(uiState, {}) {}
 	}

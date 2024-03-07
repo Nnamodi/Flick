@@ -20,17 +20,15 @@ interface RemoteTvShowSource {
 
 	fun fetchShowsSoonToAir(): Flow<PagingData<Movie>>
 
-	fun fetchAnimeShows(): Flow<PagingData<Movie>>
+	fun fetchShowsByGenre(genreIds: String): Flow<PagingData<Movie>>
 
-	fun fetchBollywoodShows(): Flow<PagingData<Movie>>
+	fun fetchShowsByRegion(region: String): Flow<PagingData<Movie>>
 
 	fun fetchRecommendedTvShows(seriesId: Int): Flow<PagingData<Movie>>
 
 	fun fetchSimilarTvShows(seriesId: Int): Flow<PagingData<Movie>>
 
 	fun searchTvShows(query: String): Flow<PagingData<Movie>>
-
-	fun fetchShowsByGenre(genreIds: String): Flow<PagingData<Movie>>
 
 	fun fetchTvShowDetails(seriesId: Int): Flow<Series>
 

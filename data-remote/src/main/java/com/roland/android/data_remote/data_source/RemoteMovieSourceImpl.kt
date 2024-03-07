@@ -5,9 +5,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.roland.android.data_remote.network.service.MovieService
-import com.roland.android.data_remote.paging.AnimeCollectionPagingSource
-import com.roland.android.data_remote.paging.BollywoodMoviesPagingSource
 import com.roland.android.data_remote.paging.MoviesByGenrePagingSource
+import com.roland.android.data_remote.paging.MoviesByRegionPagingSource
 import com.roland.android.data_remote.paging.NowPlayingMoviesPagingSource
 import com.roland.android.data_remote.paging.PopularMoviesPagingSource
 import com.roland.android.data_remote.paging.RecommendedMoviesPagingSource
@@ -108,28 +107,28 @@ class RemoteMovieSourceImpl @Inject constructor(
 			.cachedIn(scope)
 	}
 
-	override fun fetchAnimeCollection(): Flow<PagingData<Movie>> {
+	override fun fetchMoviesByGenre(genreIds: String): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
 				pageSize = MAX_PAGE_SIZE,
 				prefetchDistance = MAX_PAGE_SIZE / 2
 			),
 			pagingSourceFactory = {
-				AnimeCollectionPagingSource(movieService)
+				MoviesByGenrePagingSource(movieService, genreIds)
 			}
 		).flow
 			.distinctUntilChanged()
 			.cachedIn(scope)
 	}
 
-	override fun fetchBollywoodMovies(): Flow<PagingData<Movie>> {
+	override fun fetchMoviesByRegion(region: String): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
 				pageSize = MAX_PAGE_SIZE,
 				prefetchDistance = MAX_PAGE_SIZE / 2
 			),
 			pagingSourceFactory = {
-				BollywoodMoviesPagingSource(movieService)
+				MoviesByRegionPagingSource(movieService, region)
 			}
 		).flow
 			.distinctUntilChanged()
@@ -172,20 +171,6 @@ class RemoteMovieSourceImpl @Inject constructor(
 			),
 			pagingSourceFactory = {
 				SearchedMoviesPagingSource(movieService, query)
-			}
-		).flow
-			.distinctUntilChanged()
-			.cachedIn(scope)
-	}
-
-	override fun fetchMoviesByGenre(genreIds: String): Flow<PagingData<Movie>> {
-		return Pager(
-			config = PagingConfig(
-				pageSize = MAX_PAGE_SIZE,
-				prefetchDistance = MAX_PAGE_SIZE / 2
-			),
-			pagingSourceFactory = {
-				MoviesByGenrePagingSource(movieService, genreIds)
 			}
 		).flow
 			.distinctUntilChanged()

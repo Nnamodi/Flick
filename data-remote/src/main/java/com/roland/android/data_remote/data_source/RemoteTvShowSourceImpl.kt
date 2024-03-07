@@ -1,17 +1,17 @@
 package com.roland.android.data_remote.data_source
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.roland.android.data_remote.network.service.TvShowService
-import com.roland.android.data_remote.paging.AnimeShowsPagingSource
-import com.roland.android.data_remote.paging.BollywoodShowsPagingSource
 import com.roland.android.data_remote.paging.NowAiringShowsPagingSource
 import com.roland.android.data_remote.paging.PopularShowsPagingSource
 import com.roland.android.data_remote.paging.RecommendedShowsPagingSource
 import com.roland.android.data_remote.paging.SearchedShowsPagingSource
 import com.roland.android.data_remote.paging.ShowsByGenrePagingSource
+import com.roland.android.data_remote.paging.ShowsByRegionPagingSource
 import com.roland.android.data_remote.paging.SimilarShowsPagingSource
 import com.roland.android.data_remote.paging.TopRatedShowsPagingSource
 import com.roland.android.data_remote.paging.TrendingShowsPagingSource
@@ -111,28 +111,28 @@ class RemoteTvShowSourceImpl @Inject constructor(
 			.cachedIn(scope)
 	}
 
-	override fun fetchAnimeShows(): Flow<PagingData<Movie>> {
+	override fun fetchShowsByGenre(genreIds: String): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
 				pageSize = MAX_PAGE_SIZE,
 				prefetchDistance = MAX_PAGE_SIZE / 2
 			),
 			pagingSourceFactory = {
-				AnimeShowsPagingSource(tvShowService)
+				ShowsByGenrePagingSource(tvShowService, genreIds)
 			}
 		).flow
 			.distinctUntilChanged()
 			.cachedIn(scope)
 	}
 
-	override fun fetchBollywoodShows(): Flow<PagingData<Movie>> {
+	override fun fetchShowsByRegion(region: String): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
 				pageSize = MAX_PAGE_SIZE,
 				prefetchDistance = MAX_PAGE_SIZE / 2
 			),
 			pagingSourceFactory = {
-				BollywoodShowsPagingSource(tvShowService)
+				ShowsByRegionPagingSource(tvShowService, region)
 			}
 		).flow
 			.distinctUntilChanged()
@@ -175,20 +175,6 @@ class RemoteTvShowSourceImpl @Inject constructor(
 			),
 			pagingSourceFactory = {
 				SearchedShowsPagingSource(tvShowService, query)
-			}
-		).flow
-			.distinctUntilChanged()
-			.cachedIn(scope)
-	}
-
-	override fun fetchShowsByGenre(genreIds: String): Flow<PagingData<Movie>> {
-		return Pager(
-			config = PagingConfig(
-				pageSize = MAX_PAGE_SIZE,
-				prefetchDistance = MAX_PAGE_SIZE / 2
-			),
-			pagingSourceFactory = {
-				ShowsByGenrePagingSource(tvShowService, genreIds)
 			}
 		).flow
 			.distinctUntilChanged()

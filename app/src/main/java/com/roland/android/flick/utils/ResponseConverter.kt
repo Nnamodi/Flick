@@ -2,28 +2,28 @@ package com.roland.android.flick.utils
 
 import com.roland.android.domain.entity.Result
 import com.roland.android.domain.usecase.GetCastDetailsUseCase
-import com.roland.android.domain.usecase.GetFurtherMovieCollectionUseCase
-import com.roland.android.domain.usecase.GetFurtherTvShowUseCase
 import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetMovieListUseCase
 import com.roland.android.domain.usecase.GetMoviesAndShowByGenreUseCase
+import com.roland.android.domain.usecase.GetMoviesByRegionUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.domain.usecase.GetSearchedMoviesUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
+import com.roland.android.domain.usecase.GetTvShowByRegionUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.domain.usecase.GetUpcomingMoviesUseCase
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.CategorySelectionModel
 import com.roland.android.flick.models.ComingSoonModel
-import com.roland.android.flick.models.FurtherMoviesModel
-import com.roland.android.flick.models.FurtherTvShowsModel
 import com.roland.android.flick.models.MovieDetailsModel
 import com.roland.android.flick.models.MovieListModel
+import com.roland.android.flick.models.MoviesByRegionModel
 import com.roland.android.flick.models.MoviesModel
 import com.roland.android.flick.models.SearchModel
 import com.roland.android.flick.models.SeasonDetailsModel
 import com.roland.android.flick.models.TvShowDetailsModel
+import com.roland.android.flick.models.TvShowsByRegionModel
 import com.roland.android.flick.models.TvShowsModel
 import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.Extensions.refactor
@@ -45,26 +45,26 @@ class ResponseConverter @Inject constructor() {
 						result.data.popularMovies.refactor(),
 						result.data.nowPlayingMovies.refactor(),
 						result.data.topRated.refactor(),
-						result.data.upcomingMovies.refactor()
+						result.data.movieGenres
 					)
 				)
 			}
 		}
 	}
 
-	fun convertFurtherMoviesData(
-		result: Result<GetFurtherMovieCollectionUseCase.Response>
-	): State<FurtherMoviesModel> {
+	fun convertMoviesByRegionData(
+		result: Result<GetMoviesByRegionUseCase.Response>
+	): State<MoviesByRegionModel> {
 		return when (result) {
 			is Result.Error -> {
 				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
 				State.Success(
-					FurtherMoviesModel(
-						result.data.bollywoodMovies.refactor(),
-						result.data.animeCollection.refactor(),
-						result.data.movieGenres
+					MoviesByRegionModel(
+						result.data.nigerianMovies.refactor(),
+						result.data.koreanMovies.refactor(),
+						result.data.bollywoodMovies.refactor()
 					)
 				)
 			}
@@ -106,26 +106,26 @@ class ResponseConverter @Inject constructor() {
 						result.data.popularShows.refactor(),
 						result.data.showsAiringToday.refactor(),
 						result.data.topRatedShows.refactor(),
-						result.data.showsSoonToAir.refactor()
+						result.data.showGenres
 					)
 				)
 			}
 		}
 	}
 
-	fun convertFurtherTvShowsData(
-		result: Result<GetFurtherTvShowUseCase.Response>
-	): State<FurtherTvShowsModel> {
+	fun convertTvShowsByRegionData(
+		result: Result<GetTvShowByRegionUseCase.Response>
+	): State<TvShowsByRegionModel> {
 		return when (result) {
 			is Result.Error -> {
 				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
 				State.Success(
-					FurtherTvShowsModel(
-						result.data.bollywoodShows.refactor(),
-						result.data.animeShows.refactor(),
-						result.data.showGenres
+					TvShowsByRegionModel(
+						result.data.nigerianShows.refactor(),
+						result.data.koreanShows.refactor(),
+						result.data.bollywoodShows.refactor()
 					)
 				)
 			}

@@ -1,6 +1,7 @@
 package com.roland.android.domain.usecase
 
 import androidx.paging.PagingData
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.repository.TvShowRepository
 import kotlinx.coroutines.flow.Flow
@@ -17,9 +18,9 @@ class GetTvShowUseCase @Inject constructor(
 		tvShowRepository.fetchPopularShows(),
 		tvShowRepository.fetchShowsAiringToday(),
 		tvShowRepository.fetchTopRatedShows(),
-		tvShowRepository.fetchShowsSoonToAir()
-	) { trending, popular, airingToday, topRated, soonToAir ->
-		Response(trending, popular, airingToday, topRated, soonToAir)
+		tvShowRepository.fetchTvShowGenres()
+	) { trending, popular, airingToday, topRated, showGenres ->
+		Response(trending, popular, airingToday, topRated, showGenres)
 	}
 
 	object Request : UseCase.Request
@@ -29,7 +30,7 @@ class GetTvShowUseCase @Inject constructor(
 		val popularShows: PagingData<Movie>,
 		val showsAiringToday: PagingData<Movie>,
 		val topRatedShows: PagingData<Movie>,
-		val showsSoonToAir: PagingData<Movie>
+		val showGenres: List<Genre>
 	) : UseCase.Response
 
 }

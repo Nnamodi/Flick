@@ -84,8 +84,10 @@ object Extensions {
 			Category.NEW_RELEASES -> R.string.newly_released_series
 			Category.TOP_RATED_MOVIES -> R.string.top_rated_movies
 			Category.TOP_RATED_SERIES -> R.string.top_rated_series
-			Category.ANIME -> R.string.anime
-			Category.ANIME_SERIES -> R.string.anime_series
+			Category.NOLLYWOOD_MOVIES -> R.string.nollywood_movies
+			Category.NOLLYWOOD_SERIES -> R.string.nollywood_series
+			Category.KOREAN_MOVIES -> R.string.korean_movies
+			Category.K_DRAMA -> R.string.k_drama
 			Category.BOLLYWOOD_MOVIES -> R.string.bollywood_movies
 			Category.BOLLYWOOD_SERIES -> R.string.bollywood_series
 			Category.POPULAR_MOVIES -> R.string.popular_movies

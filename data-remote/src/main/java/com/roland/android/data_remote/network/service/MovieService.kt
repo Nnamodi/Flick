@@ -48,23 +48,21 @@ interface MovieService {
 	): MovieListModel
 
 	@GET("/3/discover/movie")
-	suspend fun fetchAnimeCollection(
+	suspend fun fetchMoviesByGenre(
+		@Query("with_genres") genreIds: String,
+		@Query("page") page: Int,
 		@Query("include_adult") includeAdult: Boolean = false,
 		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1,
-		@Query("sort_by") sortBy: String = "popularity.desc",
-		@Query("with_genres") genre: String = "16"
+		@Query("sort_by") sortBy: String = "popularity.desc"
 	): MovieListModel
 
 	@GET("/3/discover/movie")
-	suspend fun fetchBollywoodMovies(
+	suspend fun fetchMoviesByRegion(
+		@Query("with_origin_country") region: String,
+		@Query("page") page: Int,
+		@Query("language") language: String = "en_US",
 		@Query("include_adult") includeAdult: Boolean = false,
-		@Query("language") language: String = "hi_IN",
-		@Query("page") page: Int = 1,
-		@Query("sort_by") sortBy: String = "popularity.desc",
-		@Query("region") region: String = "IN",
-		@Query("watch_region") watchRegion: String = "IN",
-		@Query("with_original_language") originalLang: String = "hi"
+		@Query("sort_by") sortBy: String = "popularity.desc"
 	): MovieListModel
 
 	@GET("/3/movie/{movie_id}/recommendations")
@@ -94,15 +92,6 @@ interface MovieService {
 		@Query("language") language: String = "en_US",
 		@Query("page") page: Int
 	): MultiListModel
-
-	@GET("/3/discover/movie")
-	suspend fun fetchMoviesByGenre(
-		@Query("with_genres") genreIds: String,
-		@Query("include_adult") includeAdult: Boolean = false,
-		@Query("language") language: String = "en_US",
-		@Query("page") page: Int = 1,
-		@Query("sort_by") sortBy: String = "popularity.desc"
-	): MovieListModel
 
 	@GET("/3/movie/{movie_id}")
 	suspend fun fetchMovieDetails(
