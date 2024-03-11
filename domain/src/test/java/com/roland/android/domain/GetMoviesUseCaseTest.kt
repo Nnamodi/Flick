@@ -1,8 +1,14 @@
 package com.roland.android.domain
 
+import com.roland.android.domain.Constant.ANIME
 import com.roland.android.domain.Constant.BOLLYWOOD
+import com.roland.android.domain.Constant.COMEDY
+import com.roland.android.domain.Constant.DOCUMENTARY
 import com.roland.android.domain.Constant.HALLYUWOOD
 import com.roland.android.domain.Constant.NOLLYWOOD
+import com.roland.android.domain.Constant.ROMEDY_MOVIES
+import com.roland.android.domain.Constant.SCI_FI_MOVIES
+import com.roland.android.domain.SampleTestData.animeCollections
 import com.roland.android.domain.SampleTestData.bollywoodMovies
 import com.roland.android.domain.SampleTestData.genreList
 import com.roland.android.domain.SampleTestData.koreanMovies
@@ -12,6 +18,7 @@ import com.roland.android.domain.SampleTestData.popularMovies
 import com.roland.android.domain.SampleTestData.topRatedMovies
 import com.roland.android.domain.SampleTestData.trendingMovies
 import com.roland.android.domain.repository.MovieRepository
+import com.roland.android.domain.usecase.GetMoviesByGenreUseCase
 import com.roland.android.domain.usecase.GetMoviesByRegionUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,6 +35,7 @@ class GetMoviesUseCaseTest {
 	private val movieRepository = mock<MovieRepository>()
 	private val moviesUseCase = GetMoviesUseCase(mock(), movieRepository)
 	private val moviesByRegionUseCase = GetMoviesByRegionUseCase(mock(), movieRepository)
+	private val moviesByGenreUseCase = GetMoviesByGenreUseCase(mock(), movieRepository)
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
@@ -62,6 +70,24 @@ class GetMoviesUseCaseTest {
 		assertEquals(
 			GetMoviesByRegionUseCase.Response(
 				nigerianMovies, koreanMovies, bollywoodMovies
+			),
+			response
+		)
+	}
+
+	@OptIn(ExperimentalCoroutinesApi::class)
+	@Test
+	fun testProcess3() = runTest {
+		whenever(movieRepository.fetchMoviesByGenre(ANIME)).thenReturn(flowOf(animeCollections))
+		whenever(movieRepository.fetchMoviesByGenre(COMEDY)).thenReturn(flowOf(animeCollections))
+		whenever(movieRepository.fetchMoviesByGenre(DOCUMENTARY)).thenReturn(flowOf(animeCollections))
+		whenever(movieRepository.fetchMoviesByGenre(ROMEDY_MOVIES)).thenReturn(flowOf(animeCollections))
+		whenever(movieRepository.fetchMoviesByGenre(SCI_FI_MOVIES)).thenReturn(flowOf(animeCollections))
+
+		val response = moviesByGenreUseCase.process(GetMoviesByGenreUseCase.Request).first()
+		assertEquals(
+			GetMoviesByGenreUseCase.Response(
+				animeCollections, animeCollections, animeCollections, animeCollections, animeCollections
 			),
 			response
 		)

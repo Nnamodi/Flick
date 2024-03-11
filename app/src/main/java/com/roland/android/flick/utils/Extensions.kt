@@ -84,14 +84,26 @@ object Extensions {
 			Category.NEW_RELEASES -> R.string.newly_released_series
 			Category.TOP_RATED_MOVIES -> R.string.top_rated_movies
 			Category.TOP_RATED_SERIES -> R.string.top_rated_series
+			Category.POPULAR_MOVIES -> R.string.popular_movies
+			Category.POPULAR_SERIES -> R.string.popular_series
+			// genre
+			Category.ANIME -> R.string.anime
+			Category.ANIME_SERIES -> R.string.anime_series
+			Category.COMEDY_MOVIES -> R.string.comedy_movies
+			Category.COMEDY_SERIES -> R.string.comedy_series
+			Category.DOCUMENTARY_MOVIES -> R.string.documentary_movies
+			Category.DOCUMENTARY_SERIES -> R.string.documentary_series
+			Category.ROMEDY_MOVIES -> R.string.romedy_movies
+			Category.ROMEDY_SERIES -> R.string.romedy_series
+			Category.SCI_FI_MOVIES -> R.string.sci_fi_movies
+			Category.SCI_FI_SERIES -> R.string.sci_fi_series
+			// region
 			Category.NOLLYWOOD_MOVIES -> R.string.nollywood_movies
 			Category.NOLLYWOOD_SERIES -> R.string.nollywood_series
 			Category.KOREAN_MOVIES -> R.string.korean_movies
 			Category.K_DRAMA -> R.string.k_drama
 			Category.BOLLYWOOD_MOVIES -> R.string.bollywood_movies
 			Category.BOLLYWOOD_SERIES -> R.string.bollywood_series
-			Category.POPULAR_MOVIES -> R.string.popular_movies
-			Category.POPULAR_SERIES -> R.string.popular_series
 		}
 	}
 

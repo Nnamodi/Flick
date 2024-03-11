@@ -42,14 +42,16 @@ fun <T: Any>CommonScreen(
 }
 
 @Composable
-fun <T1: Any, T2: Any, T3: Any, T4: Any>CommonScreen(
+fun <T1: Any, T2: Any, T3: Any, T4: Any, T5: Any, T6: Any>CommonScreen(
 	state1: State<T1>?,
 	state2: State<T2>?,
 	state3: State<T3>?,
 	state4: State<T4>?,
+	state5: State<T5>?,
+	state6: State<T6>?,
 	paddingValues: PaddingValues = PaddingValues(0.dp),
 	loadingScreen: @Composable (String?) -> Unit,
-	successScreen: @Composable (T1, T2, T3, T4) -> Unit
+	successScreen: @Composable (T1, T2, T3, T4, T5, T6) -> Unit
 ) {
 	val layoutDirection = LocalLayoutDirection.current
 
@@ -76,9 +78,16 @@ fun <T1: Any, T2: Any, T3: Any, T4: Any>CommonScreen(
 			state4 is State.Error -> {
 				loadingScreen(state4.errorMessage.refine())
 			}
+			state5 is State.Error -> {
+				loadingScreen(state5.errorMessage.refine())
+			}
+			state6 is State.Error -> {
+				loadingScreen(state6.errorMessage.refine())
+			}
 			(state1 is State.Success) && (state2 is State.Success) &&
-					(state3 is State.Success) && (state4 is State.Success) -> {
-				successScreen(state1.data, state2.data, state3.data, state4.data)
+					(state3 is State.Success) && (state4 is State.Success &&
+					(state5 is State.Success) && (state6 is State.Success)) -> {
+				successScreen(state1.data, state2.data, state3.data, state4.data, state5.data, state6.data)
 			}
 		}
 	}

@@ -5,4 +5,13 @@ internal object Constant {
 	const val NOLLYWOOD = "NG" // Nigerian
 	const val HALLYUWOOD = "KR" // Korean
 	const val BOLLYWOOD = "IN" // Indian
+
+	// genres
+	const val ANIME = "16"
+	const val COMEDY = "35"
+	const val DOCUMENTARY = "99"
+	const val ROMEDY_MOVIES = "35,10749"
+	const val ROMEDY_SERIES = "35,18,10766"
+	const val SCI_FI_MOVIES = "878"
+	const val SCI_FI_SERIES = "10765"
 }

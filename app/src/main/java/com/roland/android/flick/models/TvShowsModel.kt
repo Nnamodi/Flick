@@ -17,6 +17,14 @@ data class TvShowsModel(
 	val genres: List<Genre> = emptyList()
 )
 
+data class TvShowsByGenreModel(
+	val anime: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val comedy: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val documentary: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val romedy: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val sciFi: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty())
+)
+
 data class TvShowsByRegionModel(
 	val nollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val kDrama: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),

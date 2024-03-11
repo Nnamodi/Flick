@@ -5,10 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.roland.android.domain.usecase.GetMoviesByGenreUseCase
 import com.roland.android.domain.usecase.GetMoviesByRegionUseCase
 import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.domain.usecase.GetTvShowByRegionUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
+import com.roland.android.domain.usecase.GetTvShowsByGenreUseCase
 import com.roland.android.flick.state.HomeUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.ResponseConverter
@@ -22,8 +24,10 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
 	private val moviesUseCase: GetMoviesUseCase,
+	private val moviesByGenreUseCase: GetMoviesByGenreUseCase,
 	private val moviesByRegionUseCase: GetMoviesByRegionUseCase,
 	private val tvShowsUseCase: GetTvShowUseCase,
+	private val tvShowByGenreUseCase: GetTvShowsByGenreUseCase,
 	private val tvShowByRegionUseCase: GetTvShowByRegionUseCase,
 	private val converter: ResponseConverter,
 ) : ViewModel() {
@@ -33,9 +37,11 @@ class HomeViewModel @Inject constructor(
 
 	init {
 		loadMovies()
-		loadFurtherMovieCollections()
+		loadMoviesByGenre()
+		loadMoviesByRegion()
 		loadTvShows()
-		loadFurtherTvShows()
+		loadTvShowsByGenre()
+		loadTvShowsByRegion()
 
 		viewModelScope.launch {
 			_homeUiState.collect {
@@ -55,7 +61,18 @@ class HomeViewModel @Inject constructor(
 		}
 	}
 
-	private fun loadFurtherMovieCollections() {
+	private fun loadMoviesByGenre() {
+		viewModelScope.launch {
+			if (homeUiState.moviesByGenre is State.Error) _homeUiState.update { it.copy(moviesByGenre = null) }
+			moviesByGenreUseCase.execute(GetMoviesByGenreUseCase.Request)
+				.map { converter.convertMoviesByGenreData(it) }
+				.collect { data ->
+					_homeUiState.update { it.copy(moviesByGenre = data) }
+				}
+		}
+	}
+
+	private fun loadMoviesByRegion() {
 		viewModelScope.launch {
 			if (homeUiState.moviesByRegion is State.Error) _homeUiState.update { it.copy(moviesByRegion = null) }
 			moviesByRegionUseCase.execute(GetMoviesByRegionUseCase.Request)
@@ -77,7 +94,18 @@ class HomeViewModel @Inject constructor(
 		}
 	}
 
-	private fun loadFurtherTvShows() {
+	private fun loadTvShowsByGenre() {
+		viewModelScope.launch {
+			if (homeUiState.tvShowsByGenre is State.Error) _homeUiState.update { it.copy(tvShowsByGenre = null) }
+			tvShowByGenreUseCase.execute(GetTvShowsByGenreUseCase.Request)
+				.map { converter.convertTvShowsByGenreData(it) }
+				.collect { data ->
+					_homeUiState.update { it.copy(tvShowsByGenre = data) }
+				}
+		}
+	}
+
+	private fun loadTvShowsByRegion() {
 		viewModelScope.launch {
 			if (homeUiState.tvShowsByRegion is State.Error) _homeUiState.update { it.copy(tvShowsByRegion = null) }
 			tvShowByRegionUseCase.execute(GetTvShowByRegionUseCase.Request)
@@ -97,9 +125,11 @@ class HomeViewModel @Inject constructor(
 
 	private fun retry() {
 		loadMovies()
-		loadFurtherMovieCollections()
+		loadMoviesByGenre()
+		loadMoviesByRegion()
 		loadTvShows()
-		loadFurtherTvShows()
+		loadTvShowsByGenre()
+		loadTvShowsByRegion()
 	}
 
 	private fun toggleCategory(category: String) {
