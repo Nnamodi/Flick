@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.NavBar
 import com.roland.android.flick.ui.navigation.AppRoute
 import com.roland.android.flick.ui.navigation.NavActions
@@ -41,6 +42,7 @@ class MainActivity : ComponentActivity() {
 			)
 		)
 		super.onCreate(savedInstanceState)
+		setTheme(R.style.Theme_Flick)
 		setContent {
 			FlickTheme(darkTheme = true) {
 				val navController = rememberNavController()

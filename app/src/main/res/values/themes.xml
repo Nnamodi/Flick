@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="primaryColor">#1C1B1F</color>
 
+    // App theme
     <style name="Theme.Flick" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:colorPrimary">@color/primaryColor</item>
+    </style>
+
+    // Splash theme
+    <style name="Theme.Splash" parent="Theme.SplashScreen">
+        <item name="android:colorPrimary">@color/primaryColor</item>
+        <item name="windowSplashScreenBackground">@color/primaryColor</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/app_icon</item>
+        <item name="android:windowSplashScreenBehavior" tools:targetApi="tiramisu">icon_preferred</item>
+        <item name="postSplashScreenTheme">@style/Theme.Flick</item>
     </style>
 </resources>
