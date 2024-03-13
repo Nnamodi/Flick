@@ -187,9 +187,11 @@ fun ComingSoonItem(
 			}
 		}
 	)
+	val itemIsLast = itemPage == (pagerState.pageCount - 1) // every logic associated with this field, fixes the same bug
 
 	Box(
 		modifier = Modifier
+			.alpha(if (itemIsLast) 0f else 1f)
 			.size(itemWidth, itemHeight)
 			.clip(RoundedCornerShape(cornerSize))
 			.clickable(
@@ -223,6 +225,7 @@ fun ComingSoonItem(
 						.padding(end = if (!inPortraitMode) itemPadding else 0.dp),
 					posterType = if (targetState == Expanded) BackdropPoster else ComingSoon,
 					posterFromPager = targetState == Default,
+					clickable = !itemIsLast,
 					onClick = { if (!itemTransition.isRunning) onExpand() }
 				)
 				if (targetState == Expanded) {

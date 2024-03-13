@@ -28,6 +28,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -134,8 +135,8 @@ fun ComingSoonScreen(
 			val movies = (if (selectedCategory == MOVIES)
 				movieData.upcomingMovies else movieData.upcomingShows
 			).collectAsLazyPagingItems()
-			val moviesPagerState = rememberPagerState { 60 }
-			val seriesPagerState = rememberPagerState { 60 }
+			val moviesPagerState = rememberPagerState { 61 }
+			val seriesPagerState = rememberPagerState { 61 }
 			val pagerState = if (selectedCategory == MOVIES) moviesPagerState else seriesPagerState
 			val screenWidth = LocalConfiguration.current.screenWidthDp
 			val itemWidth = dynamicPageWidth(POSTER_WIDTH_X_LARGE)
@@ -218,6 +219,13 @@ fun ComingSoonScreen(
 							}
 						}
 					}
+				}
+
+				// This is a workaround to fix a bug
+				LaunchedEffect(pagerState.currentPageOffsetFraction) {
+					val lastItem = pagerState.currentPage == (pagerState.pageCount - 1)
+					if (!lastItem) return@LaunchedEffect
+					pagerState.animateScrollToPage(page = pagerState.pageCount - 4)
 				}
 			}
 		}

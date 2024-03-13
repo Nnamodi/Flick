@@ -87,6 +87,7 @@ fun ComingSoonItemPoster(
 	modifier: Modifier = Modifier,
 	posterType: PosterType = BackdropPoster,
 	posterFromPager: Boolean,
+	clickable: Boolean,
 	onClick: () -> Unit
 ) {
 	val isBackdrop = posterType == BackdropPoster
@@ -105,7 +106,7 @@ fun ComingSoonItemPoster(
 		posterType = posterType,
 		posterFromPager = posterFromPager,
 		showVoteAverage = false
-	) { onClick() }
+	) { if (clickable) onClick() }
 }
 
 @Composable

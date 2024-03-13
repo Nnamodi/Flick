@@ -79,8 +79,8 @@ fun NavBar(
 		exit = ExitTransition.None
 	) {
 		when {
-			showBottomBar -> BottomNavBar(navController)
 			!inPortraitMode -> SideNavRail(navController)
+			showBottomBar -> BottomNavBar(navController)
 		}
 	}
 }
