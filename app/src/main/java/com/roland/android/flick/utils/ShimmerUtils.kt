@@ -171,11 +171,12 @@ private fun ShimmerBoxItem(
 }
 
 fun Modifier.painterPlaceholder(state: AsyncImagePainter.State): Modifier = composed {
-	val color = Color.LightGray.copy(alpha = 0.6f)
-	when (state) {
-		is AsyncImagePainter.State.Success -> drawBehind { drawRect(color) }
-		is AsyncImagePainter.State.Error -> background(color)
-		else -> background(rememberAnimatedShimmerBrush())
+	if (state is AsyncImagePainter.State.Loading) {
+		background(rememberAnimatedShimmerBrush())
+	} else {
+		drawBehind {
+			drawRect(Color.LightGray.copy(alpha = 0.6f))
+		}
 	}
 }
 

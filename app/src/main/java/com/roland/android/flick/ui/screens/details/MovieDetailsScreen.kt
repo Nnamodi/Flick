@@ -159,6 +159,7 @@ fun MovieDetailsScreen(
 
 					VideoPlayer(
 						trailerKey = movie.details.videos.getTrailerKey(),
+						thumbnail = movie.details.backdropPath,
 						modifier = Modifier.height(screenHeight * videoHeightDivisor),
 						navigateUp = navigate
 					)
@@ -187,6 +188,7 @@ fun MovieDetailsScreen(
 					Column(screenModifier) {
 						VideoPlayer(
 							trailerKey = show.details.videos.getTrailerKey(),
+							thumbnail = show.details.backdropPath,
 							modifier = Modifier.height(screenHeight * videoHeightDivisor),
 							enabled = !openSeasonSelectionSheet.value,
 							navigateUp = navigate

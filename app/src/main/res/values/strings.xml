@@ -75,6 +75,7 @@
     <string name="close">Close</string>
     <string name="get_results">GET RESULTS</string>
     <string name="no_episode">No episodes for this season</string>
+    <string name="trailer_loading">Movie trailer loading</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

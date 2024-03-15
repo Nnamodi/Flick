@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -11,10 +12,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -29,6 +33,7 @@ import androidx.media3.ui.PlayerView
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.roland.android.domain.entity.Video
 import com.roland.android.flick.R
+import com.roland.android.flick.ui.components.VideoThumbnail
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_SMALL
 import com.roland.android.flick.utils.Constants.YOUTUBE_VIDEO_BASE_URL
@@ -59,6 +64,7 @@ fun VideoPlayer(
 @Composable
 fun VideoPlayer(
 	trailerKey: String?,
+	thumbnail: String,
 	modifier: Modifier = Modifier,
 	enabled: Boolean = true,
 	navigateUp: (Screens) -> Unit
@@ -66,12 +72,14 @@ fun VideoPlayer(
 	Box {
 		Player(
 			videoKey = trailerKey,
-			modifier = modifier.fillMaxWidth()
+			modifier = modifier.fillMaxWidth(),
+			thumbnail = thumbnail
 		)
 		IconButton(
 			onClick = { navigateUp(Screens.Back) },
 			modifier = Modifier.padding(start = 2.dp, top = 46.dp),
-			enabled = enabled
+			enabled = enabled,
+			colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Black.copy(alpha = 0.5f))
 		) {
 			Icon(
 				imageVector = Icons.Rounded.ArrowBackIos,
@@ -86,22 +94,37 @@ fun VideoPlayer(
 private fun Player(
 	videoKey: String?,
 	modifier: Modifier = Modifier,
+	thumbnail: String = "",
 	autoPlay: Boolean = true,
 	canPlay: Boolean = true
 ) {
 	val view = YouTubePlayerView(LocalContext.current)
+	val playerIsReady = rememberSaveable { mutableStateOf(false) }
 
-	AndroidView(
-		modifier = modifier,
-		factory = {
-			view.addYouTubePlayerListener(PlayerListener(videoKey, autoPlay, canPlay))
-			view
+	Box(modifier) {
+		AndroidView(
+			modifier = Modifier.fillMaxSize(),
+			factory = {
+				view.addYouTubePlayerListener(
+					PlayerListener(
+						videoKey, autoPlay, canPlay,
+						playerIsReady = { playerIsReady.value = true }
+					)
+				)
+				view
+			}
+		)
+		if (!playerIsReady.value) {
+			VideoThumbnail(
+				thumbnail = thumbnail,
+				modifier = Modifier.fillMaxSize()
+			)
 		}
-	)
+	}
 
 	DisposableEffect(Unit) {
 		onDispose {
-			view.removeYouTubePlayerListener(PlayerListener(videoKey, autoPlay, canPlay))
+			view.removeYouTubePlayerListener(PlayerListener(videoKey))
 			view.release()
 		}
 	}

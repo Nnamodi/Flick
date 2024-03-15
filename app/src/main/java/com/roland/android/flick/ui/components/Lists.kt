@@ -326,7 +326,7 @@ fun VideoList(videos: List<Video>) {
 			modifier = Modifier
 				.fillMaxWidth()
 				.padding(bottom = 16.dp),
-			beyondBoundsPageCount = videos.size,
+			beyondBoundsPageCount = 5,
 			pageSpacing = 8.dp,
 			verticalAlignment = Alignment.Top,
 			flingBehavior = PagerDefaults.flingBehavior(
