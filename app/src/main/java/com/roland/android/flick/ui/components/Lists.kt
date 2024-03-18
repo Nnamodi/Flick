@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -335,10 +336,13 @@ fun VideoList(videos: List<Video>) {
 			),
 			pageSize = PageSize.Fixed(screenWidth.dp - (PADDING_WIDTH * 2))
 		) { page ->
+			val canPlay = remember(pagerState.currentPage) {
+				derivedStateOf { page == pagerState.currentPage }
+			}
 			VideoPlayer(
 				video = videos[page],
 				modifier = Modifier.fillMaxWidth(),
-				canPlay = page == pagerState.currentPage
+				canPlay = canPlay.value
 			)
 		}
 		Spacer(Modifier.weight(1f))

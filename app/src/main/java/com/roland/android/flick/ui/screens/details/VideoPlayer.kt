@@ -16,16 +16,22 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -100,18 +106,31 @@ private fun Player(
 ) {
 	val view = YouTubePlayerView(LocalContext.current)
 	val playerIsReady = rememberSaveable { mutableStateOf(false) }
+	val canPlayVideo = rememberSaveable(canPlay) { mutableStateOf(canPlay) }
+	var lifecycle by remember { mutableStateOf(Lifecycle.Event.ON_CREATE) }
+	val lifecycleOwner = LocalLifecycleOwner.current
 
-	Box(modifier) {
+	Box(modifier.drawBehind { drawRect(Color.Black) }) {
 		AndroidView(
-			modifier = Modifier.fillMaxSize(),
 			factory = {
 				view.addYouTubePlayerListener(
 					PlayerListener(
-						videoKey, autoPlay, canPlay,
+						videoKey, autoPlay, canPlayVideo.value,
 						playerIsReady = { playerIsReady.value = true }
 					)
 				)
 				view
+			},
+			modifier = Modifier.fillMaxSize(),
+			update = {
+				when (lifecycle) {
+					Lifecycle.Event.ON_PAUSE -> canPlayVideo.value = false
+					Lifecycle.Event.ON_DESTROY -> {
+						view.removeYouTubePlayerListener(PlayerListener(videoKey))
+						view.release()
+					}
+					else -> {}
+				}
 			}
 		)
 		if (!playerIsReady.value) {
@@ -122,8 +141,15 @@ private fun Player(
 		}
 	}
 
-	DisposableEffect(Unit) {
+	DisposableEffect(lifecycleOwner) {
+		val observer = LifecycleEventObserver { _, event ->
+			lifecycle = event
+		}
+		lifecycleOwner.lifecycle.addObserver(observer)
+
 		onDispose {
+			lifecycleOwner.lifecycle.removeObserver(observer)
+			// in case the player has not loaded yet
 			view.removeYouTubePlayerListener(PlayerListener(videoKey))
 			view.release()
 		}

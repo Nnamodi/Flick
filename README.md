@@ -2,9 +2,9 @@
 Watch trailers and browse info of millions of movies and series.
 
 ## Screenshots
-|::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|
-|:--:|:--:|:--:|:--:|
-|![Home screen](screenshots/home_screen.png)|![List screen](screenshots/list_screen.png)|![Details screen](screenshots/details_screen.png)|![Coming Soon screen](screenshots/coming_soon_screen.png)|
+|::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|
+|:--:|:--:|:--:|:--:|:--:|
+|![Launch screen](screenshots/launch_screen.png)|![Home screen](screenshots/home_screen.png)|![List screen](screenshots/list_screen.png)|![Details screen](screenshots/details_screen.png)|![Coming Soon screen](screenshots/coming_soon_screen.png)|
 
 ## About
 * The app uses [The Movie Database (TMDB) API](https://developer.themoviedb.org/docs) to fetch movie data.
