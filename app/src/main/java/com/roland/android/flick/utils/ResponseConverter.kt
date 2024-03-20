@@ -68,9 +68,9 @@ class ResponseConverter @Inject constructor() {
 					MoviesByGenreModel(
 						result.data.anime.refactor(),
 						result.data.comedy.refactor(),
-						result.data.documentary.refactor(),
 						result.data.romedy.refactor(),
-						result.data.sciFi.refactor()
+						result.data.sciFi.refactor(),
+						result.data.warStory.refactor()
 					)
 				)
 			}
@@ -150,9 +150,9 @@ class ResponseConverter @Inject constructor() {
 					TvShowsByGenreModel(
 						result.data.anime.refactor(),
 						result.data.comedy.refactor(),
-						result.data.documentary.refactor(),
 						result.data.romedy.refactor(),
-						result.data.sciFi.refactor()
+						result.data.sciFi.refactor(),
+						result.data.warStory.refactor()
 					)
 				)
 			}
@@ -289,7 +289,6 @@ class ResponseConverter @Inject constructor() {
 				State.Success(
 					SeasonDetailsModel(
 						result.data.season,
-						result.data.episode,
 						result.data.showCasts
 					)
 				)

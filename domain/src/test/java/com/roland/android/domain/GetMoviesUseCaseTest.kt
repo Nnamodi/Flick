@@ -3,11 +3,11 @@ package com.roland.android.domain
 import com.roland.android.domain.Constant.ANIME
 import com.roland.android.domain.Constant.BOLLYWOOD
 import com.roland.android.domain.Constant.COMEDY
-import com.roland.android.domain.Constant.DOCUMENTARY
 import com.roland.android.domain.Constant.HALLYUWOOD
 import com.roland.android.domain.Constant.NOLLYWOOD
 import com.roland.android.domain.Constant.ROMEDY_MOVIES
 import com.roland.android.domain.Constant.SCI_FI_MOVIES
+import com.roland.android.domain.Constant.WAR_STORY_MOVIES
 import com.roland.android.domain.SampleTestData.animeCollections
 import com.roland.android.domain.SampleTestData.bollywoodMovies
 import com.roland.android.domain.SampleTestData.genreList
@@ -80,14 +80,18 @@ class GetMoviesUseCaseTest {
 	fun testProcess3() = runTest {
 		whenever(movieRepository.fetchMoviesByGenre(ANIME)).thenReturn(flowOf(animeCollections))
 		whenever(movieRepository.fetchMoviesByGenre(COMEDY)).thenReturn(flowOf(animeCollections))
-		whenever(movieRepository.fetchMoviesByGenre(DOCUMENTARY)).thenReturn(flowOf(animeCollections))
+		whenever(movieRepository.fetchMoviesByGenre(WAR_STORY_MOVIES)).thenReturn(flowOf(animeCollections))
 		whenever(movieRepository.fetchMoviesByGenre(ROMEDY_MOVIES)).thenReturn(flowOf(animeCollections))
 		whenever(movieRepository.fetchMoviesByGenre(SCI_FI_MOVIES)).thenReturn(flowOf(animeCollections))
 
 		val response = moviesByGenreUseCase.process(GetMoviesByGenreUseCase.Request).first()
 		assertEquals(
 			GetMoviesByGenreUseCase.Response(
-				animeCollections, animeCollections, animeCollections, animeCollections, animeCollections
+				animeCollections,
+				animeCollections,
+				animeCollections,
+				animeCollections,
+				animeCollections
 			),
 			response
 		)

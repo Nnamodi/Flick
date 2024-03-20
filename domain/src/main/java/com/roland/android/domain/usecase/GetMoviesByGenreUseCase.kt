@@ -3,9 +3,9 @@ package com.roland.android.domain.usecase
 import androidx.paging.PagingData
 import com.roland.android.domain.Constant.ANIME
 import com.roland.android.domain.Constant.COMEDY
-import com.roland.android.domain.Constant.DOCUMENTARY
 import com.roland.android.domain.Constant.ROMEDY_MOVIES
 import com.roland.android.domain.Constant.SCI_FI_MOVIES
+import com.roland.android.domain.Constant.WAR_STORY_MOVIES
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.repository.MovieRepository
 import kotlinx.coroutines.flow.Flow
@@ -20,11 +20,11 @@ class GetMoviesByGenreUseCase @Inject constructor(
 	override fun process(request: Request): Flow<Response> = combine(
 		movieRepository.fetchMoviesByGenre(ANIME),
 		movieRepository.fetchMoviesByGenre(COMEDY),
-		movieRepository.fetchMoviesByGenre(DOCUMENTARY),
 		movieRepository.fetchMoviesByGenre(ROMEDY_MOVIES),
-		movieRepository.fetchMoviesByGenre(SCI_FI_MOVIES)
-	) { anime, comedy, documentary, romedy, sciFi ->
-		Response(anime, comedy, documentary, romedy, sciFi)
+		movieRepository.fetchMoviesByGenre(SCI_FI_MOVIES),
+		movieRepository.fetchMoviesByGenre(WAR_STORY_MOVIES)
+	) { anime, comedy, romedy, sciFi, warStory ->
+		Response(anime, comedy, romedy, sciFi, warStory)
 	}
 
 	object Request : UseCase.Request
@@ -32,9 +32,9 @@ class GetMoviesByGenreUseCase @Inject constructor(
 	data class Response(
 		val anime: PagingData<Movie>,
 		val comedy: PagingData<Movie>,
-		val documentary: PagingData<Movie>,
 		val romedy: PagingData<Movie>,
-		val sciFi: PagingData<Movie>
+		val sciFi: PagingData<Movie>,
+		val warStory: PagingData<Movie>
 	) : UseCase.Response
 
 }

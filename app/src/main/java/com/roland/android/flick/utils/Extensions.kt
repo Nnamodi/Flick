@@ -91,12 +91,12 @@ object Extensions {
 			Category.ANIME_SERIES -> R.string.anime_series
 			Category.COMEDY_MOVIES -> R.string.comedy_movies
 			Category.COMEDY_SERIES -> R.string.comedy_series
-			Category.DOCUMENTARY_MOVIES -> R.string.documentary_movies
-			Category.DOCUMENTARY_SERIES -> R.string.documentary_series
 			Category.ROMEDY_MOVIES -> R.string.romedy_movies
 			Category.ROMEDY_SERIES -> R.string.romedy_series
 			Category.SCI_FI_MOVIES -> R.string.sci_fi_movies
 			Category.SCI_FI_SERIES -> R.string.sci_fi_series
+			Category.WAR_STORY_MOVIES -> R.string.war_story_movies
+			Category.WAR_STORY_SERIES -> R.string.war_story_series
 			// region
 			Category.NOLLYWOOD_MOVIES -> R.string.nollywood_movies
 			Category.NOLLYWOOD_SERIES -> R.string.nollywood_series

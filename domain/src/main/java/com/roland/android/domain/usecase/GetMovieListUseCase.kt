@@ -4,7 +4,6 @@ import androidx.paging.PagingData
 import com.roland.android.domain.Constant
 import com.roland.android.domain.Constant.BOLLYWOOD
 import com.roland.android.domain.Constant.COMEDY
-import com.roland.android.domain.Constant.DOCUMENTARY
 import com.roland.android.domain.Constant.HALLYUWOOD
 import com.roland.android.domain.Constant.NOLLYWOOD
 import com.roland.android.domain.entity.Genre
@@ -17,8 +16,6 @@ import com.roland.android.domain.usecase.Category.BOLLYWOOD_MOVIES
 import com.roland.android.domain.usecase.Category.BOLLYWOOD_SERIES
 import com.roland.android.domain.usecase.Category.COMEDY_MOVIES
 import com.roland.android.domain.usecase.Category.COMEDY_SERIES
-import com.roland.android.domain.usecase.Category.DOCUMENTARY_MOVIES
-import com.roland.android.domain.usecase.Category.DOCUMENTARY_SERIES
 import com.roland.android.domain.usecase.Category.IN_THEATRES
 import com.roland.android.domain.usecase.Category.KOREAN_MOVIES
 import com.roland.android.domain.usecase.Category.K_DRAMA
@@ -35,6 +32,8 @@ import com.roland.android.domain.usecase.Category.TOP_RATED_MOVIES
 import com.roland.android.domain.usecase.Category.TOP_RATED_SERIES
 import com.roland.android.domain.usecase.Category.TRENDING_MOVIES
 import com.roland.android.domain.usecase.Category.TRENDING_SERIES
+import com.roland.android.domain.usecase.Category.WAR_STORY_MOVIES
+import com.roland.android.domain.usecase.Category.WAR_STORY_SERIES
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -60,12 +59,12 @@ class GetMovieListUseCase @Inject constructor(
 			ANIME_SERIES -> tvShowRepository.fetchShowsByGenre(Constant.ANIME)
 			COMEDY_MOVIES -> movieRepository.fetchMoviesByGenre(COMEDY)
 			COMEDY_SERIES -> tvShowRepository.fetchShowsByGenre(COMEDY)
-			DOCUMENTARY_MOVIES -> movieRepository.fetchMoviesByGenre(DOCUMENTARY)
-			DOCUMENTARY_SERIES -> tvShowRepository.fetchShowsByGenre(DOCUMENTARY)
 			ROMEDY_MOVIES -> movieRepository.fetchMoviesByGenre(Constant.ROMEDY_MOVIES)
 			ROMEDY_SERIES -> tvShowRepository.fetchShowsByGenre(Constant.ROMEDY_SERIES)
 			SCI_FI_MOVIES -> movieRepository.fetchMoviesByGenre(Constant.SCI_FI_MOVIES)
 			SCI_FI_SERIES -> tvShowRepository.fetchShowsByGenre(Constant.SCI_FI_SERIES)
+			WAR_STORY_MOVIES -> movieRepository.fetchMoviesByGenre(Constant.WAR_STORY_MOVIES)
+			WAR_STORY_SERIES -> tvShowRepository.fetchShowsByGenre(Constant.WAR_STORY_SERIES)
 			// by region
 			NOLLYWOOD_MOVIES -> movieRepository.fetchMoviesByRegion(NOLLYWOOD)
 			NOLLYWOOD_SERIES -> tvShowRepository.fetchShowsByRegion(NOLLYWOOD)
@@ -107,12 +106,12 @@ enum class Category {
 	ANIME_SERIES,
 	COMEDY_MOVIES,
 	COMEDY_SERIES,
-	DOCUMENTARY_MOVIES,
-	DOCUMENTARY_SERIES,
 	ROMEDY_MOVIES,
 	ROMEDY_SERIES,
 	SCI_FI_MOVIES,
 	SCI_FI_SERIES,
+	WAR_STORY_MOVIES,
+	WAR_STORY_SERIES,
 	// regions
 	NOLLYWOOD_MOVIES,
 	NOLLYWOOD_SERIES,

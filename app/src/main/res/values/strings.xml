@@ -7,7 +7,7 @@
     <string name="new_releases">New Releases</string>
     <string name="anime_collection">Anime</string>
     <string name="comedy">Comedy</string>
-    <string name="documentary">Documentary</string>
+    <string name="war_story">War Story</string>
     <string name="romedy">Romedy</string>
     <string name="sci_fi">Sci-fi</string>
     <string name="nollywood">Nollywood</string>
@@ -33,12 +33,12 @@
     <string name="anime_series">Anime Series</string>
     <string name="comedy_movies">Comedy Movies</string>
     <string name="comedy_series">Comedy Series</string>
-    <string name="documentary_movies">Documentary Movies</string>
-    <string name="documentary_series">Documentary Series</string>
     <string name="romedy_movies">Romedy Movies</string>
     <string name="romedy_series">Romedy Series</string>
     <string name="sci_fi_movies">Sci-fi Movies</string>
     <string name="sci_fi_series">Sci-fi Series</string>
+    <string name="war_story_movies">War Story Movies</string>
+    <string name="war_story_series">War Story Series</string>
     <string name="nollywood_movies">Nollywood Movies</string>
     <string name="nollywood_series">Nollywood Series</string>
     <string name="korean_movies">Korean Movies</string>

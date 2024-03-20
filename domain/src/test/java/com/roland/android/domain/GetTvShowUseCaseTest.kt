@@ -2,9 +2,9 @@ package com.roland.android.domain
 
 import com.roland.android.domain.Constant.ANIME
 import com.roland.android.domain.Constant.COMEDY
-import com.roland.android.domain.Constant.DOCUMENTARY
 import com.roland.android.domain.Constant.ROMEDY_SERIES
 import com.roland.android.domain.Constant.SCI_FI_SERIES
+import com.roland.android.domain.Constant.WAR_STORY_MOVIES
 import com.roland.android.domain.SampleTestData.animeShows
 import com.roland.android.domain.SampleTestData.bollywoodShows
 import com.roland.android.domain.SampleTestData.genreList
@@ -77,7 +77,7 @@ class GetTvShowUseCaseTest {
 	fun testProcess3() = runTest {
 		whenever(tvShowRepository.fetchShowsByGenre(ANIME)).thenReturn(flowOf(animeShows))
 		whenever(tvShowRepository.fetchShowsByGenre(COMEDY)).thenReturn(flowOf(animeShows))
-		whenever(tvShowRepository.fetchShowsByGenre(DOCUMENTARY)).thenReturn(flowOf(animeShows))
+		whenever(tvShowRepository.fetchShowsByGenre(WAR_STORY_MOVIES)).thenReturn(flowOf(animeShows))
 		whenever(tvShowRepository.fetchShowsByGenre(ROMEDY_SERIES)).thenReturn(flowOf(animeShows))
 		whenever(tvShowRepository.fetchShowsByGenre(SCI_FI_SERIES)).thenReturn(flowOf(animeShows))
 

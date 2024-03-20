@@ -270,12 +270,6 @@ fun HomeScreen(
 				) { seeMore(if (selectedCategory == MOVIES) COMEDY_MOVIES else COMEDY_SERIES) }
 
 				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData2.documentary else showData2.documentary,
-					header = stringResource(R.string.documentary),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) DOCUMENTARY_MOVIES else DOCUMENTARY_SERIES) }
-
-				HorizontalPosters(
 					pagingData = if (selectedCategory == MOVIES) movieData2.romedy else showData2.romedy,
 					header = stringResource(R.string.romedy),
 					onMovieClick = { clickedMovieItem.value = it }
@@ -286,6 +280,12 @@ fun HomeScreen(
 					header = stringResource(R.string.sci_fi),
 					onMovieClick = { clickedMovieItem.value = it }
 				) { seeMore(if (selectedCategory == MOVIES) SCI_FI_MOVIES else SCI_FI_SERIES) }
+
+				HorizontalPosters(
+					pagingData = if (selectedCategory == MOVIES) movieData2.warStory else showData2.warStory,
+					header = stringResource(R.string.war_story),
+					onMovieClick = { clickedMovieItem.value = it }
+				) { seeMore(if (selectedCategory == MOVIES) WAR_STORY_MOVIES else WAR_STORY_SERIES) }
 
 				HorizontalPosters(
 					pagingData = if (selectedCategory == MOVIES) movieData3.nollywood else showData3.nollywood,
