@@ -33,6 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 	override fun onCreate(savedInstanceState: Bundle?) {
+		setTheme(R.style.Theme_Flick)
 		enableEdgeToEdge(
 			statusBarStyle = SystemBarStyle.light(
 				Color.TRANSPARENT, Color.TRANSPARENT
@@ -42,7 +43,6 @@ class MainActivity : ComponentActivity() {
 			)
 		)
 		super.onCreate(savedInstanceState)
-		setTheme(R.style.Theme_Flick)
 		setContent {
 			FlickTheme(darkTheme = true) {
 				val navController = rememberNavController()

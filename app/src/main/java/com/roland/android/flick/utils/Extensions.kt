@@ -60,20 +60,22 @@ object Extensions {
 	}
 
 	fun String.dateFormat(pattern: String = RELEASE_DATE_PATTERN): String {
-		val dateFormat = SimpleDateFormat(DEFAULT_PATTERN, Locale.getDefault())
-		val parsedDate = dateFormat.parse(this)
-		val formatter = SimpleDateFormat(pattern, Locale.getDefault())
-		if (pattern != RELEASE_DATE_PATTERN) {
-			return parsedDate?.let { formatter.format(it) } ?: this
-		}
+		return try {
+			val dateFormat = SimpleDateFormat(DEFAULT_PATTERN, Locale.getDefault())
+			val parsedDate = dateFormat.parse(this)
+			val formatter = SimpleDateFormat(pattern, Locale.getDefault())
+			if (pattern != RELEASE_DATE_PATTERN) {
+				return parsedDate?.let { formatter.format(it) } ?: this
+			}
 
-		val weekFormatter = SimpleDateFormat(DAY, Locale.getDefault())
-		val thisWeek = Calendar.getInstance()
-		thisWeek.add(Calendar.WEEK_OF_MONTH, 1)
+			val weekFormatter = SimpleDateFormat(DAY, Locale.getDefault())
+			val thisWeek = Calendar.getInstance()
+			thisWeek.add(Calendar.WEEK_OF_MONTH, 1)
 
-		return parsedDate?.let {
-			if (parsedDate <= thisWeek.time) weekFormatter.format(it) else formatter.format(it)
-		} ?: this
+			return parsedDate?.let {
+				if (parsedDate <= thisWeek.time) weekFormatter.format(it) else formatter.format(it)
+			} ?: this
+		} catch (e: Exception) { "_" }
 	}
 
 	fun String.getName(): Int {

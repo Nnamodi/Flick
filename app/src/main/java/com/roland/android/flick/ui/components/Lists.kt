@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -66,7 +67,6 @@ import com.roland.android.domain.entity.Video
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.screens.details.VideoPlayer
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
-import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_MEDIUM
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_SMALL
 import com.roland.android.flick.utils.Extensions.appendStateUi
 import com.roland.android.flick.utils.Extensions.loadStateUi
@@ -100,6 +100,7 @@ fun MovieLists(
 	LazyVerticalGrid(
 		columns = GridCells.Adaptive(dynamicGridSize),
 		modifier = Modifier
+			.fillMaxHeight()
 			.padding(paddingValues)
 			.padding(horizontal = 6.dp),
 		state = scrollState,
@@ -109,9 +110,6 @@ fun MovieLists(
 			movies[index]?.let { movie ->
 				MediumItemPoster(
 					movie = movie,
-					modifier = Modifier
-						.padding(6.dp)
-						.height(POSTER_HEIGHT_MEDIUM),
 					onClick = onItemClick
 				)
 			}
@@ -261,7 +259,6 @@ private fun MovieListPage(
 			movieList[index]?.let { movie ->
 				SmallItemPoster(
 					movie = movie,
-					modifier = Modifier.padding(end = 12.dp),
 					onClick = onMovieClick
 				)
 			}
@@ -295,7 +292,6 @@ fun HorizontalPosters(
 			items(movieList.size) { index ->
 				SmallItemPoster(
 					movie = movieList[index],
-					modifier = Modifier.padding(end = 12.dp),
 					onClick = onMovieClick
 				)
 			}

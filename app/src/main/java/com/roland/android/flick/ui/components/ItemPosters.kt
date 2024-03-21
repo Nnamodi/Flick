@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -49,6 +51,7 @@ import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_SMALL
 import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.animatePagerItem
 import com.roland.android.flick.utils.bounceClickable
 import com.roland.android.flick.utils.dynamicPageSize
 import com.roland.android.flick.utils.getPoster
@@ -136,10 +139,12 @@ fun ComingSoonItemPoster(
 	) { if (clickable) onClick() }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LargeItemPoster(
 	movie: Movie,
-	modifier: Modifier = Modifier,
+	itemPage: Int,
+	pagerState: PagerState,
 	onClick: (Movie) -> Unit
 ) {
 	val windowSize = rememberWindowSize()
@@ -153,7 +158,9 @@ fun LargeItemPoster(
 		} else movie.backdropPath).getPoster(),
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
-		modifier = modifier.dynamicPageSize(POSTER_WIDTH_LARGE, POSTER_HEIGHT_LARGE),
+		modifier = Modifier
+			.dynamicPageSize(POSTER_WIDTH_LARGE, POSTER_HEIGHT_LARGE)
+			.animatePagerItem(itemPage, pagerState),
 		posterType = Large,
 		posterFromPager = true,
 	) { onClick(movie) }
@@ -169,7 +176,9 @@ fun MediumItemPoster(
 		model = MOVIE_IMAGE_BASE_URL_W342 + movie.posterPath,
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
-		modifier = modifier.size(POSTER_WIDTH_MEDIUM, POSTER_HEIGHT_MEDIUM),
+		modifier = modifier
+			.padding(6.dp)
+			.size(POSTER_WIDTH_MEDIUM, POSTER_HEIGHT_MEDIUM),
 		posterType = PosterType.Medium
 	) { onClick(movie) }
 }
@@ -184,7 +193,9 @@ fun SmallItemPoster(
 		model = MOVIE_IMAGE_BASE_URL_W342 + movie.posterPath,
 		contentDescription = movie.title ?: movie.tvName,
 		voteAverage = movie.voteAverage,
-		modifier = modifier.size(POSTER_WIDTH_SMALL, POSTER_HEIGHT_SMALL)
+		modifier = modifier
+			.padding(end = 12.dp)
+			.size(POSTER_WIDTH_SMALL, POSTER_HEIGHT_SMALL)
 	) { onClick(movie) }
 }
 

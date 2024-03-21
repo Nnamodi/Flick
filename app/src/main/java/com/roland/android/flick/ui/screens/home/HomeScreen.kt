@@ -218,7 +218,8 @@ fun HomeScreen(
 						trendingMovies[page]?.let { movie ->
 							LargeItemPoster(
 								movie = movie,
-								modifier = Modifier.animatePagerItem(page, pagerState),
+								itemPage = page,
+								pagerState = pagerState,
 								onClick = {
 									if (page != pagerState.currentPage) scope.launch {
 										pagerState.animateScrollToPage(
