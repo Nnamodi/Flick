@@ -20,8 +20,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.ButtonDefaults.textButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Indefinite
@@ -50,8 +52,6 @@ import com.roland.android.domain.usecase.Category.BOLLYWOOD_MOVIES
 import com.roland.android.domain.usecase.Category.BOLLYWOOD_SERIES
 import com.roland.android.domain.usecase.Category.COMEDY_MOVIES
 import com.roland.android.domain.usecase.Category.COMEDY_SERIES
-import com.roland.android.domain.usecase.Category.DOCUMENTARY_MOVIES
-import com.roland.android.domain.usecase.Category.DOCUMENTARY_SERIES
 import com.roland.android.domain.usecase.Category.IN_THEATRES
 import com.roland.android.domain.usecase.Category.KOREAN_MOVIES
 import com.roland.android.domain.usecase.Category.K_DRAMA
@@ -66,6 +66,8 @@ import com.roland.android.domain.usecase.Category.SCI_FI_MOVIES
 import com.roland.android.domain.usecase.Category.SCI_FI_SERIES
 import com.roland.android.domain.usecase.Category.TOP_RATED_MOVIES
 import com.roland.android.domain.usecase.Category.TOP_RATED_SERIES
+import com.roland.android.domain.usecase.Category.WAR_STORY_MOVIES
+import com.roland.android.domain.usecase.Category.WAR_STORY_SERIES
 import com.roland.android.flick.R
 import com.roland.android.flick.models.MoviesByGenreModel
 import com.roland.android.flick.models.MoviesByRegionModel
@@ -132,7 +134,8 @@ fun HomeScreen(
 						action = {
 							data.visuals.actionLabel?.let {
 								TextButton(
-									onClick = { action(HomeActions.Retry) }
+									onClick = { action(HomeActions.Retry) },
+									colors = textButtonColors(contentColor = colorScheme.inversePrimary)
 								) { Text(it) }
 							}
 						},

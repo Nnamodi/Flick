@@ -1,8 +1,11 @@
 package com.roland.android.flick.ui.components
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,10 +15,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.ArrowDropUp
+import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
@@ -32,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -248,6 +254,61 @@ private fun CustomDropDownItem(
 		)
 	}
 }
+
+@Composable
+fun OpenWithButton() {
+	val clicked = rememberSaveable { mutableStateOf(false) }
+	val backgroundTint by animateColorAsState(
+		targetValue = if (clicked.value) Color.Black.copy(alpha = 0.5f) else Color.Transparent,
+		label = "background tint"
+	)
+
+	Row(
+		modifier = Modifier
+			.animateContentSize()
+			.clip(MaterialTheme.shapes.large)
+			.background(backgroundTint)
+			.padding(10.dp),
+		horizontalArrangement = Arrangement.spacedBy(20.dp),
+		verticalAlignment = Alignment.CenterVertically
+	) {
+		Column(
+			modifier = Modifier.bounceClickable { clicked.value = !clicked.value },
+			verticalArrangement = Arrangement.spacedBy(4.dp),
+			horizontalAlignment = Alignment.CenterHorizontally
+		) {
+			Icon(Icons.Rounded.OpenInNew, stringResource(R.string.open_with))
+			Text(stringResource(R.string.open_with))
+		}
+		if (clicked.value) {
+			OpenButtonOptions.values().forEach { button ->
+				Image(
+					painter = painterResource(button.imageRes),
+					contentDescription = stringResource(button.nameRes),
+					modifier = Modifier
+						.size(32.dp)
+						.clip(MaterialTheme.shapes.large)
+						.clickable {}
+				)
+			}
+		}
+	}
+}
+
+private enum class OpenButtonOptions(
+	@StringRes val nameRes: Int,
+	@DrawableRes val imageRes: Int
+) {
+	YouTube(
+		nameRes = R.string.open_on_youtube,
+		imageRes = R.drawable.youtube_logo
+	),
+	IMDB(
+		nameRes = R.string.open_on_imdb,
+		imageRes = R.drawable.imdb_logo
+	)
+}
+
 
 @Composable
 private fun rememberBackgroundColor(selected: Boolean) = if (selected) {

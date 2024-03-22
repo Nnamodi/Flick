@@ -55,8 +55,7 @@
     <string name="home">Home</string>
     <string name="coming_soon">Coming Soon</string>
     <string name="date_to_release">Releases %s</string>
-    <string name="add">My List</string>
-    <string name="favorite">Favorite</string>
+    <string name="open_with">Open</string>
     <string name="share">Share</string>
     <string name="top_casts">Top Casts</string>
     <string name="recommended">Recommended</string>
@@ -76,6 +75,8 @@
     <string name="get_results">GET RESULTS</string>
     <string name="no_episode">No episodes for this season</string>
     <string name="trailer_loading">Movie trailer loading</string>
+    <string name="open_on_youtube">Open on Youtube</string>
+    <string name="open_on_imdb">Open on IMDB</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

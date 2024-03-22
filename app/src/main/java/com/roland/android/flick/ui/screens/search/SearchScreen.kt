@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.ButtonDefaults.textButtonColors
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Indefinite
@@ -81,7 +83,8 @@ fun SearchScreen(
 						action = {
 							data.visuals.actionLabel?.let {
 								TextButton(
-									onClick = { action(SearchActions.Retry(searchQuery)) }
+									onClick = { action(SearchActions.Retry(searchQuery)) },
+									colors = textButtonColors(contentColor = colorScheme.inversePrimary)
 								) { Text(it) }
 							}
 						}

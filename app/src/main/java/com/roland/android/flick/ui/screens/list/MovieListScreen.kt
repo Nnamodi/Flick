@@ -2,6 +2,8 @@ package com.roland.android.flick.ui.screens.list
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.ButtonDefaults.textButtonColors
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Indefinite
@@ -61,7 +63,8 @@ fun MovieListScreen(
 						action = {
 							data.visuals.actionLabel?.let {
 								TextButton(
-									onClick = { action(MovieListActions.Retry(category)) }
+									onClick = { action(MovieListActions.Retry(category)) },
+									colors = textButtonColors(contentColor = colorScheme.inversePrimary)
 								) { Text(it) }
 							}
 						}

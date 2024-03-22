@@ -18,8 +18,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.ButtonDefaults.textButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Indefinite
@@ -103,7 +105,8 @@ fun ComingSoonScreen(
 						action = {
 							data.visuals.actionLabel?.let {
 								TextButton(
-									onClick = { action(ComingSoonActions.Retry) }
+									onClick = { action(ComingSoonActions.Retry) },
+									colors = textButtonColors(contentColor = colorScheme.inversePrimary)
 								) { Text(it) }
 							}
 						},
