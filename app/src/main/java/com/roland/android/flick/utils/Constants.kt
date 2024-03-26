@@ -11,13 +11,16 @@ object Constants {
 	const val CAST_IMAGE_BASE_URL_W185 = "https://image.tmdb.org/t/p/w185"
 	const val CAST_IMAGE_BASE_URL_W342 = "https://image.tmdb.org/t/p/w342"
 
+	// Other urls
+	const val IMDB_BASE_URL = "https://www.imdb.com/title/"
+	const val YOUTUBE_VIDEO_BASE_URL = "https://www.youtube.com/watch?v="
+	const val VIMEO_BASE_URL = "https://vimeo.com/"
+
 	// Media types
 	const val MOVIES = "movies"
 	const val SERIES = "series"
 
 	// Video
-	const val YOUTUBE_VIDEO_BASE_URL = "https://www.youtube.com/watch?v="
-	const val VIMEO_BASE_URL = "https://vimeo.com/"
 	const val TRAILER = "Trailer"
 	const val YOUTUBE = "YouTube"
 

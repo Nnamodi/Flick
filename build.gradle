@@ -9,6 +9,7 @@ buildscript {
         versions = [
             activity_compose : "1.8.0",
             appcompat : "1.6.1",
+            chrome_tab : "1.5.0",
             coil : "2.3.0",
             compose : "1.4.4",
             compose_icon : "1.4.1",
@@ -33,6 +34,7 @@ buildscript {
         ]
         androidx = [
             appcompat : "androidx.appcompat:appcompat:${versions.appcompat}",
+            chromeTab : "androidx.browser:browser:${versions.chrome_tab}",
             composeActivity : "androidx.activity:activity-compose:${versions.activity_compose}",
             composeUi : "androidx.compose.ui:ui",
             composeUiGraphics : "androidx.compose.ui:ui-graphics",

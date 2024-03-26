@@ -82,8 +82,10 @@ import com.roland.android.flick.ui.screens.details.sheets.CastDetailsSheet
 import com.roland.android.flick.ui.screens.details.sheets.SeasonSelectionSheet
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
+import com.roland.android.flick.utils.Constants.IMDB_BASE_URL
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.YEAR
+import com.roland.android.flick.utils.Constants.YOUTUBE_VIDEO_BASE_URL
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.getTrailer
 import com.roland.android.flick.utils.Extensions.getTrailerKey
@@ -246,7 +248,10 @@ private fun MovieDetails(
 
 	Column(modifier) {
 		Details(movie, series)
-		ActionButtonsRow()
+		ActionButtonsRow(
+			imdbId = IMDB_BASE_URL + movie?.imdbId,
+			trailerKey = YOUTUBE_VIDEO_BASE_URL + videos.getTrailerKey()
+		)
 		MovieCastList(
 			castList = casts,
 			onCastClick = {
@@ -389,7 +394,10 @@ private fun Details(
 }
 
 @Composable
-private fun ActionButtonsRow() {
+private fun ActionButtonsRow(
+	imdbId: String,
+	trailerKey: String?
+) {
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
@@ -400,7 +408,7 @@ private fun ActionButtonsRow() {
 	) {
 		val context = LocalContext.current
 
-		OpenWithButton()
+		OpenWithButton(imdbId, trailerKey)
 		Column(
 			modifier = Modifier
 				.padding(horizontal = 10.dp)

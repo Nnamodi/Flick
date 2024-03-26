@@ -1,5 +1,7 @@
 package com.roland.android.flick.ui.components
 
+import android.content.Context
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -37,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +51,7 @@ import com.roland.android.flick.ui.screens.coming_soon.ComingSoonActions
 import com.roland.android.flick.ui.screens.home.HomeActions
 import com.roland.android.flick.ui.screens.search.SearchCategory
 import com.roland.android.flick.ui.theme.FlickTheme
+import com.roland.android.flick.utils.ChromeTabUtils
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.ROUNDED_EDGE
 import com.roland.android.flick.utils.Constants.SERIES
@@ -256,7 +260,12 @@ private fun CustomDropDownItem(
 }
 
 @Composable
-fun OpenWithButton() {
+fun OpenWithButton(
+	imdbId: String,
+	trailerKey: String?
+) {
+	val context = LocalContext.current
+	val chromeTabUtils = ChromeTabUtils(context)
 	val clicked = rememberSaveable { mutableStateOf(false) }
 	val backgroundTint by animateColorAsState(
 		targetValue = if (clicked.value) Color.Black.copy(alpha = 0.5f) else Color.Transparent,
@@ -288,11 +297,31 @@ fun OpenWithButton() {
 					modifier = Modifier
 						.size(32.dp)
 						.clip(MaterialTheme.shapes.large)
-						.clickable {}
+						.clickable {
+							val url = if (button == OpenButtonOptions.IMDB) imdbId else trailerKey
+							url?.let {
+								chromeTabUtils.launchUrl(it)
+							} ?: kotlin.run {
+								showToast(context)
+							}
+						}
 				)
 			}
 		}
 	}
+}
+
+private fun showToast(
+	context: Context,
+	@StringRes textRes: Int = R.string.url_unavailable
+) {
+	Toast
+		.makeText(
+			context,
+			context.getString(textRes),
+			Toast.LENGTH_SHORT
+		)
+		.show()
 }
 
 private enum class OpenButtonOptions(
