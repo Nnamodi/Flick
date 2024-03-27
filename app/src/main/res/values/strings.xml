@@ -77,6 +77,7 @@
     <string name="trailer_loading">Movie trailer loading</string>
     <string name="open_on_youtube">Open on Youtube</string>
     <string name="open_on_imdb">Open on IMDB</string>
+    <string name="chooser_title">Share link via</string>
     <string name="url_unavailable">Url is unavailable</string>
 
     <plurals name="number_of_seasons">

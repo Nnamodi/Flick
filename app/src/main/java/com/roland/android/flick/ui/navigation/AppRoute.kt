@@ -94,6 +94,7 @@ fun AppRoute(
 				uiState = movieDetailsViewModel.movieDetailsUiState,
 				isMovie = isMovie,
 				request = movieDetailsViewModel::detailsRequest,
+				action = movieDetailsViewModel::detailsAction,
 				navigate = navActions::navigate
 			)
 		}

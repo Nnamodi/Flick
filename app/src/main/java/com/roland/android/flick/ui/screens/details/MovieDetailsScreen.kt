@@ -1,6 +1,5 @@
 package com.roland.android.flick.ui.screens.details
 
-import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -100,6 +99,7 @@ fun MovieDetailsScreen(
 	uiState: MovieDetailsUiState,
 	isMovie: Boolean,
 	request: (DetailsRequest) -> Unit,
+	action: (MovieDetailsActions) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
 	val scrollState = rememberScrollState()
@@ -174,6 +174,7 @@ fun MovieDetailsScreen(
 						videos = movie.details.videos,
 						modifier = columnModifier,
 						castDetailsRequest = request,
+						detailsAction = action,
 						navigate = navigate
 					)
 				}
@@ -207,6 +208,7 @@ fun MovieDetailsScreen(
 							modifier = columnModifier,
 							openSeasonSelectionSheet = { openSeasonSelectionSheet.value = true },
 							castDetailsRequest = request,
+							detailsAction = action,
 							navigate = navigate
 						)
 					}
@@ -240,6 +242,7 @@ private fun MovieDetails(
 	modifier: Modifier,
 	openSeasonSelectionSheet: () -> Unit = {},
 	castDetailsRequest: (DetailsRequest) -> Unit,
+	detailsAction: (MovieDetailsActions) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
@@ -250,7 +253,8 @@ private fun MovieDetails(
 		Details(movie, series)
 		ActionButtonsRow(
 			imdbId = IMDB_BASE_URL + movie?.imdbId,
-			trailerKey = YOUTUBE_VIDEO_BASE_URL + videos.getTrailerKey()
+			trailerKey = YOUTUBE_VIDEO_BASE_URL + videos.getTrailerKey(),
+			onClick = detailsAction
 		)
 		MovieCastList(
 			castList = casts,
@@ -396,7 +400,8 @@ private fun Details(
 @Composable
 private fun ActionButtonsRow(
 	imdbId: String,
-	trailerKey: String?
+	trailerKey: String?,
+	onClick: (MovieDetailsActions) -> Unit
 ) {
 	Row(
 		modifier = Modifier
@@ -413,13 +418,7 @@ private fun ActionButtonsRow(
 			modifier = Modifier
 				.padding(horizontal = 10.dp)
 				.bounceClickable {
-					Toast
-						.makeText(
-							context,
-							context.getString(R.string.coming_soon),
-							Toast.LENGTH_SHORT
-						)
-						.show()
+					onClick(MovieDetailsActions.Share(imdbId, context))
 				},
 			verticalArrangement = Arrangement.spacedBy(4.dp),
 			horizontalAlignment = Alignment.CenterHorizontally
@@ -455,7 +454,8 @@ private fun MovieDetailsScreenPreview() {
 		MovieDetailsScreen(
 			uiState = MovieDetailsUiState(movieDetails, tvShowDetails, seasonDetails),
 			isMovie = false,
-			request = {}
+			request = {},
+			action = {}
 		) {}
 	}
 }

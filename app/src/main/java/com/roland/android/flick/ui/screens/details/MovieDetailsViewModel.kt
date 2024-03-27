@@ -1,5 +1,7 @@
 package com.roland.android.flick.ui.screens.details
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +12,7 @@ import com.roland.android.domain.usecase.GetCastDetailsUseCase
 import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
+import com.roland.android.flick.R
 import com.roland.android.flick.state.MovieDetailsUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.ResponseConverter
@@ -124,6 +127,24 @@ class MovieDetailsViewModel @Inject constructor(
 
 	private fun retryLastRequest() {
 		lastRequest?.let { detailsRequest(it) }
+	}
+
+	fun detailsAction(action: MovieDetailsActions) {
+		when (action) {
+			is MovieDetailsActions.Share -> shareUrl(action.mediaUrl, action.context)
+		}
+	}
+
+	private fun shareUrl(mediaUrl: String, context: Context) {
+		Intent(Intent.ACTION_SEND).apply {
+			type = "text/plain"
+			putExtra(Intent.EXTRA_TEXT, mediaUrl)
+		}.also { intent ->
+			val chooserIntent = Intent.createChooser(
+				intent, context.getString(R.string.chooser_title)
+			)
+			context.startActivity(chooserIntent)
+		}
 	}
 
 }
