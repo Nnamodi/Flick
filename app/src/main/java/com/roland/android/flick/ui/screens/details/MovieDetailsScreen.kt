@@ -355,6 +355,16 @@ private fun Details(
 			)
 		}
 		DotSeparator()
+		movie?.let {
+			Text(
+				text = "${it.runtime / 60}h ${it.runtime % 60}min",
+				modifier = Modifier.alpha(0.8f),
+				fontSize = 12.sp,
+				fontStyle = FontStyle.Italic,
+				fontWeight = FontWeight.Light
+			)
+			DotSeparator()
+		}
 		series?.let {
 			Text(
 				text = pluralStringResource(R.plurals.number_of_seasons, series.numberOfSeasons, series.numberOfSeasons),

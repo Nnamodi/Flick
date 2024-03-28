@@ -72,6 +72,7 @@ object Converters {
 		detailsModel.productionCompanies.map { convertToProductionCompany(it) },
 		detailsModel.productionCountries.map { convertToProductionCountry(it) },
 		detailsModel.releaseDate,
+		detailsModel.runtime,
 		detailsModel.spokenLanguages.map { convertToLanguage(it) },
 		detailsModel.status,
 		detailsModel.tagline,

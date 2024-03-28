@@ -39,6 +39,8 @@ data class MovieDetailsModel(
 	val productionCountries: List<ProductionCountryModel> = emptyList(),
 	@Json(name = "release_date")
 	val releaseDate: String? = null,
+	@Json(name = "runtime")
+	val runtime: Int = 0,
 	@Json(name = "spoken_languages")
 	val spokenLanguages: List<LanguageModel> = emptyList(),
 	@Json(name = "status")

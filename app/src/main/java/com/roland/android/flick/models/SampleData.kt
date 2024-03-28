@@ -78,6 +78,7 @@ object SampleData {
 		),
 		voteAverage = movie5.voteAverage,
 		releaseDate = movie5.releaseDate,
+		runtime = 142,
 		videos = listOf(
 			Video(id = "0", name = "First Trailer"),
 			Video(id = "1", name = "Behind the scene"),
