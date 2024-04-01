@@ -7,6 +7,7 @@ data class Series(
 	val backdropPath: String = "",
 	val adult: Boolean = false,
 	val createdBy: List<Cast> = emptyList(),
+	val externalIds: ExternalIds = ExternalIds(),
 	val firstAirDate: String = "",
 	val lastAirDate: String? = null,
 	val genres: List<Genre> = emptyList(),
@@ -32,4 +33,14 @@ data class Series(
 	val voteCount: Int = 0,
 	val videos: List<Video> = emptyList(),
 	val credits: MovieCredits = MovieCredits()
+)
+
+data class ExternalIds(
+	val id: Int = 0,
+	val imdbId: String = "",
+	val tvdbId: Int? = null,
+	val wikidataId: String? = null,
+	val facebookId: String? = null,
+	val instagramId: String? = null,
+	val twitterId: String? = null
 )

@@ -4,6 +4,7 @@ import com.roland.android.data_remote.network.model.CastDetailsModel
 import com.roland.android.data_remote.network.model.CastModel
 import com.roland.android.data_remote.network.model.DatesModel
 import com.roland.android.data_remote.network.model.EpisodeModel
+import com.roland.android.data_remote.network.model.ExternalIdsModel
 import com.roland.android.data_remote.network.model.GenreModel
 import com.roland.android.data_remote.network.model.LanguageModel
 import com.roland.android.data_remote.network.model.MovieCreditsModel
@@ -21,6 +22,7 @@ import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.Dates
 import com.roland.android.domain.entity.Episode
+import com.roland.android.domain.entity.ExternalIds
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Language
 import com.roland.android.domain.entity.Movie
@@ -87,6 +89,7 @@ object Converters {
 		seriesModel.backdropPath,
 		seriesModel.adult,
 		seriesModel.createdBy.map { convertToCast(it) },
+		convertExternalIds(seriesModel.externalIds),
 		seriesModel.firstAirDate,
 		seriesModel.lastAirDate,
 		seriesModel.genres.map { convertToGenre(it) },
@@ -215,6 +218,16 @@ object Converters {
 		castModel.castId,
 		castModel.creditId,
 		castModel.order
+	)
+
+	private fun convertExternalIds(externalIdsModel: ExternalIdsModel) = ExternalIds(
+		externalIdsModel.id,
+		externalIdsModel.imdbId,
+		externalIdsModel.tvdbId,
+		externalIdsModel.wikidataId,
+		externalIdsModel.facebookId,
+		externalIdsModel.instagramId,
+		externalIdsModel.twitterId
 	)
 
 	private fun convertToVideo(videoModel: VideoModel) = Video(

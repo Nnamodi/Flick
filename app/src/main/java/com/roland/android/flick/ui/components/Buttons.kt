@@ -52,9 +52,11 @@ import com.roland.android.flick.ui.screens.home.HomeActions
 import com.roland.android.flick.ui.screens.search.SearchCategory
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.ChromeTabUtils
+import com.roland.android.flick.utils.Constants.IMDB_BASE_URL
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.ROUNDED_EDGE
 import com.roland.android.flick.utils.Constants.SERIES
+import com.roland.android.flick.utils.Constants.YOUTUBE_VIDEO_BASE_URL
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.bounceClickable
 import com.roland.android.flick.utils.rememberWindowSize
@@ -261,7 +263,7 @@ private fun CustomDropDownItem(
 
 @Composable
 fun OpenWithButton(
-	imdbId: String,
+	imdbId: String?,
 	trailerKey: String?
 ) {
 	val context = LocalContext.current
@@ -300,7 +302,8 @@ fun OpenWithButton(
 						.clickable {
 							val url = if (button == OpenButtonOptions.IMDB) imdbId else trailerKey
 							url?.let {
-								chromeTabUtils.launchUrl(it)
+								val baseUrl = if (button == OpenButtonOptions.IMDB) IMDB_BASE_URL else YOUTUBE_VIDEO_BASE_URL
+								chromeTabUtils.launchUrl(baseUrl + it)
 							} ?: kotlin.run {
 								showToast(context)
 							}
@@ -311,7 +314,7 @@ fun OpenWithButton(
 	}
 }
 
-private fun showToast(
+fun showToast(
 	context: Context,
 	@StringRes textRes: Int = R.string.url_unavailable
 ) {

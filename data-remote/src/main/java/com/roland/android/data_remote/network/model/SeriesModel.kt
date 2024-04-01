@@ -15,6 +15,8 @@ data class SeriesModel(
 	val adult: Boolean = false,
 	@Json(name = "created_by")
 	val createdBy: List<CastModel> = emptyList(),
+	@Json(name = "external_ids")
+	val externalIds: ExternalIdsModel = ExternalIdsModel(),
 	@Json(name = "first_air_date")
 	val firstAirDate: String = "",
 	@Json(name = "last_air_date")
@@ -65,4 +67,21 @@ data class SeriesModel(
 	val videos: VideoListModel = VideoListModel(),
 	@Json(name = "credits")
 	val credits: MovieCreditsModel = MovieCreditsModel()
+)
+
+data class ExternalIdsModel(
+	@Json(name = "id")
+	val id: Int = 0,
+	@Json(name = "imdb_id")
+	val imdbId: String = "",
+	@Json(name = "tvdb_id")
+	val tvdbId: Int? = null,
+	@Json(name = "wikidata_id")
+	val wikidataId: String? = null,
+	@Json(name = "facebook_id")
+	val facebookId: String? = null,
+	@Json(name = "instagram_id")
+	val instagramId: String? = null,
+	@Json(name = "twitter_id")
+	val twitterId: String? = null
 )

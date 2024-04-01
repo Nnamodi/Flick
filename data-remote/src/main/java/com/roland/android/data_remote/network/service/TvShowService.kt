@@ -91,7 +91,7 @@ interface TvShowService {
 	suspend fun fetchTvShowDetails(
 		@Path("series_id") seriesId: Int,
 		@Query("language") language: String = "en_US",
-		@Query("append_to_response") appendToResponse: String = "credits,videos"
+		@Query("append_to_response") appendToResponse: String = "credits,external_ids,videos"
 	): SeriesModel
 
 	@GET("/3/tv/{series_id}/season/{season_number}")

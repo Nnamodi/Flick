@@ -74,6 +74,7 @@ import com.roland.android.flick.ui.components.OpenWithButton
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.RatingBar
 import com.roland.android.flick.ui.components.VideoList
+import com.roland.android.flick.ui.components.showToast
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.screens.details.loading.MovieDetailsLoadingUi
@@ -84,7 +85,6 @@ import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.IMDB_BASE_URL
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.YEAR
-import com.roland.android.flick.utils.Constants.YOUTUBE_VIDEO_BASE_URL
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.getTrailer
 import com.roland.android.flick.utils.Extensions.getTrailerKey
@@ -252,8 +252,8 @@ private fun MovieDetails(
 	Column(modifier) {
 		Details(movie, series)
 		ActionButtonsRow(
-			imdbId = IMDB_BASE_URL + movie?.imdbId,
-			trailerKey = YOUTUBE_VIDEO_BASE_URL + videos.getTrailerKey(),
+			imdbId = movie?.imdbId ?: series?.externalIds?.imdbId,
+			trailerKey = videos.getTrailerKey(),
 			onClick = detailsAction
 		)
 		MovieCastList(
@@ -409,7 +409,7 @@ private fun Details(
 
 @Composable
 private fun ActionButtonsRow(
-	imdbId: String,
+	imdbId: String?,
 	trailerKey: String?,
 	onClick: (MovieDetailsActions) -> Unit
 ) {
@@ -428,7 +428,11 @@ private fun ActionButtonsRow(
 			modifier = Modifier
 				.padding(horizontal = 10.dp)
 				.bounceClickable {
-					onClick(MovieDetailsActions.Share(imdbId, context))
+					imdbId?.let {
+						onClick(MovieDetailsActions.Share(IMDB_BASE_URL + it, context))
+					} ?: kotlin.run {
+						showToast(context)
+					}
 				},
 			verticalArrangement = Arrangement.spacedBy(4.dp),
 			horizontalAlignment = Alignment.CenterHorizontally
