@@ -6,6 +6,10 @@ import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.Season
 import com.roland.android.domain.entity.Series
+import com.roland.android.domain.entity.auth_response.FavoriteMediaRequest
+import com.roland.android.domain.entity.auth_response.RateMediaRequest
+import com.roland.android.domain.entity.auth_response.Response
+import com.roland.android.domain.entity.auth_response.WatchlistMediaRequest
 import kotlinx.coroutines.flow.Flow
 
 interface TvShowRepository {
@@ -44,5 +48,32 @@ interface TvShowRepository {
 	): Flow<Episode>
 
 	fun fetchTvShowGenres(): Flow<List<Genre>>
+
+//	--------------------------------User Authentication Required--------------------------------
+
+	fun favoriteTvShow(
+		accountId: Int,
+		request: FavoriteMediaRequest
+	): Flow<Response>
+
+	fun fetchFavoritedTvShows(accountId: String): Flow<PagingData<Movie>>
+
+	fun fetchRecommendedTvShows(accountId: String): Flow<PagingData<Movie>>
+
+	fun watchlistTvShow(
+		accountId: Int,
+		request: WatchlistMediaRequest
+	): Flow<Response>
+
+	fun fetchWatchlistedTvShows(accountId: String): Flow<PagingData<Movie>>
+
+	fun rateTvShow(
+		seriesId: Int,
+		request: RateMediaRequest
+	): Flow<Response>
+
+	fun deleteTvShowRating(seriesId: Int): Flow<Response>
+
+	fun fetchRatedTvShows(accountId: String): Flow<PagingData<Movie>>
 
 }
