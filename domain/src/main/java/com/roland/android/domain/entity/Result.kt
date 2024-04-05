@@ -1,11 +1,5 @@
 package com.roland.android.domain.entity
 
-data class Response(
-	val success: Boolean,
-	val statusCode: Int,
-	val statusMessage: String,
-)
-
 sealed class Result<out T : Any> {
 
 	data class Success<out T : Any>(val data: T) : Result<T>()
@@ -15,6 +9,8 @@ sealed class Result<out T : Any> {
 }
 
 sealed class UseCaseException(cause: Throwable) : Throwable(cause) {
+
+	class AuthException(cause: Throwable) : UseCaseException(cause)
 
 	class MovieException(cause: Throwable) : UseCaseException(cause)
 

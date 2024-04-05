@@ -1,4 +1,4 @@
-package com.roland.android.data_repository.repository
+package com.roland.android.data_repository.media_repository
 
 import com.roland.android.data_repository.data_source.RemoteCastSource
 import com.roland.android.domain.entity.CastDetails

@@ -12,7 +12,7 @@ import com.roland.android.data_repository.SampleTestData.topRatedMovies
 import com.roland.android.data_repository.SampleTestData.trendingMovies
 import com.roland.android.data_repository.SampleTestData.upcomingMovies
 import com.roland.android.data_repository.data_source.RemoteMovieSource
-import com.roland.android.data_repository.repository.MovieRepositoryImpl
+import com.roland.android.data_repository.media_repository.MovieRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf

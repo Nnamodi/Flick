@@ -13,7 +13,7 @@ import com.roland.android.data_repository.SampleTestData.similarShows
 import com.roland.android.data_repository.SampleTestData.topRatedShows
 import com.roland.android.data_repository.SampleTestData.trendingShows
 import com.roland.android.data_repository.data_source.RemoteTvShowSource
-import com.roland.android.data_repository.repository.TvShowRepositoryImpl
+import com.roland.android.data_repository.media_repository.TvShowRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf

@@ -1,8 +1,8 @@
 package com.roland.android.data_repository.di
 
-import com.roland.android.data_repository.repository.CastRepositoryImpl
-import com.roland.android.data_repository.repository.MovieRepositoryImpl
-import com.roland.android.data_repository.repository.TvShowRepositoryImpl
+import com.roland.android.data_repository.media_repository.CastRepositoryImpl
+import com.roland.android.data_repository.media_repository.MovieRepositoryImpl
+import com.roland.android.data_repository.media_repository.TvShowRepositoryImpl
 import com.roland.android.domain.repository.CastRepository
 import com.roland.android.domain.repository.MovieRepository
 import com.roland.android.domain.repository.TvShowRepository
