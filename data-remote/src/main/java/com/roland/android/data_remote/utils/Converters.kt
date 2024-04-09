@@ -18,6 +18,20 @@ import com.roland.android.data_remote.network.model.ProductionCountryModel
 import com.roland.android.data_remote.network.model.SeasonModel
 import com.roland.android.data_remote.network.model.SeriesModel
 import com.roland.android.data_remote.network.model.VideoModel
+import com.roland.android.data_remote.network.model.auth_response.AccessTokenModel
+import com.roland.android.data_remote.network.model.auth_response.AccessTokenResponseModel
+import com.roland.android.data_remote.network.model.auth_response.AccountDetailsModel
+import com.roland.android.data_remote.network.model.auth_response.AvatarModel
+import com.roland.android.data_remote.network.model.auth_response.FavoriteMediaRequestModel
+import com.roland.android.data_remote.network.model.auth_response.GravatarModel
+import com.roland.android.data_remote.network.model.auth_response.RateMediaRequestModel
+import com.roland.android.data_remote.network.model.auth_response.RequestTokenModel
+import com.roland.android.data_remote.network.model.auth_response.RequestTokenResponseModel
+import com.roland.android.data_remote.network.model.auth_response.ResponseModel
+import com.roland.android.data_remote.network.model.auth_response.SessionIdModel
+import com.roland.android.data_remote.network.model.auth_response.SessionIdResponseModel
+import com.roland.android.data_remote.network.model.auth_response.TmdbAvatarModel
+import com.roland.android.data_remote.network.model.auth_response.WatchlistMediaRequestModel
 import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.Dates
@@ -34,6 +48,20 @@ import com.roland.android.domain.entity.ProductionCountry
 import com.roland.android.domain.entity.Season
 import com.roland.android.domain.entity.Series
 import com.roland.android.domain.entity.Video
+import com.roland.android.domain.entity.auth_response.AccessToken
+import com.roland.android.domain.entity.auth_response.AccessTokenResponse
+import com.roland.android.domain.entity.auth_response.AccountDetails
+import com.roland.android.domain.entity.auth_response.Avatar
+import com.roland.android.domain.entity.auth_response.FavoriteMediaRequest
+import com.roland.android.domain.entity.auth_response.Gravatar
+import com.roland.android.domain.entity.auth_response.RateMediaRequest
+import com.roland.android.domain.entity.auth_response.RequestToken
+import com.roland.android.domain.entity.auth_response.RequestTokenResponse
+import com.roland.android.domain.entity.auth_response.Response
+import com.roland.android.domain.entity.auth_response.SessionId
+import com.roland.android.domain.entity.auth_response.SessionIdResponse
+import com.roland.android.domain.entity.auth_response.TmdbAvatar
+import com.roland.android.domain.entity.auth_response.WatchlistMediaRequest
 
 object Converters {
 
@@ -163,6 +191,39 @@ object Converters {
 		castDetailsModel.combinedCredits.moviesActed.map { convertToMovie(it) }
 	)
 
+	fun convertToResponse(responseModel: ResponseModel) = Response(
+		responseModel.statusCode,
+		responseModel.statusMessage,
+		responseModel.success
+	)
+
+	fun convertToSessionIdResponse(sessionId: SessionIdResponseModel) = SessionIdResponse(
+		sessionId.success,
+		sessionId.sessionId
+	)
+
+	fun convertToRequestTokenResponse(requestToken: RequestTokenResponseModel) = RequestTokenResponse(
+		requestToken.requestToken,
+		requestToken.success,
+		requestToken.statusMessage,
+		requestToken.statusCode,
+	)
+
+	fun convertToAccessTokenResponse(accessToken: AccessTokenResponseModel) = AccessTokenResponse(
+		accessToken.accountId,
+		accessToken.accessToken,
+		accessToken.success,
+		accessToken.statusMessage,
+		accessToken.statusCode,
+	)
+
+	fun convertToAccountDetails(accountDetailsModel: AccountDetailsModel) = AccountDetails(
+		accountDetailsModel.id,
+		convertToAvatar(accountDetailsModel.avatar),
+		accountDetailsModel.name,
+		accountDetailsModel.username
+	)
+
 	fun convertToGenreList(genreListModel: List<GenreModel>) = genreListModel.map {
 		convertToGenre(it)
 	}
@@ -241,6 +302,19 @@ object Converters {
 		videoModel.official
 	)
 
+	private fun convertToAvatar(avatarModel: AvatarModel) = Avatar(
+		convertToGravatar(avatarModel.gravatar),
+		convertToTmdbAvatar(avatarModel.tmdbAvatar)
+	)
+
+	private fun convertToGravatar(gravatarModel: GravatarModel) = Gravatar(
+		gravatarModel.hash
+	)
+
+	private fun convertToTmdbAvatar(tmdbAvatarModel: TmdbAvatarModel) = TmdbAvatar(
+		tmdbAvatarModel.avatarPath
+	)
+
 	private fun convertToDates(datesModel: DatesModel?) = Dates(
 		datesModel?.maximum ?: "",
 		datesModel?.minimum ?: ""
@@ -262,6 +336,34 @@ object Converters {
 		languageModel.iso,
 		languageModel.name,
 		languageModel.englishName
+	)
+
+	fun convertFromAccessToken(accessToken: AccessToken) = AccessTokenModel(
+		accessToken.accessToken
+	)
+
+	fun convertFromRequestToken(requestToken: RequestToken) = RequestTokenModel(
+		requestToken.requestToken
+	)
+
+	fun convertFromSessionId(sessionId: SessionId) = SessionIdModel(
+		sessionId.sessionId
+	)
+
+	fun convertFromFavoriteMediaRequest(favoriteRequest: FavoriteMediaRequest) = FavoriteMediaRequestModel(
+		favoriteRequest.mediaId,
+		favoriteRequest.mediaType,
+		favoriteRequest.favorite
+	)
+
+	fun convertFromRateMediaRequest(rateRequest: RateMediaRequest) = RateMediaRequestModel(
+		rateRequest.value
+	)
+
+	fun convertFromWatchlistMediaRequest(watchlistRequest: WatchlistMediaRequest) = WatchlistMediaRequestModel(
+		watchlistRequest.mediaId,
+		watchlistRequest.mediaType,
+		watchlistRequest.watchlist
 	)
 
 }
