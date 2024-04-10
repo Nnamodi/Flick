@@ -4,10 +4,17 @@ import com.roland.android.data_remote.network.model.GenreListModel
 import com.roland.android.data_remote.network.model.MovieDetailsModel
 import com.roland.android.data_remote.network.model.MovieListModel
 import com.roland.android.data_remote.network.model.MultiListModel
+import com.roland.android.data_remote.network.model.auth_response.FavoriteMediaRequestModel
+import com.roland.android.data_remote.network.model.auth_response.RateMediaRequestModel
+import com.roland.android.data_remote.network.model.auth_response.ResponseModel
+import com.roland.android.data_remote.network.model.auth_response.WatchlistMediaRequestModel
 import com.roland.android.data_remote.utils.Constants.NEXT_MONTH
 import com.roland.android.data_remote.utils.Constants.TOMORROW
 import com.roland.android.data_remote.utils.Constants.date
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -104,5 +111,58 @@ interface MovieService {
 	suspend fun fetchMovieGenres(
 		@Query("language") language: String = "en"
 	): GenreListModel
+
+//	--------------------------------User Authentication Required--------------------------------
+
+	@POST("/3/account/{account_id}/favorite")
+	suspend fun favoriteMovie(
+		@Path("account_id") accountId: Int,
+		@Body request: FavoriteMediaRequestModel
+	): ResponseModel
+
+	@GET("/4/account/{account_object_id}/movie/favorites")
+	suspend fun fetchFavoritedMovies(
+		@Path("account_object_id") accountId: String,
+		@Query("page") page: Int,
+		@Query("language") language: String = "en_US"
+	): MovieListModel
+
+	@GET("/4/account/{account_object_id}/movie/recommendations")
+	suspend fun fetchRecommendedMovies(
+		@Path("account_object_id") accountId: String,
+		@Query("page") page: Int,
+		@Query("language") language: String = "en_US"
+	): MovieListModel
+
+	@POST("/3/account/{account_id}/watchlist")
+	suspend fun watchlistMovie(
+		@Path("account_id") accountId: Int,
+		@Body request: WatchlistMediaRequestModel
+	): ResponseModel
+
+	@GET("/4/account/{account_object_id}/movie/watchlist")
+	suspend fun fetchWatchlistedMovies(
+		@Path("account_object_id") accountId: String,
+		@Query("page") page: Int,
+		@Query("language") language: String = "en_US"
+	): MovieListModel
+
+	@POST("/3/movie/{movie_id}/rating")
+	suspend fun rateMovie(
+		@Path("movie_id") movieId: Int,
+		@Body request: RateMediaRequestModel
+	): ResponseModel
+
+	@DELETE("/3/movie/{movie_id}/rating")
+	suspend fun deleteMovieRating(
+		@Path("movie_id") movieId: Int
+	): ResponseModel
+
+	@GET("/4/account/{account_object_id}/movie/rated")
+	suspend fun fetchRatedMovies(
+		@Path("account_object_id") accountId: String,
+		@Query("page") page: Int,
+		@Query("language") language: String = "en_US"
+	): MovieListModel
 
 }

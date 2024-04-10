@@ -5,10 +5,17 @@ import com.roland.android.data_remote.network.model.GenreListModel
 import com.roland.android.data_remote.network.model.MovieListModel
 import com.roland.android.data_remote.network.model.SeasonModel
 import com.roland.android.data_remote.network.model.SeriesModel
+import com.roland.android.data_remote.network.model.auth_response.FavoriteMediaRequestModel
+import com.roland.android.data_remote.network.model.auth_response.RateMediaRequestModel
+import com.roland.android.data_remote.network.model.auth_response.ResponseModel
+import com.roland.android.data_remote.network.model.auth_response.WatchlistMediaRequestModel
 import com.roland.android.data_remote.utils.Constants.NEXT_MONTH
 import com.roland.android.data_remote.utils.Constants.TOMORROW
 import com.roland.android.data_remote.utils.Constants.date
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -113,5 +120,58 @@ interface TvShowService {
 	suspend fun fetchTvShowGenres(
 		@Query("language") language: String = "en"
 	): GenreListModel
+
+//	--------------------------------User Authentication Required--------------------------------
+
+	@POST("/3/account/{account_id}/favorite")
+	suspend fun favoriteTvShow(
+		@Path("account_id") accountId: Int,
+		@Body request: FavoriteMediaRequestModel
+	): ResponseModel
+
+	@GET("/4/account/{account_object_id}/tv/favorites")
+	suspend fun fetchFavoritedTvShows(
+		@Path("account_object_id") accountId: String,
+		@Query("page") page: Int,
+		@Query("language") language: String = "en_US"
+	): MovieListModel
+
+	@GET("/4/account/{account_object_id}/tv/recommendations")
+	suspend fun fetchRecommendedTvShows(
+		@Path("account_object_id") accountId: String,
+		@Query("page") page: Int,
+		@Query("language") language: String = "en_US"
+	): MovieListModel
+
+	@POST("/3/account/{account_id}/watchlist")
+	suspend fun watchlistTvShow(
+		@Path("account_id") accountId: Int,
+		@Body request: WatchlistMediaRequestModel
+	): ResponseModel
+
+	@GET("/4/account/{account_object_id}/tv/watchlist")
+	suspend fun fetchWatchlistedTvShows(
+		@Path("account_object_id") accountId: String,
+		@Query("page") page: Int,
+		@Query("language") language: String = "en_US"
+	): MovieListModel
+
+	@POST("/3/tv/{series_id}/rating")
+	suspend fun rateTvShow(
+		@Path("series_id") seriesId: Int,
+		@Body request: RateMediaRequestModel
+	): ResponseModel
+
+	@DELETE("/3/tv/{series_id}/rating")
+	suspend fun deleteTvShowRating(
+		@Path("series_id") seriesId: Int
+	): ResponseModel
+
+	@GET("/4/account/{account_object_id}/tv/rated")
+	suspend fun fetchRatedTvShows(
+		@Path("account_object_id") accountId: String,
+		@Query("page") page: Int,
+		@Query("language") language: String = "en_US"
+	): MovieListModel
 
 }

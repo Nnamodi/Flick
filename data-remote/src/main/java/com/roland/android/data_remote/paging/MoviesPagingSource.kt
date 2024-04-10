@@ -309,3 +309,115 @@ class SearchedMoviesAndShowsPagingSource(
 	}
 
 }
+
+class FavoritedMoviesPagingSource(
+	private val movieService: MovieService,
+	private val accountId: String
+) : PagingSource<Int, Movie>() {
+
+	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
+		return try {
+			val currentPage = params.key ?: INITIAL_PAGE
+			val movies = movieService.fetchFavoritedMovies(accountId, currentPage)
+			LoadResult.Page(
+				data = convertToMovieList(movies).results,
+				prevKey = if (currentPage == 1) null else currentPage - 1,
+				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
+			)
+		} catch (e: Exception) {
+			LoadResult.Error(throwable = e)
+		}
+	}
+
+	override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {
+		return state.anchorPosition?.let { anchorPosition ->
+			state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+				?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+		}
+	}
+
+}
+
+class MoviesRecommendedPagingSource(
+	private val movieService: MovieService,
+	private val accountId: String
+) : PagingSource<Int, Movie>() {
+
+	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
+		return try {
+			val currentPage = params.key ?: INITIAL_PAGE
+			val movies = movieService.fetchRecommendedMovies(accountId, currentPage)
+			LoadResult.Page(
+				data = convertToMovieList(movies).results,
+				prevKey = if (currentPage == 1) null else currentPage - 1,
+				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
+			)
+		} catch (e: Exception) {
+			LoadResult.Error(throwable = e)
+		}
+	}
+
+	override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {
+		return state.anchorPosition?.let { anchorPosition ->
+			state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+				?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+		}
+	}
+
+}
+
+class WatchlistedMoviesPagingSource(
+	private val movieService: MovieService,
+	private val accountId: String
+) : PagingSource<Int, Movie>() {
+
+	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
+		return try {
+			val currentPage = params.key ?: INITIAL_PAGE
+			val movies = movieService.fetchWatchlistedMovies(accountId, currentPage)
+			LoadResult.Page(
+				data = convertToMovieList(movies).results,
+				prevKey = if (currentPage == 1) null else currentPage - 1,
+				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
+			)
+		} catch (e: Exception) {
+			LoadResult.Error(throwable = e)
+		}
+	}
+
+	override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {
+		return state.anchorPosition?.let { anchorPosition ->
+			state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+				?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+		}
+	}
+
+}
+
+class RatedMoviesPagingSource(
+	private val movieService: MovieService,
+	private val accountId: String
+) : PagingSource<Int, Movie>() {
+
+	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
+		return try {
+			val currentPage = params.key ?: INITIAL_PAGE
+			val movies = movieService.fetchRatedMovies(accountId, currentPage)
+			LoadResult.Page(
+				data = convertToMovieList(movies).results,
+				prevKey = if (currentPage == 1) null else currentPage - 1,
+				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
+			)
+		} catch (e: Exception) {
+			LoadResult.Error(throwable = e)
+		}
+	}
+
+	override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {
+		return state.anchorPosition?.let { anchorPosition ->
+			state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+				?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+		}
+	}
+
+}

@@ -5,10 +5,13 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.roland.android.data_remote.network.service.MovieService
+import com.roland.android.data_remote.paging.FavoritedMoviesPagingSource
 import com.roland.android.data_remote.paging.MoviesByGenrePagingSource
 import com.roland.android.data_remote.paging.MoviesByRegionPagingSource
+import com.roland.android.data_remote.paging.MoviesRecommendedPagingSource
 import com.roland.android.data_remote.paging.NowPlayingMoviesPagingSource
 import com.roland.android.data_remote.paging.PopularMoviesPagingSource
+import com.roland.android.data_remote.paging.RatedMoviesPagingSource
 import com.roland.android.data_remote.paging.RecommendedMoviesPagingSource
 import com.roland.android.data_remote.paging.SearchedMoviesAndShowsPagingSource
 import com.roland.android.data_remote.paging.SearchedMoviesPagingSource
@@ -16,14 +19,23 @@ import com.roland.android.data_remote.paging.SimilarMoviesPagingSource
 import com.roland.android.data_remote.paging.TopRatedMoviesPagingSource
 import com.roland.android.data_remote.paging.TrendingMoviesPagingSource
 import com.roland.android.data_remote.paging.UpcomingMoviesPagingSource
+import com.roland.android.data_remote.paging.WatchlistedMoviesPagingSource
 import com.roland.android.data_remote.utils.Constants.MAX_PAGE_SIZE
+import com.roland.android.data_remote.utils.Converters.convertFromFavoriteMediaRequest
+import com.roland.android.data_remote.utils.Converters.convertFromRateMediaRequest
+import com.roland.android.data_remote.utils.Converters.convertFromWatchlistMediaRequest
 import com.roland.android.data_remote.utils.Converters.convertToGenreList
 import com.roland.android.data_remote.utils.Converters.convertToMovieDetails
+import com.roland.android.data_remote.utils.Converters.convertToResponse
 import com.roland.android.data_repository.data_source.RemoteMovieSource
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.UseCaseException
+import com.roland.android.domain.entity.auth_response.FavoriteMediaRequest
+import com.roland.android.domain.entity.auth_response.RateMediaRequest
+import com.roland.android.domain.entity.auth_response.Response
+import com.roland.android.domain.entity.auth_response.WatchlistMediaRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -205,6 +217,108 @@ class RemoteMovieSourceImpl @Inject constructor(
 		convertToGenreList(genreListModel.genres)
 	}.catch {
 		throw UseCaseException.MovieException(it)
+	}
+
+//	--------------------------------User Authentication Required--------------------------------
+
+	override fun favoriteMovie(
+		accountId: Int,
+		request: FavoriteMediaRequest
+	): Flow<Response> = flow {
+		val requestModel = convertFromFavoriteMediaRequest(request)
+		emit(movieService.favoriteMovie(accountId, requestModel))
+	}.map { responseModel ->
+		convertToResponse(responseModel)
+	}.catch {
+		throw UseCaseException.MovieException(it)
+	}
+
+	override fun fetchFavoritedMovies(accountId: String): Flow<PagingData<Movie>> {
+		return Pager(
+			config = PagingConfig(
+				pageSize = MAX_PAGE_SIZE,
+				prefetchDistance = MAX_PAGE_SIZE / 2
+			),
+			pagingSourceFactory = {
+				FavoritedMoviesPagingSource(movieService, accountId)
+			}
+		).flow
+			.distinctUntilChanged()
+			.cachedIn(scope)
+	}
+
+	override fun fetchRecommendedMovies(accountId: String): Flow<PagingData<Movie>> {
+		return Pager(
+			config = PagingConfig(
+				pageSize = MAX_PAGE_SIZE,
+				prefetchDistance = MAX_PAGE_SIZE / 2
+			),
+			pagingSourceFactory = {
+				MoviesRecommendedPagingSource(movieService, accountId)
+			}
+		).flow
+			.distinctUntilChanged()
+			.cachedIn(scope)
+	}
+
+	override fun watchlistMovie(
+		accountId: Int,
+		request: WatchlistMediaRequest,
+	): Flow<Response> = flow {
+		val requestModel = convertFromWatchlistMediaRequest(request)
+		emit(movieService.watchlistMovie(accountId, requestModel))
+	}.map { responseModel ->
+		convertToResponse(responseModel)
+	}.catch {
+		throw UseCaseException.MovieException(it)
+	}
+
+	override fun fetchWatchlistedMovies(accountId: String): Flow<PagingData<Movie>> {
+		return Pager(
+			config = PagingConfig(
+				pageSize = MAX_PAGE_SIZE,
+				prefetchDistance = MAX_PAGE_SIZE / 2
+			),
+			pagingSourceFactory = {
+				WatchlistedMoviesPagingSource(movieService, accountId)
+			}
+		).flow
+			.distinctUntilChanged()
+			.cachedIn(scope)
+	}
+
+	override fun rateMovie(
+		movieId: Int,
+		request: RateMediaRequest
+	): Flow<Response> = flow {
+		val requestModel = convertFromRateMediaRequest(request)
+		emit(movieService.rateMovie(movieId, requestModel))
+	}.map { responseModel ->
+		convertToResponse(responseModel)
+	}.catch {
+		throw UseCaseException.MovieException(it)
+	}
+
+	override fun deleteMovieRating(movieId: Int): Flow<Response> = flow {
+		emit(movieService.deleteMovieRating(movieId))
+	}.map { responseModel ->
+		convertToResponse(responseModel)
+	}.catch {
+		throw UseCaseException.MovieException(it)
+	}
+
+	override fun fetchRatedMovies(accountId: String): Flow<PagingData<Movie>> {
+		return Pager(
+			config = PagingConfig(
+				pageSize = MAX_PAGE_SIZE,
+				prefetchDistance = MAX_PAGE_SIZE / 2
+			),
+			pagingSourceFactory = {
+				RatedMoviesPagingSource(movieService, accountId)
+			}
+		).flow
+			.distinctUntilChanged()
+			.cachedIn(scope)
 	}
 
 }
