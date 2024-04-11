@@ -1,6 +1,7 @@
 package com.roland.android.data_remote.di
 
 import com.roland.android.data_remote.BuildConfig
+import com.roland.android.data_remote.auth.AuthService
 import com.roland.android.data_remote.network.service.CastService
 import com.roland.android.data_remote.network.service.MovieService
 import com.roland.android.data_remote.network.service.TvShowService
@@ -51,6 +52,11 @@ class NetworkModule {
 		.client(okHttpClient)
 		.addConverterFactory(MoshiConverterFactory.create(moshi))
 		.build()
+
+	@Provides
+	fun providesAuthService(retrofit: Retrofit): AuthService {
+		return retrofit.create(AuthService::class.java)
+	}
 
 	@Provides
 	fun providesCastService(retrofit: Retrofit): CastService {

@@ -1,8 +1,10 @@
 package com.roland.android.data_remote.di
 
+import com.roland.android.data_remote.auth.AuthUtilImpl
 import com.roland.android.data_remote.data_source.RemoteCastSourceImpl
 import com.roland.android.data_remote.data_source.RemoteMovieSourceImpl
 import com.roland.android.data_remote.data_source.RemoteTvShowSourceImpl
+import com.roland.android.data_repository.auth.AuthUtil
 import com.roland.android.data_repository.data_source.RemoteCastSource
 import com.roland.android.data_repository.data_source.RemoteMovieSource
 import com.roland.android.data_repository.data_source.RemoteTvShowSource
@@ -14,6 +16,9 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RemoteDataSourceModule {
+
+	@Binds
+	abstract fun bindAuthUtil(authUtilImpl: AuthUtilImpl): AuthUtil
 
 	@Binds
 	abstract fun bindRemoteCastSource(remoteCastSourceImpl: RemoteCastSourceImpl): RemoteCastSource
