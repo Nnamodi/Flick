@@ -29,13 +29,18 @@ class AuthUseCase @Inject constructor(
 				authRepository.generateRequestToken().map { Response(requestTokenResponse = it) }
 			}
 			RequestAccessToken -> {
-				authRepository.requestAccessToken(request.requestToken!!).map { Response(accessTokenResponse = it) }
+				authRepository.requestAccessToken(request.requestToken).map { Response(accessTokenResponse = it) }
 			}
 			CreateSession -> {
-				authRepository.createSession(request.accessToken!!).map { Response(sessionIdResponse = it) }
+				authRepository.createSession(request.accessToken).map { Response(sessionIdResponse = it) }
 			}
 			GetAccountDetails -> {
-				authRepository.getAccountDetails(request.sessionIdString!!).map { Response(accountDetails = it) }
+				combine(
+					authRepository.getAccountDetails(request.sessionIdString),
+					authRepository.getAccountId()
+				) { accountDetails, accountId ->
+					Response(accountDetails = accountDetails, accountId = accountId)
+				}
 			}
 			Logout -> {
 				combine(
@@ -61,6 +66,7 @@ class AuthUseCase @Inject constructor(
 		val accessTokenResponse: AccessTokenResponse? = null,
 		val sessionIdResponse: SessionIdResponse? = null,
 		val accountDetails: AccountDetails? = null,
+		val accountId: String? = null,
 		val response: com.roland.android.domain.entity.auth_response.Response? = null,
 	) : UseCase.Response
 

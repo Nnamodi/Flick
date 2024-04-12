@@ -198,8 +198,8 @@ object Converters {
 	)
 
 	fun convertToSessionIdResponse(sessionId: SessionIdResponseModel) = SessionIdResponse(
-		sessionId.success,
-		sessionId.sessionId
+		sessionId.sessionId,
+		sessionId.success
 	)
 
 	fun convertToRequestTokenResponse(requestToken: RequestTokenResponseModel) = RequestTokenResponse(

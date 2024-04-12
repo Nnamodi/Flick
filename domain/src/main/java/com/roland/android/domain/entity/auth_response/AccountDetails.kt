@@ -4,7 +4,7 @@ data class AccountDetails(
 	val id: Int = 0,
 	val avatar: Avatar = Avatar(),
 	val name: String = "",
-	val userName: String = ""
+	val username: String = ""
 )
 
 data class Avatar(

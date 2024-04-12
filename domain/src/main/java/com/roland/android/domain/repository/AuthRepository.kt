@@ -14,11 +14,13 @@ interface AuthRepository {
 
 	fun generateRequestToken(): Flow<RequestTokenResponse>
 
-	fun requestAccessToken(requestToken: RequestToken): Flow<AccessTokenResponse>
+	fun requestAccessToken(requestToken: RequestToken?): Flow<AccessTokenResponse>
 
-	fun createSession(accessToken: AccessToken): Flow<SessionIdResponse>
+	fun getAccountId(): Flow<String>
 
-	fun getAccountDetails(sessionId: String): Flow<AccountDetails>
+	fun createSession(accessToken: AccessToken?): Flow<SessionIdResponse>
+
+	fun getAccountDetails(sessionId: String?): Flow<AccountDetails>
 
 	fun deleteSession(sessionId: SessionId): Flow<SessionIdResponse>
 
