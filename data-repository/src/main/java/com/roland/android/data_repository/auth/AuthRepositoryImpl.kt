@@ -10,22 +10,67 @@ import com.roland.android.domain.entity.auth_response.SessionId
 import com.roland.android.domain.entity.auth_response.SessionIdResponse
 import com.roland.android.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-	private val authUtil: AuthUtil
+	private val authUtil: AuthUtil,
+	private val localAuthDataSource: LocalAuthDataSource
 ) : AuthRepository {
 
 	override fun generateRequestToken(): Flow<RequestTokenResponse> = authUtil.generateRequestToken()
 
-	override fun requestAccessToken(requestToken: RequestToken): Flow<AccessTokenResponse> = authUtil.requestAccessToken(requestToken)
+	override fun requestAccessToken(requestToken: RequestToken?): Flow<AccessTokenResponse> {
+		return requestToken?.let { token ->
+			authUtil.requestAccessToken(token)
+				.onEach {
+					localAuthDataSource.saveAccessToken(AccessToken(it.accessToken))
+					localAuthDataSource.saveAccountId(it.accountId)
+				}
+		} ?: kotlin.run {
+			localAuthDataSource.getAccessToken().map { AccessTokenResponse(it.accessToken) }
+		}
+	}
 
-	override fun createSession(accessToken: AccessToken): Flow<SessionIdResponse> = authUtil.createSession(accessToken)
+	override fun getAccountId(): Flow<String> = localAuthDataSource.getAccountId()
 
-	override fun getAccountDetails(sessionId: String): Flow<AccountDetails> = authUtil.getAccountDetails(sessionId)
+	override fun createSession(accessToken: AccessToken?): Flow<SessionIdResponse> {
+		return accessToken?.let { token ->
+			authUtil.createSession(token)
+				.onEach {
+					localAuthDataSource.saveSessionId(SessionId(it.sessionId))
+				}
+		} ?: kotlin.run {
+			localAuthDataSource.getSessionId().map { SessionIdResponse(it.sessionId) }
+		}
+	}
 
-	override fun deleteSession(sessionId: SessionId): Flow<SessionIdResponse> = authUtil.deleteSession(sessionId)
+	override fun getAccountDetails(sessionId: String?): Flow<AccountDetails> {
+		return sessionId?.let { id ->
+			authUtil.getAccountDetails(id)
+				.onEach {
+					localAuthDataSource.saveAccountDetails(it)
+				}
+		} ?: kotlin.run {
+			localAuthDataSource.getAccountDetails()
+		}
+	}
 
-	override fun logout(accessToken: AccessToken): Flow<Response> = authUtil.logout(accessToken)
+	override fun deleteSession(sessionId: SessionId): Flow<SessionIdResponse> {
+		return authUtil.deleteSession(sessionId)
+			.onEach {
+				localAuthDataSource.saveAccountId("")
+				localAuthDataSource.saveSessionId(SessionId(it.sessionId))
+			}
+	}
+
+	override fun logout(accessToken: AccessToken): Flow<Response> {
+		return authUtil.logout(accessToken)
+			.onEach {
+				localAuthDataSource.saveAccessToken(AccessToken())
+				localAuthDataSource.saveAccountDetails(AccountDetails())
+			}
+	}
 
 }
