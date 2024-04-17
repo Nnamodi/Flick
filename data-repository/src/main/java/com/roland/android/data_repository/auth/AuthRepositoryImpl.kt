@@ -29,7 +29,12 @@ class AuthRepositoryImpl @Inject constructor(
 					localAuthDataSource.saveAccountId(it.accountId)
 				}
 		} ?: kotlin.run {
-			localAuthDataSource.getAccessToken().map { AccessTokenResponse(it.accessToken) }
+			localAuthDataSource.getAccessToken().map {
+				AccessTokenResponse(
+					accessToken = it.accessToken,
+					success = it.accessToken.isNotEmpty()
+				)
+			}
 		}
 	}
 
@@ -42,7 +47,12 @@ class AuthRepositoryImpl @Inject constructor(
 					localAuthDataSource.saveSessionId(SessionId(it.sessionId))
 				}
 		} ?: kotlin.run {
-			localAuthDataSource.getSessionId().map { SessionIdResponse(it.sessionId) }
+			localAuthDataSource.getSessionId().map {
+				SessionIdResponse(
+					sessionId = it.sessionId,
+					success = it.sessionId.isNotEmpty()
+				)
+			}
 		}
 	}
 

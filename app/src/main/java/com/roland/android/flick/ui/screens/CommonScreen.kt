@@ -42,6 +42,34 @@ fun <T: Any>CommonScreen(
 }
 
 @Composable
+fun <T: Any>CommonScreen(
+	state: State<T>?,
+	paddingValues: PaddingValues = PaddingValues(0.dp),
+	successScreen: @Composable (T?, Boolean, String?) -> Unit
+) {
+	val layoutDirection = LocalLayoutDirection.current
+
+	Box(
+		Modifier.padding(
+			start = paddingValues.calculateStartPadding(layoutDirection),
+			end = paddingValues.calculateEndPadding(layoutDirection)
+		)
+	) {
+		when (state) {
+			null -> {
+				successScreen(null, true, null)
+			}
+			is State.Error -> {
+				successScreen(null, false, state.errorMessage.refine())
+			}
+			is State.Success -> {
+				successScreen(state.data, false, null)
+			}
+		}
+	}
+}
+
+@Composable
 fun <T1: Any, T2: Any, T3: Any, T4: Any, T5: Any, T6: Any>CommonScreen(
 	state1: State<T1>?,
 	state2: State<T2>?,

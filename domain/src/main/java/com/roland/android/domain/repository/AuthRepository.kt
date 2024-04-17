@@ -16,7 +16,7 @@ interface AuthRepository {
 
 	fun requestAccessToken(requestToken: RequestToken?): Flow<AccessTokenResponse>
 
-	fun getAccountId(): Flow<String>
+	fun getAccountId(): Flow<String> // Account id is returned along with access token and then saved. So this function fetches the saved account id
 
 	fun createSession(accessToken: AccessToken?): Flow<SessionIdResponse>
 

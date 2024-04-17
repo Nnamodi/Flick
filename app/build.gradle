@@ -90,6 +90,7 @@ dependencies {
     implementation compose.navigation
 
     // other modules
+    implementation(project(path: ":data-local"))
     implementation(project(path: ":data-remote"))
     implementation(project(path: ":data-repository"))
     implementation(project(path: ":domain"))

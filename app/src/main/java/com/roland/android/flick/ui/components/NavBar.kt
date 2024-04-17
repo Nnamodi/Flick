@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Upcoming
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -38,6 +39,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.roland.android.flick.R
+import com.roland.android.flick.ui.components.NavBarItems.Account
 import com.roland.android.flick.ui.components.NavBarItems.ComingSoon
 import com.roland.android.flick.ui.components.NavBarItems.Home
 import com.roland.android.flick.ui.navigation.AppRoute
@@ -108,8 +110,9 @@ fun SideNavRail(navController: NavHostController) {
 				val backStackState = navController.currentBackStackEntryAsState()
 				val currentDestination = backStackState.value?.destination?.route
 				val selected = when (item) {
-					Home -> destinationInBackStack && ComingSoon.route !in backStackEntries
+					Home -> destinationInBackStack && ComingSoon.route !in backStackEntries && Account.route !in backStackEntries
 					ComingSoon -> destinationInBackStack
+					Account -> destinationInBackStack
 				}
 				val itemIsNotLast = item != navBars.last()
 
@@ -118,6 +121,7 @@ fun SideNavRail(navController: NavHostController) {
 					onClick = {
 						val shouldSaveState = when {
 							ComingSoon.route in backStackEntries && item.route != ComingSoon.route-> true
+							Account.route in backStackEntries && item.route != Account.route-> true
 							destinationInBackStack && item == Home -> false
 							currentDestination == item.route -> false
 							else -> true
@@ -183,5 +187,10 @@ private enum class NavBarItems(
 		title = R.string.coming_soon,
 		icon = Icons.Rounded.Upcoming,
 		route = AppRoute.ComingSoonScreen.route
+	),
+	Account(
+		title = R.string.account,
+		icon = Icons.Rounded.Person,
+		route = AppRoute.AccountScreen.route
 	)
 }

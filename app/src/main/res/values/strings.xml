@@ -79,6 +79,8 @@
     <string name="open_on_imdb">Open on IMDB</string>
     <string name="chooser_title">Share link via</string>
     <string name="url_unavailable">Url is unavailable</string>
+    <string name="account">Account</string>
+    <string name="sign_up">SIGN UP</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

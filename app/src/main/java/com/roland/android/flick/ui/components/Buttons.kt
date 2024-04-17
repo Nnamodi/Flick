@@ -22,13 +22,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.ArrowDropUp
+import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +65,7 @@ import com.roland.android.flick.utils.Constants.YOUTUBE_VIDEO_BASE_URL
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.bounceClickable
 import com.roland.android.flick.utils.rememberWindowSize
+import kotlinx.coroutines.delay
 
 @Composable
 fun ToggleButton(
@@ -262,6 +268,54 @@ private fun CustomDropDownItem(
 }
 
 @Composable
+fun SignUpButton(
+	loading: Boolean,
+	failed: Boolean,
+	completed: Boolean,
+	onClick: () -> Unit
+) {
+	val requestFailed = rememberSaveable(failed) { mutableStateOf(failed) }
+
+	Column(Modifier.padding(40.dp)) {
+		when {
+			loading -> {
+				CircularProgressIndicator()
+			}
+			requestFailed.value -> {
+				Icon(
+					imageVector = Icons.Rounded.Cancel,
+					contentDescription = null,
+					modifier = Modifier.size(50.dp),
+					tint = Color.Red
+				)
+			}
+			completed -> {
+				Icon(
+					imageVector = Icons.Rounded.CheckCircle,
+					contentDescription = null,
+					modifier = Modifier.size(50.dp),
+					tint = Color.Green
+				)
+			}
+			else -> {
+				Button(
+					onClick = onClick,
+					modifier = Modifier.fillMaxWidth()
+				) {
+					Text(text = stringResource(R.string.sign_up))
+				}
+			}
+		}
+	}
+
+	LaunchedEffect(failed) {
+		if (!requestFailed.value) return@LaunchedEffect
+		delay(2000)
+		requestFailed.value = false
+	}
+}
+
+@Composable
 fun OpenWithButton(
 	imdbId: String?,
 	trailerKey: String?
@@ -302,7 +356,8 @@ fun OpenWithButton(
 						.clickable {
 							val url = if (button == OpenButtonOptions.IMDB) imdbId else trailerKey
 							url?.let {
-								val baseUrl = if (button == OpenButtonOptions.IMDB) IMDB_BASE_URL else YOUTUBE_VIDEO_BASE_URL
+								val baseUrl =
+									if (button == OpenButtonOptions.IMDB) IMDB_BASE_URL else YOUTUBE_VIDEO_BASE_URL
 								chromeTabUtils.launchUrl(baseUrl + it)
 							} ?: kotlin.run {
 								showToast(context)

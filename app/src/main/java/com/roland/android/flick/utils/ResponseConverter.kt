@@ -1,6 +1,7 @@
 package com.roland.android.flick.utils
 
 import com.roland.android.domain.entity.Result
+import com.roland.android.domain.usecase.AuthUseCase
 import com.roland.android.domain.usecase.GetCastDetailsUseCase
 import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetMovieListUseCase
@@ -15,6 +16,7 @@ import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.domain.usecase.GetTvShowsByGenreUseCase
 import com.roland.android.domain.usecase.GetUpcomingMoviesUseCase
+import com.roland.android.flick.models.AccountModel
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.CategorySelectionModel
 import com.roland.android.flick.models.ComingSoonModel
@@ -23,8 +25,10 @@ import com.roland.android.flick.models.MovieListModel
 import com.roland.android.flick.models.MoviesByGenreModel
 import com.roland.android.flick.models.MoviesByRegionModel
 import com.roland.android.flick.models.MoviesModel
+import com.roland.android.flick.models.ResponseModel
 import com.roland.android.flick.models.SearchModel
 import com.roland.android.flick.models.SeasonDetailsModel
+import com.roland.android.flick.models.TokenModel
 import com.roland.android.flick.models.TvShowDetailsModel
 import com.roland.android.flick.models.TvShowsByGenreModel
 import com.roland.android.flick.models.TvShowsByRegionModel
@@ -305,6 +309,60 @@ class ResponseConverter @Inject constructor() {
 			}
 			is Result.Success -> {
 				State.Success(CastDetailsModel(result.data.cast))
+			}
+		}
+	}
+
+	fun convertTokenData(
+		result: Result<AuthUseCase.Response>
+	): State<TokenModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					TokenModel(
+						result.data.requestTokenResponse,
+						result.data.accessTokenResponse
+					)
+				)
+			}
+		}
+	}
+
+	fun convertResponseData(
+		result: Result<AuthUseCase.Response>
+	): State<ResponseModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					ResponseModel(
+						result.data.sessionIdResponse,
+						result.data.response
+					)
+				)
+			}
+		}
+	}
+
+	fun convertAccountData(
+		result: Result<AuthUseCase.Response>
+	): State<AccountModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					AccountModel(
+						result.data.accountDetails,
+						result.data.accountId
+					)
+				)
 			}
 		}
 	}

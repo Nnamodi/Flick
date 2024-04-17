@@ -15,6 +15,7 @@ object Constants {
 	const val IMDB_BASE_URL = "https://www.imdb.com/title/"
 	const val YOUTUBE_VIDEO_BASE_URL = "https://www.youtube.com/watch?v="
 	const val VIMEO_BASE_URL = "https://vimeo.com/"
+	const val TOKEN_AUTHORIZATION_URL = "https://www.themoviedb.org/auth/access?request_token="
 
 	// Media types
 	const val MOVIES = "movies"

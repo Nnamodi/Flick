@@ -1,6 +1,7 @@
 package com.roland.android.flick.state
 
 import com.roland.android.domain.usecase.Collection
+import com.roland.android.flick.models.AccountModel
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.CategorySelectionModel
 import com.roland.android.flick.models.ComingSoonModel
@@ -9,8 +10,10 @@ import com.roland.android.flick.models.MovieListModel
 import com.roland.android.flick.models.MoviesByGenreModel
 import com.roland.android.flick.models.MoviesByRegionModel
 import com.roland.android.flick.models.MoviesModel
+import com.roland.android.flick.models.ResponseModel
 import com.roland.android.flick.models.SearchModel
 import com.roland.android.flick.models.SeasonDetailsModel
+import com.roland.android.flick.models.TokenModel
 import com.roland.android.flick.models.TvShowDetailsModel
 import com.roland.android.flick.models.TvShowsByGenreModel
 import com.roland.android.flick.models.TvShowsByRegionModel
@@ -55,4 +58,10 @@ data class SearchUiState(
 	val movieData: State<SearchModel>? = State.Success(SearchModel()),
 	val searchCategory: SearchCategory = SearchCategory.ALL,
 	val searchQuery: String = ""
+)
+
+data class AuthUiState(
+	val tokenData: State<TokenModel>? = null,
+	val responseData: State<ResponseModel>? = null,
+	val accountData: State<AccountModel>? = null
 )
