@@ -278,6 +278,14 @@ fun SignUpButton(
 
 	Column(Modifier.padding(40.dp)) {
 		when {
+			completed -> {
+				Icon(
+					imageVector = Icons.Rounded.CheckCircle,
+					contentDescription = null,
+					modifier = Modifier.size(50.dp),
+					tint = Color.Green
+				)
+			}
 			loading -> {
 				CircularProgressIndicator()
 			}
@@ -289,20 +297,15 @@ fun SignUpButton(
 					tint = Color.Red
 				)
 			}
-			completed -> {
-				Icon(
-					imageVector = Icons.Rounded.CheckCircle,
-					contentDescription = null,
-					modifier = Modifier.size(50.dp),
-					tint = Color.Green
-				)
-			}
 			else -> {
 				Button(
 					onClick = onClick,
 					modifier = Modifier.fillMaxWidth()
 				) {
-					Text(text = stringResource(R.string.sign_up))
+					Text(
+						text = stringResource(R.string.sign_up),
+						style = MaterialTheme.typography.titleMedium
+					)
 				}
 			}
 		}

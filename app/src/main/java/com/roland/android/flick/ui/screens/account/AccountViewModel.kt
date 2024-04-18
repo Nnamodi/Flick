@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.screens.account
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,6 +11,7 @@ import com.roland.android.domain.entity.auth_response.RequestToken
 import com.roland.android.domain.entity.auth_response.SessionId
 import com.roland.android.domain.usecase.AuthRequest
 import com.roland.android.domain.usecase.AuthUseCase
+import com.roland.android.flick.models.TokenModel
 import com.roland.android.flick.state.AuthUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.ResponseConverter
@@ -41,9 +43,18 @@ class AccountViewModel @Inject constructor(
 		}
 	}
 
+	fun onNewIntent(intentData: Uri?) {
+		_accountUiState.update { it.copy(intentData = intentData) }
+	}
+
+	fun onActivityResumed(resumed: Boolean) {
+		_accountUiState.update { it.copy(activityResumed = resumed) }
+	}
+
 	fun authActions(action: AuthActions) {
 		when (action) {
 			AuthActions.GenerateRequest -> generateRequest()
+			AuthActions.AuthorizationCancelled -> tokenAuthorizationCancelled()
 			is AuthActions.RequestAccessToken -> requestAccessToken(action.requestToken)
 			is AuthActions.Logout -> logout(action.sessionId, action.accessToken)
 		}
@@ -57,12 +68,17 @@ class AccountViewModel @Inject constructor(
 			)
 				.map { converter.convertTokenData(it) }
 				.collect { data ->
-					_accountUiState.update { it.copy(tokenData = data) }
+					_accountUiState.update { it.copy(tokenData = data, activityResumed = false) }
 				}
 		}
 	}
 
+	private fun tokenAuthorizationCancelled() {
+		_accountUiState.update { it.copy(tokenData = State.Success(TokenModel())) }
+	}
+
 	private fun requestAccessToken(requestToken: RequestToken?) {
+		_accountUiState.update { it.copy(intentData = null) }
 		viewModelScope.launch {
 			authUseCase.execute(
 				AuthUseCase.Request(

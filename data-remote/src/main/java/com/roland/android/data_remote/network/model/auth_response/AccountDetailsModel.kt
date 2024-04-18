@@ -27,5 +27,5 @@ data class GravatarModel(
 
 data class TmdbAvatarModel(
 	@Json(name = "avatar_path")
-	val avatarPath: String = ""
+	val avatarPath: String? = null
 )

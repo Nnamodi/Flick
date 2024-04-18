@@ -1,5 +1,6 @@
 package com.roland.android.flick.state
 
+import android.net.Uri
 import com.roland.android.domain.usecase.Collection
 import com.roland.android.flick.models.AccountModel
 import com.roland.android.flick.models.CastDetailsModel
@@ -63,5 +64,7 @@ data class SearchUiState(
 data class AuthUiState(
 	val tokenData: State<TokenModel>? = null,
 	val responseData: State<ResponseModel>? = null,
-	val accountData: State<AccountModel>? = null
+	val accountData: State<AccountModel>? = null,
+	val intentData: Uri? = null,
+	val activityResumed: Boolean = false
 )

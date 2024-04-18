@@ -16,10 +16,20 @@
         <activity
             android:name=".ui.MainActivity"
             android:configChanges="orientation"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="com.roland.android.flick"
+                    android:pathPrefix="/ui/MainActivity"
+                    android:scheme="android" />
             </intent-filter>
         </activity>
     </application>

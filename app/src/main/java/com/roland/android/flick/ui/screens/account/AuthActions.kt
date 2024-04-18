@@ -8,6 +8,8 @@ sealed class AuthActions {
 
 	object GenerateRequest : AuthActions()
 
+	object AuthorizationCancelled : AuthActions()
+
 	data class RequestAccessToken(val requestToken: RequestToken) : AuthActions()
 
 	data class Logout(

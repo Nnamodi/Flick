@@ -1,12 +1,14 @@
 package com.roland.android.flick.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -23,6 +25,7 @@ import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.NavBar
 import com.roland.android.flick.ui.navigation.AppRoute
 import com.roland.android.flick.ui.navigation.NavActions
+import com.roland.android.flick.ui.screens.account.AccountViewModel
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.NavigationRailWidth
 import com.roland.android.flick.utils.WindowType
@@ -31,6 +34,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+	private val accountViewModel: AccountViewModel by viewModels()
+
 	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 	override fun onCreate(savedInstanceState: Bundle?) {
 		setTheme(R.style.Theme_Flick)
@@ -74,5 +79,20 @@ class MainActivity : ComponentActivity() {
 				}
 			}
 		}
+	}
+
+	override fun onNewIntent(intent: Intent?) {
+		super.onNewIntent(intent)
+		accountViewModel.onNewIntent(intent?.data)
+	}
+
+	override fun onResume() {
+		super.onResume()
+		accountViewModel.onActivityResumed(true)
+	}
+
+	override fun onPause() {
+		super.onPause()
+		accountViewModel.onActivityResumed(false)
 	}
 }

@@ -17,5 +17,5 @@ data class Gravatar(
 )
 
 data class TmdbAvatar(
-	val avatarPath: String = ""
+	val avatarPath: String? = null
 )
