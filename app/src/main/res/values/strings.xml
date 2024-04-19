@@ -81,6 +81,11 @@
     <string name="url_unavailable">Url is unavailable</string>
     <string name="account">Account</string>
     <string name="sign_up">SIGN UP</string>
+    <string name="my_account">My Account</string>
+    <string name="favorites">Favorites</string>
+    <string name="watchlist">Watchlist</string>
+    <string name="rated">Rated</string>
+    <string name="profile_image">Profile image</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

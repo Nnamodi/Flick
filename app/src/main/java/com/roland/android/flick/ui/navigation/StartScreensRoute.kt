@@ -5,7 +5,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.roland.android.flick.ui.screens.account.AccountScreen
 import com.roland.android.flick.ui.screens.account.AccountViewModel
-import com.roland.android.flick.ui.screens.account.SignUpScreen
+import com.roland.android.flick.ui.screens.auth.AuthViewModel
+import com.roland.android.flick.ui.screens.auth.SignUpScreen
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonScreen
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonViewModel
 import com.roland.android.flick.ui.screens.home.HomeScreen
@@ -16,7 +17,8 @@ fun NavGraphBuilder.startScreensRoute(
 	inFullScreen: (Boolean) -> Unit,
 	homeViewModel: HomeViewModel,
 	comingSoonViewModel: ComingSoonViewModel,
-	accountViewModel: AccountViewModel
+	accountViewModel: AccountViewModel,
+	authViewModel: AuthViewModel
 ) {
 	navigation(
 		startDestination = AppRoute.HomeScreen.route,
@@ -40,13 +42,12 @@ fun NavGraphBuilder.startScreensRoute(
 		composable(AppRoute.AccountScreen.route) {
 			if (accountViewModel.userLoggedIn) {
 				AccountScreen(
-					uiState = accountViewModel.accountUiState,
-					authAction = accountViewModel::authActions
+					uiState = accountViewModel.accountUiState
 				)
 			} else {
 				SignUpScreen(
-					uiState = accountViewModel.accountUiState,
-					authAction = accountViewModel::authActions
+					uiState = authViewModel.authUiState,
+					authAction = authViewModel::authActions
 				)
 			}
 		}

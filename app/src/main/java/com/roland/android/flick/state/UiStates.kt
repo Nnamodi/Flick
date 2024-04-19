@@ -1,7 +1,9 @@
 package com.roland.android.flick.state
 
 import android.net.Uri
+import com.roland.android.domain.entity.auth_response.AccountDetails
 import com.roland.android.domain.usecase.Collection
+import com.roland.android.flick.models.AccountMediaModel
 import com.roland.android.flick.models.AccountModel
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.CategorySelectionModel
@@ -59,6 +61,12 @@ data class SearchUiState(
 	val movieData: State<SearchModel>? = State.Success(SearchModel()),
 	val searchCategory: SearchCategory = SearchCategory.ALL,
 	val searchQuery: String = ""
+)
+
+data class AccountUiState(
+	val accountDetails: AccountDetails = AccountDetails(),
+	val moviesData: State<AccountMediaModel>? = null,
+	val showsData: State<AccountMediaModel>? = null,
 )
 
 data class AuthUiState(

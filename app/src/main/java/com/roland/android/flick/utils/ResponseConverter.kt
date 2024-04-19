@@ -1,6 +1,7 @@
 package com.roland.android.flick.utils
 
 import com.roland.android.domain.entity.Result
+import com.roland.android.domain.usecase.AccountUseCase
 import com.roland.android.domain.usecase.AuthUseCase
 import com.roland.android.domain.usecase.GetCastDetailsUseCase
 import com.roland.android.domain.usecase.GetMovieDetailsUseCase
@@ -16,6 +17,7 @@ import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.domain.usecase.GetTvShowsByGenreUseCase
 import com.roland.android.domain.usecase.GetUpcomingMoviesUseCase
+import com.roland.android.flick.models.AccountMediaModel
 import com.roland.android.flick.models.AccountModel
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.CategorySelectionModel
@@ -54,6 +56,46 @@ class ResponseConverter @Inject constructor() {
 						result.data.nowPlayingMovies.refactor(),
 						result.data.topRated.refactor(),
 						result.data.movieGenres
+					)
+				)
+			}
+		}
+	}
+
+	fun convertToAccountMovieData(
+		result: Result<AccountUseCase.Response>
+	): State<AccountMediaModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					AccountMediaModel(
+						result.data.favoritedMovies.refactor(),
+						result.data.watchlistedMovies.refactor(),
+						result.data.ratedMovies.refactor(),
+						result.data.movieGenres
+					)
+				)
+			}
+		}
+	}
+
+	fun convertToAccountTvShowsData(
+		result: Result<AccountUseCase.Response>
+	): State<AccountMediaModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					AccountMediaModel(
+						result.data.favoritedShows.refactor(),
+						result.data.watchlistedShows.refactor(),
+						result.data.ratedShows.refactor(),
+						result.data.showGenres
 					)
 				)
 			}

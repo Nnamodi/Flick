@@ -55,7 +55,7 @@ class LocalAuthDataSourceImpl @Inject constructor(
 			AccountDetails(
 				id = it[USER_ID_KEY] ?: 0,
 				name = it[ACCOUNT_NAME_KEY] ?: "",
-				username = it[USERNAME_KEY] ?: "",
+				username = it[USERNAME_KEY] ?: "· · ·",
 			)
 		}
 	}

@@ -251,3 +251,16 @@ fun MovieDetailsTopBar(navigateUp: (Screens) -> Unit) {
 		colors = TopAppBarDefaults.topAppBarColors(Color.Transparent)
 	)
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AccountTopBar() {
+	TopAppBar(
+		title = {
+			Text(
+				text = stringResource(R.string.my_account),
+				fontWeight = FontWeight.Bold
+			)
+		}
+	)
+}

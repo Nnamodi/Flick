@@ -25,7 +25,7 @@ import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.NavBar
 import com.roland.android.flick.ui.navigation.AppRoute
 import com.roland.android.flick.ui.navigation.NavActions
-import com.roland.android.flick.ui.screens.account.AccountViewModel
+import com.roland.android.flick.ui.screens.auth.AuthViewModel
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.NavigationRailWidth
 import com.roland.android.flick.utils.WindowType
@@ -34,7 +34,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-	private val accountViewModel: AccountViewModel by viewModels()
+	private val authViewModel: AuthViewModel by viewModels()
 
 	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,16 +83,16 @@ class MainActivity : ComponentActivity() {
 
 	override fun onNewIntent(intent: Intent?) {
 		super.onNewIntent(intent)
-		accountViewModel.onNewIntent(intent?.data)
+		authViewModel.onNewIntent(intent?.data)
 	}
 
 	override fun onResume() {
 		super.onResume()
-		accountViewModel.onActivityResumed(true)
+		authViewModel.onActivityResumed(true)
 	}
 
 	override fun onPause() {
 		super.onPause()
-		accountViewModel.onActivityResumed(false)
+		authViewModel.onActivityResumed(false)
 	}
 }

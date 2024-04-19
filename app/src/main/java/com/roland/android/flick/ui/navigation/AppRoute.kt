@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.roland.android.domain.usecase.Category
 import com.roland.android.flick.ui.screens.account.AccountViewModel
+import com.roland.android.flick.ui.screens.auth.AuthViewModel
 import com.roland.android.flick.ui.screens.category_selection.CategorySelectionScreen
 import com.roland.android.flick.ui.screens.category_selection.CategorySelectionViewModel
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonViewModel
@@ -30,6 +31,7 @@ fun AppRoute(
 	homeViewModel: HomeViewModel = hiltViewModel(),
 	comingSoonViewModel: ComingSoonViewModel = hiltViewModel(),
 	accountViewModel: AccountViewModel = hiltViewModel(),
+	authViewModel: AuthViewModel = hiltViewModel(),
 	movieListViewModel: MovieListViewModel = hiltViewModel(),
 	searchViewModel: SearchViewModel = hiltViewModel(),
 	categorySelectionViewModel: CategorySelectionViewModel = hiltViewModel(),
@@ -45,7 +47,8 @@ fun AppRoute(
 			inFullScreen = inFullScreen,
 			homeViewModel = homeViewModel,
 			comingSoonViewModel = comingSoonViewModel,
-			accountViewModel = accountViewModel
+			accountViewModel = accountViewModel,
+			authViewModel = authViewModel
 		)
 		animatedComposable(AppRoute.MovieListScreen.route) { backStackEntry ->
 			val categoryName = backStackEntry.arguments?.getString("category") ?: ""

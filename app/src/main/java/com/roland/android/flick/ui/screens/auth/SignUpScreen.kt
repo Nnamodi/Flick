@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.screens.account
+package com.roland.android.flick.ui.screens.auth
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Box

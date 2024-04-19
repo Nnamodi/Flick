@@ -1,4 +1,4 @@
-package com.roland.android.flick.ui.screens.account
+package com.roland.android.flick.ui.screens.auth
 
 import com.roland.android.domain.entity.auth_response.AccessToken
 import com.roland.android.domain.entity.auth_response.RequestToken
