@@ -42,7 +42,9 @@ fun NavGraphBuilder.startScreensRoute(
 		composable(AppRoute.AccountScreen.route) {
 			if (accountViewModel.userLoggedIn) {
 				AccountScreen(
-					uiState = accountViewModel.accountUiState
+					uiState = accountViewModel.accountUiState,
+					action = accountViewModel::accountActions,
+					navigate = navActions::navigate
 				)
 			} else {
 				SignUpScreen(

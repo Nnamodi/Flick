@@ -14,6 +14,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.roland.android.flick.ui.screens.home.HomeActions
+import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Extensions.roundOff
 import com.roland.android.flick.utils.bounceClickable
 
@@ -101,6 +107,44 @@ fun Header(
 				fontSize = 16.sp
 			)
 		}
+	}
+}
+
+@Composable
+fun Header(
+	header: String,
+	modifier: Modifier = Modifier,
+	onMediaTypeChange: (String) -> Unit
+) {
+	var selectedMediaType by rememberSaveable { mutableStateOf(MOVIES) }
+
+	Row(
+		modifier = modifier,
+		verticalAlignment = Alignment.CenterVertically
+	) {
+		Divider(
+			modifier = Modifier
+				.padding(vertical = 8.dp)
+				.size(4.dp, 18.dp)
+				.clip(MaterialTheme.shapes.medium),
+			color = MaterialTheme.colorScheme.surfaceTint
+		)
+		Text(
+			text = header,
+			modifier = Modifier.padding(start = 4.dp),
+			fontWeight = FontWeight.Bold,
+			fontSize = 16.sp
+		)
+		Spacer(Modifier.weight(1f))
+		ToggleButton(
+			selectedOption = selectedMediaType,
+			maximumSize = false,
+			onClick = { action ->
+				val mediaType = (action as HomeActions.ToggleCategory).category
+				onMediaTypeChange(mediaType)
+				selectedMediaType = mediaType
+			}
+		)
 	}
 }
 

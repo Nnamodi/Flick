@@ -74,4 +74,15 @@ class AccountViewModel @Inject constructor(
 		}
 	}
 
+	fun accountActions(action: AccountActions) {
+		when (action) {
+			AccountActions.ReloadMedia -> reloadMedia()
+		}
+	}
+
+	private fun reloadMedia() {
+		_accountUiState.update { it.copy(moviesData = null, showsData = null) }
+		fetchMovieData(); fetchShowData()
+	}
+
 }

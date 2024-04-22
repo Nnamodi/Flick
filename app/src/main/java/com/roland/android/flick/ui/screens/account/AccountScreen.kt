@@ -1,6 +1,5 @@
 package com.roland.android.flick.ui.screens.account
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,14 +12,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration.Indefinite
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,20 +39,49 @@ import com.roland.android.flick.state.AccountUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.AccountTopBar
 import com.roland.android.flick.ui.components.HorizontalPosters
+import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScreen
-import com.roland.android.flick.utils.Constants.MOVIES
+import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.utils.Constants.NavigationBarHeight
+import com.roland.android.flick.utils.RowItems
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.rememberWindowSize
+import kotlinx.coroutines.launch
 
 @Composable
 fun AccountScreen(
-	uiState: AccountUiState
+	uiState: AccountUiState,
+	action: (AccountActions) -> Unit,
+	navigate: (Screens) -> Unit
 ) {
 	val (accountDetails, movieData, showData) = uiState
+	val snackbarHostState = remember { SnackbarHostState() }
+	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
+	val windowSize = rememberWindowSize()
 
 	Scaffold(
-		topBar = { AccountTopBar() }
+		topBar = { AccountTopBar() },
+		snackbarHost = {
+			SnackbarHost(snackbarHostState) { data ->
+				errorMessage.value?.let {
+					Snackbar(
+						modifier = Modifier
+							.padding(16.dp)
+							.padding(bottom = if (windowSize.width == WindowType.Portrait) NavigationBarHeight else 0.dp),
+						action = {
+							data.visuals.actionLabel?.let {
+								TextButton(
+									onClick = { action(AccountActions.ReloadMedia) },
+									colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.inversePrimary)
+								) { Text(it) }
+							}
+						}
+					) {
+						Text(data.visuals.message)
+					}
+				}
+			}
+		}
 	) { paddingValues ->
 		Column(
 			modifier = Modifier
@@ -74,7 +108,10 @@ fun AccountScreen(
 			MediaRows(
 				movies = movieData,
 				shows = showData,
-				paddingValues = paddingValues
+				paddingValues = paddingValues,
+				snackbarHostState = snackbarHostState,
+				onError = { errorMessage.value = it },
+				navigate = navigate
 			)
 		}
 	}
@@ -84,42 +121,49 @@ fun AccountScreen(
 private fun MediaRows(
 	movies: State<AccountMediaModel>?,
 	shows: State<AccountMediaModel>?,
-	paddingValues: PaddingValues
+	paddingValues: PaddingValues,
+	snackbarHostState: SnackbarHostState,
+	onError: (String?) -> Unit,
+	navigate: (Screens) -> Unit
 ) {
+	val scope = rememberCoroutineScope()
+	val windowSize = rememberWindowSize()
+	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
+
 	CommonScreen(
 		movies, shows, paddingValues,
-		loadingScreen = {
-			Column(
-				modifier = Modifier.fillMaxSize(),
-				verticalArrangement = Arrangement.Center,
-				horizontalAlignment = Alignment.CenterHorizontally
-			) { Text("Loading...") }
+		loadingScreen = { error ->
+			AccountLoadingUi(isLoading = error == null)
+			onError(error)
+			error?.let {
+				val actionLabel = stringResource(R.string.retry)
+				scope.launch {
+					snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
+				}
+			}
 		}
 	) { movieData, showData ->
-		val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
-		val windowSize = rememberWindowSize()
-
 		Column {
-			val favoriteMediaType by rememberSaveable { mutableStateOf(MOVIES) }
 			HorizontalPosters(
-				pagingData = if (favoriteMediaType == MOVIES) movieData.favoriteList else showData.favoriteList,
+				moviesData = movieData.favoriteList,
+				showsData = showData.favoriteList,
 				header = stringResource(R.string.favorites),
 				onMovieClick = { clickedMovieItem.value = it }
-			) {}
+			)
 
-			val watchlistMediaType by rememberSaveable { mutableStateOf(MOVIES) }
 			HorizontalPosters(
-				pagingData = if (watchlistMediaType == MOVIES) movieData.watchlist else showData.watchlist,
+				moviesData = movieData.watchlist,
+				showsData = showData.watchlist,
 				header = stringResource(R.string.watchlist),
 				onMovieClick = { clickedMovieItem.value = it }
-			) {}
+			)
 
-			val ratedMediaType by rememberSaveable { mutableStateOf(MOVIES) }
 			HorizontalPosters(
-				pagingData = if (ratedMediaType == MOVIES) movieData.ratedList else showData.ratedList,
+				moviesData = movieData.ratedList,
+				showsData = showData.ratedList,
 				header = stringResource(R.string.rated),
 				onMovieClick = { clickedMovieItem.value = it }
-			) {}
+			)
 
 			Spacer(
 				Modifier.height(
@@ -127,5 +171,31 @@ private fun MediaRows(
 				)
 			)
 		}
+
+		if (clickedMovieItem.value != null) {
+			val itemIsMovie = clickedMovieItem.value!!.title != null
+
+			MovieDetailsSheet(
+				movie = clickedMovieItem.value!!,
+				genreList = if (itemIsMovie) movieData.genres else showData.genres,
+				viewMore = navigate,
+				closeSheet = { clickedMovieItem.value = null }
+			)
+		}
+	}
+}
+
+@Composable
+private fun AccountLoadingUi(isLoading: Boolean) {
+	Column {
+
+		RowItems(stringResource(R.string.favorites), isLoading)
+
+		RowItems(stringResource(R.string.watchlist), isLoading)
+
+		RowItems(stringResource(R.string.rated), isLoading)
+
+		Spacer(Modifier.height(50.dp + NavigationBarHeight))
+
 	}
 }

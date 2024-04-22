@@ -71,6 +71,7 @@ import kotlinx.coroutines.delay
 fun ToggleButton(
 	selectedOption: String,
 	modifier: Modifier = Modifier,
+	maximumSize: Boolean = true,
 	onClick: (HomeActions) -> Unit
 ) {
 	Row(modifier) {
@@ -96,7 +97,8 @@ fun ToggleButton(
 		) {
 			ToggleButtonItem(
 				text = stringResource(R.string.movies),
-				textColor = rememberBorderColor(selectedOption == MOVIES)
+				textColor = rememberBorderColor(selectedOption == MOVIES),
+				maximumSize = maximumSize
 			)
 		}
 		Box(
@@ -121,20 +123,28 @@ fun ToggleButton(
 		) {
 			ToggleButtonItem(
 				text = stringResource(R.string.series),
-				textColor = rememberBorderColor(selectedOption == SERIES)
+				textColor = rememberBorderColor(selectedOption == SERIES),
+				maximumSize = maximumSize
 			)
 		}
 	}
 }
 
 @Composable
-private fun ToggleButtonItem(text: String, textColor: Color) {
+private fun ToggleButtonItem(
+	text: String,
+	textColor: Color,
+	maximumSize: Boolean
+) {
 	Text(
 		text = text,
-		modifier = Modifier.padding(20.dp, 6.dp),
+		modifier = Modifier.padding(
+			horizontal = if (maximumSize) 20.dp else 10.dp,
+			vertical = 6.dp
+		),
 		color = textColor,
 		fontWeight = FontWeight.Bold,
-		fontSize = 16.sp
+		fontSize = if (maximumSize) 16.sp else 12.sp
 	)
 }
 

@@ -66,6 +66,7 @@ import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.Video
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.screens.details.VideoPlayer
+import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_SMALL
 import com.roland.android.flick.utils.Extensions.appendStateUi
@@ -198,8 +199,6 @@ fun HorizontalPosters(
 	header2: String,
 	onMovieClick: (Movie) -> Unit
 ) {
-	val movieList = pagingData.collectAsLazyPagingItems()
-	val movieList2 = pagingData2.collectAsLazyPagingItems()
 	val pagerState = rememberPagerState { 2 }
 	val scope = rememberCoroutineScope()
 	var selectedHeader by rememberSaveable { mutableIntStateOf(0) }
@@ -216,22 +215,69 @@ fun HorizontalPosters(
 			}
 		)
 
-		HorizontalPager(
-			state = pagerState,
-			userScrollEnabled = false
-		) { page ->
-			when (page) {
-				0 -> MovieListPage(
-					movieList = movieList,
-					showFullList = true,
-					onMovieClick = onMovieClick
-				)
-				1 -> MovieListPage(
-					movieList = movieList2,
-					showFullList = true,
-					onMovieClick = onMovieClick
-				)
+		PostersPager(
+			movies = pagingData.collectAsLazyPagingItems(),
+			shows = pagingData2.collectAsLazyPagingItems(),
+			pagerState = pagerState,
+			onMovieClick = onMovieClick
+		)
+	}
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HorizontalPosters(
+	moviesData: MutableStateFlow<PagingData<Movie>>,
+	showsData: MutableStateFlow<PagingData<Movie>>,
+	header: String,
+	onMovieClick: (Movie) -> Unit
+) {
+	val pagerState = rememberPagerState { 2 }
+	val scope = rememberCoroutineScope()
+
+	Column(Modifier.padding(bottom = 12.dp)) {
+		Header(
+			header = header,
+			modifier = Modifier.padding(PADDING_WIDTH),
+			onMediaTypeChange = { mediaType ->
+				val selectedPage = if (mediaType == MOVIES) 0 else 1
+				scope.launch { pagerState.animateScrollToPage(selectedPage) }
 			}
+		)
+
+		PostersPager(
+			movies = moviesData.collectAsLazyPagingItems(),
+			shows = showsData.collectAsLazyPagingItems(),
+			pagerState = pagerState,
+			onMovieClick = onMovieClick
+		)
+	}
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun PostersPager(
+	movies: LazyPagingItems<Movie>,
+	shows: LazyPagingItems<Movie>,
+	pagerState: PagerState,
+	onMovieClick: (Movie) -> Unit
+) {
+	HorizontalPager(
+		state = pagerState,
+		userScrollEnabled = false
+	) { page ->
+		when (page) {
+			0 -> MovieListPage(
+				movieList = movies,
+				showFullList = true,
+				onMovieClick = onMovieClick
+			)
+
+			1 -> MovieListPage(
+				movieList = shows,
+				showFullList = true,
+				onMovieClick = onMovieClick
+			)
 		}
 	}
 }
