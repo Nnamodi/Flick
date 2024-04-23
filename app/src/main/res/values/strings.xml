@@ -86,6 +86,7 @@
     <string name="watchlist">Watchlist</string>
     <string name="rated">Rated</string>
     <string name="profile_image">Profile image</string>
+    <string name="media_removed">Media successfully removed from list</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

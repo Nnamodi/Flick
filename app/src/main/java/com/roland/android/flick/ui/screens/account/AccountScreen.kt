@@ -12,16 +12,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult.ActionPerformed
+import androidx.compose.material3.SnackbarResult.Dismissed
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,9 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
-import com.roland.android.flick.models.AccountMediaModel
 import com.roland.android.flick.state.AccountUiState
-import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.AccountTopBar
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.navigation.Screens
@@ -44,7 +41,7 @@ import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.utils.Constants.NavigationBarHeight
 import com.roland.android.flick.utils.RowItems
-import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.WindowType.Portrait
 import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.launch
 
@@ -54,32 +51,20 @@ fun AccountScreen(
 	action: (AccountActions) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
-	val (accountDetails, movieData, showData) = uiState
 	val snackbarHostState = remember { SnackbarHostState() }
-	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
+	val scope = rememberCoroutineScope()
+	val snackbarMessage = rememberSaveable { mutableStateOf<String?>(null) }
 	val windowSize = rememberWindowSize()
 
 	Scaffold(
 		topBar = { AccountTopBar() },
 		snackbarHost = {
-			SnackbarHost(snackbarHostState) { data ->
-				errorMessage.value?.let {
-					Snackbar(
-						modifier = Modifier
-							.padding(16.dp)
-							.padding(bottom = if (windowSize.width == WindowType.Portrait) NavigationBarHeight else 0.dp),
-						action = {
-							data.visuals.actionLabel?.let {
-								TextButton(
-									onClick = { action(AccountActions.ReloadMedia) },
-									colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.inversePrimary)
-								) { Text(it) }
-							}
-						}
-					) {
-						Text(data.visuals.message)
-					}
-				}
+			snackbarMessage.value?.let {
+				SnackbarHost(
+					hostState = snackbarHostState,
+					modifier = Modifier
+						.padding(bottom = if (windowSize.width == Portrait) NavigationBarHeight else 0.dp)
+				)
 			}
 		}
 	) { paddingValues ->
@@ -100,17 +85,25 @@ fun AccountScreen(
 					tint = Color.Blue
 				)
 				Text(
-					text = accountDetails.username,
+					text = uiState.accountDetails.username,
 					modifier = Modifier.padding(start = 20.dp),
 					style = MaterialTheme.typography.headlineSmall
 				)
 			}
 			MediaRows(
-				movies = movieData,
-				shows = showData,
+				uiState = uiState,
 				paddingValues = paddingValues,
 				snackbarHostState = snackbarHostState,
-				onError = { errorMessage.value = it },
+				action = action,
+				onError = { snackbarMessage.value = it },
+				onCancelResult = {
+					scope.launch {
+						snackbarMessage.value = it
+						if (snackbarHostState.showSnackbar(it) == Dismissed) {
+							snackbarMessage.value = null
+						}
+					}
+				},
 				navigate = navigate
 			)
 		}
@@ -119,13 +112,15 @@ fun AccountScreen(
 
 @Composable
 private fun MediaRows(
-	movies: State<AccountMediaModel>?,
-	shows: State<AccountMediaModel>?,
+	uiState: AccountUiState,
 	paddingValues: PaddingValues,
 	snackbarHostState: SnackbarHostState,
+	action: (AccountActions) -> Unit,
 	onError: (String?) -> Unit,
+	onCancelResult: (String) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
+	val (_, movies, shows, response) = uiState
 	val scope = rememberCoroutineScope()
 	val windowSize = rememberWindowSize()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
@@ -138,36 +133,57 @@ private fun MediaRows(
 			error?.let {
 				val actionLabel = stringResource(R.string.retry)
 				scope.launch {
-					snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
+					when (snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)) {
+						ActionPerformed -> action(AccountActions.ReloadMedia)
+						Dismissed -> {}
+					}
 				}
 			}
 		}
-	) { movieData, showData ->
+	) { movieData, showData -> onError(null)
 		Column {
 			HorizontalPosters(
 				moviesData = movieData.favoriteList,
 				showsData = showData.favoriteList,
 				header = stringResource(R.string.favorites),
-				onMovieClick = { clickedMovieItem.value = it }
+				response = response,
+				onMovieClick = { clickedMovieItem.value = it },
+				onCancel = { mediaId, mediaType ->
+					action(AccountActions.UnFavoriteMedia(mediaId, mediaType))
+				},
+				onCancelled = onCancelResult,
+				onError = onCancelResult
 			)
 
 			HorizontalPosters(
 				moviesData = movieData.watchlist,
 				showsData = showData.watchlist,
 				header = stringResource(R.string.watchlist),
-				onMovieClick = { clickedMovieItem.value = it }
+				response = response,
+				onMovieClick = { clickedMovieItem.value = it },
+				onCancel = { mediaId, mediaType ->
+					action(AccountActions.RemoveFromWatchlist(mediaId, mediaType))
+				},
+				onCancelled = onCancelResult,
+				onError = onCancelResult
 			)
 
 			HorizontalPosters(
 				moviesData = movieData.ratedList,
 				showsData = showData.ratedList,
 				header = stringResource(R.string.rated),
-				onMovieClick = { clickedMovieItem.value = it }
+				response = response,
+				onMovieClick = { clickedMovieItem.value = it },
+				onCancel = { mediaId, mediaType ->
+					action(AccountActions.DeleteMediaRating(mediaId, mediaType))
+				},
+				onCancelled = onCancelResult,
+				onError = onCancelResult
 			)
 
 			Spacer(
 				Modifier.height(
-					50.dp + (if (windowSize.width == WindowType.Portrait) NavigationBarHeight else 0.dp)
+					50.dp + (if (windowSize.width == Portrait) NavigationBarHeight else 0.dp)
 				)
 			)
 		}

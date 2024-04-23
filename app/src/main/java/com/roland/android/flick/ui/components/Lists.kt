@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
@@ -51,6 +52,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -64,7 +66,10 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.Video
+import com.roland.android.domain.entity.auth_response.Response
 import com.roland.android.flick.R
+import com.roland.android.flick.state.State
+import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.screens.details.VideoPlayer
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
@@ -216,8 +221,8 @@ fun HorizontalPosters(
 		)
 
 		PostersPager(
-			movies = pagingData.collectAsLazyPagingItems(),
-			shows = pagingData2.collectAsLazyPagingItems(),
+			list1 = pagingData.collectAsLazyPagingItems(),
+			list2 = pagingData2.collectAsLazyPagingItems(),
 			pagerState = pagerState,
 			onMovieClick = onMovieClick
 		)
@@ -230,37 +235,65 @@ fun HorizontalPosters(
 	moviesData: MutableStateFlow<PagingData<Movie>>,
 	showsData: MutableStateFlow<PagingData<Movie>>,
 	header: String,
-	onMovieClick: (Movie) -> Unit
+	response: State<Response>?,
+	onMovieClick: (Movie) -> Unit,
+	onCancel: (Int, String) -> Unit,
+	onCancelled: (String) -> Unit,
+	onError: (String) -> Unit
 ) {
 	val pagerState = rememberPagerState { 2 }
 	val scope = rememberCoroutineScope()
+	val moviesList = moviesData.collectAsLazyPagingItems()
+	val showsList = showsData.collectAsLazyPagingItems()
+	val context = LocalContext.current
 
-	Column(Modifier.padding(bottom = 12.dp)) {
-		Header(
-			header = header,
-			modifier = Modifier.padding(PADDING_WIDTH),
-			onMediaTypeChange = { mediaType ->
-				val selectedPage = if (mediaType == MOVIES) 0 else 1
-				scope.launch { pagerState.animateScrollToPage(selectedPage) }
+	CommonScreen(response) { requestResult, loading, errorMessage ->
+		Column(Modifier.padding(bottom = 12.dp)) {
+			Header(
+				header = header,
+				modifier = Modifier.padding(PADDING_WIDTH),
+				onMediaTypeChange = { mediaType ->
+					val selectedPage = if (mediaType == MOVIES) 0 else 1
+					scope.launch { pagerState.animateScrollToPage(selectedPage) }
+				}
+			)
+
+			PostersPager(
+				list1 = moviesList,
+				list2 = showsList,
+				pagerState = pagerState,
+				itemIsCancellable = true,
+				onMovieClick = onMovieClick,
+				onCancel = onCancel
+			)
+		}
+
+		LaunchedEffect(requestResult, errorMessage) {
+			if (loading) return@LaunchedEffect
+			when {
+				errorMessage != null -> {
+					onError(errorMessage.refine())
+				}
+				requestResult?.success == false -> {
+					onError(requestResult.statusMessage)
+				}
+				requestResult?.success == true -> {
+					onCancelled(context.getString(R.string.media_removed))
+				}
 			}
-		)
-
-		PostersPager(
-			movies = moviesData.collectAsLazyPagingItems(),
-			shows = showsData.collectAsLazyPagingItems(),
-			pagerState = pagerState,
-			onMovieClick = onMovieClick
-		)
+		}
 	}
 }
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 private fun PostersPager(
-	movies: LazyPagingItems<Movie>,
-	shows: LazyPagingItems<Movie>,
+	list1: LazyPagingItems<Movie>,
+	list2: LazyPagingItems<Movie>,
 	pagerState: PagerState,
-	onMovieClick: (Movie) -> Unit
+	itemIsCancellable: Boolean = false,
+	onMovieClick: (Movie) -> Unit,
+	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
 	HorizontalPager(
 		state = pagerState,
@@ -268,15 +301,19 @@ private fun PostersPager(
 	) { page ->
 		when (page) {
 			0 -> MovieListPage(
-				movieList = movies,
+				movieList = list1,
 				showFullList = true,
-				onMovieClick = onMovieClick
+				itemIsCancellable = itemIsCancellable,
+				onMovieClick = onMovieClick,
+				onCancel = onCancel
 			)
 
 			1 -> MovieListPage(
-				movieList = shows,
+				movieList = list2,
 				showFullList = true,
-				onMovieClick = onMovieClick
+				itemIsCancellable = itemIsCancellable,
+				onMovieClick = onMovieClick,
+				onCancel = onCancel
 			)
 		}
 	}
@@ -287,8 +324,13 @@ private fun MovieListPage(
 	movieList: LazyPagingItems<Movie>,
 	listState: LazyListState = rememberLazyListState(),
 	showFullList: Boolean,
+	itemIsCancellable: Boolean = false,
 	onMovieClick: (Movie) -> Unit,
+	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
+	val list = movieList.itemSnapshotList.toMutableList()
+	val mediaList = if (itemIsCancellable) list.asReversed() else list
+
 	LazyRow(
 		state = listState,
 		contentPadding = PaddingValues(
@@ -297,16 +339,27 @@ private fun MovieListPage(
 		)
 	) {
 		val listSize = if (showFullList) {
-			movieList.itemCount
+			mediaList.size
 		} else {
-			min(20, movieList.itemCount)
+			min(20, mediaList.size)
 		}
-		items(listSize) { index ->
-			movieList[index]?.let { movie ->
-				SmallItemPoster(
-					movie = movie,
-					onClick = onMovieClick
-				)
+		itemsIndexed(
+			items = mediaList.take(listSize),
+			key = { id, item -> item?.id ?: id }
+		) { _, movie ->
+			movie?.let {
+				if (itemIsCancellable) {
+					CancellableItemPoster(
+						movie = it,
+						onClick = onMovieClick,
+						onCancel = onCancel
+					)
+				} else {
+					SmallItemPoster(
+						movie = it,
+						onClick = onMovieClick
+					)
+				}
 			}
 		}
 		item {

@@ -2,6 +2,7 @@ package com.roland.android.flick.state
 
 import android.net.Uri
 import com.roland.android.domain.entity.auth_response.AccountDetails
+import com.roland.android.domain.entity.auth_response.Response
 import com.roland.android.domain.usecase.Collection
 import com.roland.android.flick.models.AccountMediaModel
 import com.roland.android.flick.models.AccountModel
@@ -67,6 +68,7 @@ data class AccountUiState(
 	val accountDetails: AccountDetails = AccountDetails(),
 	val moviesData: State<AccountMediaModel>? = null,
 	val showsData: State<AccountMediaModel>? = null,
+	val response: State<Response>? = null
 )
 
 data class AuthUiState(

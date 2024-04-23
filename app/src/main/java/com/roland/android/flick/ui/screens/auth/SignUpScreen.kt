@@ -2,6 +2,7 @@ package com.roland.android.flick.ui.screens.auth
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -43,6 +44,7 @@ fun SignUpScreen(
 				requestFailed = errorMessage != null,
 				intentData = uiState.intentData,
 				activityResumed = uiState.activityResumed,
+				paddingValues = paddingValues,
 				action = authAction
 			)
 		}
@@ -56,6 +58,7 @@ private fun SignUpScreen(
 	requestFailed: Boolean,
 	intentData: Uri?,
 	activityResumed: Boolean,
+	paddingValues: PaddingValues,
 	action: (AuthActions) -> Unit
 ) {
 	var isLoading by rememberSaveable { mutableStateOf(loading) }
@@ -106,7 +109,7 @@ private fun SignUpScreen(
 	Box(
 		modifier = Modifier
 			.fillMaxSize()
-			.padding(bottom = bottomPadding),
+			.padding(bottom = bottomPadding + paddingValues.calculateBottomPadding()),
 		contentAlignment = Alignment.BottomCenter
 	) {
 		// Random movie image for the background

@@ -21,6 +21,6 @@ data class WatchlistMediaRequestModel(
 	val mediaId: Int = 0,
 	@Json(name = "media_type")
 	val mediaType: String = "",
-	@Json(name = "wishlist")
+	@Json(name = "watchlist")
 	val watchlist: Boolean = false
 )

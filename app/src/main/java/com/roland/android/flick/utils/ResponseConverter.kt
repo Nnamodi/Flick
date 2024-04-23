@@ -1,6 +1,7 @@
 package com.roland.android.flick.utils
 
 import com.roland.android.domain.entity.Result
+import com.roland.android.domain.entity.auth_response.Response
 import com.roland.android.domain.usecase.AccountUseCase
 import com.roland.android.domain.usecase.AuthUseCase
 import com.roland.android.domain.usecase.GetCastDetailsUseCase
@@ -17,6 +18,7 @@ import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.domain.usecase.GetTvShowsByGenreUseCase
 import com.roland.android.domain.usecase.GetUpcomingMoviesUseCase
+import com.roland.android.domain.usecase.MediaUtilUseCase
 import com.roland.android.flick.models.AccountMediaModel
 import com.roland.android.flick.models.AccountModel
 import com.roland.android.flick.models.CastDetailsModel
@@ -403,6 +405,25 @@ class ResponseConverter @Inject constructor() {
 					AccountModel(
 						result.data.accountDetails,
 						result.data.accountId
+					)
+				)
+			}
+		}
+	}
+
+	fun convertResponse(
+		result: Result<MediaUtilUseCase.Response>
+	): State<Response> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					Response(
+						result.data.response.statusCode,
+						result.data.response.statusMessage,
+						result.data.response.success
 					)
 				)
 			}

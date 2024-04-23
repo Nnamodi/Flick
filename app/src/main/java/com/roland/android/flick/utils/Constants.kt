@@ -18,8 +18,8 @@ object Constants {
 	const val TOKEN_AUTHORIZATION_URL = "https://www.themoviedb.org/auth/access?request_token="
 
 	// Media types
-	const val MOVIES = "movies"
-	const val SERIES = "series"
+	const val MOVIES = "movie"
+	const val SERIES = "tv"
 
 	// Video
 	const val TRAILER = "Trailer"

@@ -3,7 +3,10 @@ package com.roland.android.flick.ui.components
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,7 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +48,7 @@ import com.roland.android.flick.ui.components.PosterType.Large
 import com.roland.android.flick.ui.components.PosterType.Small
 import com.roland.android.flick.utils.Constants.CAST_IMAGE_BASE_URL_W185
 import com.roland.android.flick.utils.Constants.CAST_IMAGE_BASE_URL_W342
+import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W342
 import com.roland.android.flick.utils.Constants.MOVIE_IMAGE_BASE_URL_W780
 import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_LARGE
@@ -50,6 +57,7 @@ import com.roland.android.flick.utils.Constants.POSTER_HEIGHT_SMALL
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_MEDIUM
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_SMALL
+import com.roland.android.flick.utils.Constants.SERIES
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.animatePagerItem
 import com.roland.android.flick.utils.bounceClickable
@@ -197,6 +205,46 @@ fun SmallItemPoster(
 			.padding(end = 12.dp)
 			.size(POSTER_WIDTH_SMALL, POSTER_HEIGHT_SMALL)
 	) { onClick(movie) }
+}
+
+@Composable
+fun CancellableItemPoster(
+	movie: Movie,
+	modifier: Modifier = Modifier,
+	onClick: (Movie) -> Unit,
+	onCancel: (Int, String) -> Unit
+) {
+	Box(
+		modifier = modifier
+			.padding(end = 12.dp)
+			.size(POSTER_WIDTH_SMALL, POSTER_HEIGHT_SMALL)
+			.bounceClickable { onClick(movie) }
+			.clip(MaterialTheme.shapes.large)
+	) {
+		val mediaType = if (movie.title == null) SERIES else MOVIES
+		val state = remember { mutableStateOf<AsyncImagePainter.State>(Empty) }
+
+		AsyncImage(
+			model = MOVIE_IMAGE_BASE_URL_W342 + movie.posterPath,
+			contentDescription = movie.title ?: movie.tvName,
+			modifier = Modifier
+				.fillMaxSize()
+				.painterPlaceholder(state.value),
+			onState = { state.value = it },
+			contentScale = ContentScale.Crop
+		)
+		Row(Modifier.fillMaxWidth()) {
+			Icon(
+				imageVector = Icons.Rounded.Cancel,
+				contentDescription = null,
+				modifier = Modifier
+					.padding(6.dp)
+					.clickable { onCancel(movie.id, mediaType) }
+			)
+			Spacer(Modifier.weight(1f))
+			RatingBar(Small, movie.voteAverage)
+		}
+	}
 }
 
 @Composable
