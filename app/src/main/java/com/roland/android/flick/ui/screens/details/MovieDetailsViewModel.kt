@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -13,8 +14,10 @@ import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.flick.R
+import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.state.MovieDetailsUiState
 import com.roland.android.flick.state.State
+import com.roland.android.flick.utils.MediaUtil
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,11 +32,13 @@ class MovieDetailsViewModel @Inject constructor(
 	private val tvShowDetailsUseCase: GetTvShowDetailsUseCase,
 	private val seasonDetailsUseCase: GetSeasonDetailsUseCase,
 	private val castDetailsUseCase: GetCastDetailsUseCase,
+	private val mediaUtil: MediaUtil,
 	private val converter: ResponseConverter
 ) : ViewModel() {
 	private var _movieDetailsUiState = MutableStateFlow(MovieDetailsUiState())
 	var movieDetailsUiState by mutableStateOf(_movieDetailsUiState.value); private set
 	private var lastRequest by mutableStateOf<DetailsRequest?>(null)
+	private var accountId by mutableIntStateOf(0)
 
 	// cache details info to avoid unnecessary reload
 	private var lastMovieIdFetched by mutableStateOf<Int?>(null)
@@ -41,6 +46,15 @@ class MovieDetailsViewModel @Inject constructor(
 	private var lastCastIdFetched by mutableStateOf<Int?>(null)
 
 	init {
+		viewModelScope.launch {
+			userAccountDetails.collect { user ->
+				user?.let {
+					accountId = user.id
+					if (user.id == 0) return@let
+					_movieDetailsUiState.update { it.copy(userIsLoggedIn = true) }
+				}
+			}
+		}
 		viewModelScope.launch {
 			_movieDetailsUiState.collect {
 				movieDetailsUiState = it
@@ -50,6 +64,7 @@ class MovieDetailsViewModel @Inject constructor(
 	}
 
 	fun detailsRequest(request: DetailsRequest) {
+		_movieDetailsUiState.update { it.copy(response = null) }
 		Log.i("NavigationInfo", "Action: $request")
 		when (request) {
 			is DetailsRequest.GetMovieDetails -> getMovieDetails(request.movieId)
@@ -130,7 +145,41 @@ class MovieDetailsViewModel @Inject constructor(
 	}
 
 	fun detailsAction(action: MovieDetailsActions) {
+		_movieDetailsUiState.update { it.copy(response = null) }
 		when (action) {
+			is MovieDetailsActions.AddToWatchlist -> {
+				mediaUtil.watchlistMedia(
+					accountId = accountId,
+					mediaId = action.mediaId,
+					mediaType = action.mediaType,
+					watchlist = true,
+					result = { response ->
+						_movieDetailsUiState.update { it.copy(response = response) }
+					}
+				)
+			}
+			is MovieDetailsActions.FavoriteMedia -> {
+				mediaUtil.favoriteMedia(
+					accountId = accountId,
+					mediaId = action.mediaId,
+					mediaType = action.mediaType,
+					favorite = true,
+					result = { response ->
+						_movieDetailsUiState.update { it.copy(response = response) }
+					}
+				)
+			}
+			is MovieDetailsActions.RateMedia -> {
+				if (action.rateValue == 0f) return // awaiting implementation
+				mediaUtil.rateMedia(
+					mediaId = action.mediaId,
+					mediaType = action.mediaType,
+					rateValue = action.rateValue,
+					result = { response ->
+						_movieDetailsUiState.update { it.copy(response = response) }
+					}
+				)
+			}
 			is MovieDetailsActions.Share -> shareUrl(action.mediaUrl, action.context)
 		}
 	}

@@ -87,6 +87,10 @@
     <string name="rated">Rated</string>
     <string name="profile_image">Profile image</string>
     <string name="media_removed">Media successfully removed from list</string>
+    <string name="my_list">My List</string>
+    <string name="favorite">Favorite</string>
+    <string name="rate">Rate</string>
+    <string name="sign_up_message">Sign up to avail this feature</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

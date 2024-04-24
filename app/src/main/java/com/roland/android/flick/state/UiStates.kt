@@ -51,7 +51,9 @@ data class MovieDetailsUiState(
 	val tvShowDetails: State<TvShowDetailsModel>? = null,
 	val seasonDetails: State<SeasonDetailsModel>? = null,
 	val castDetails: State<CastDetailsModel>? = null,
-	val selectedSeasonNumber: Int = 1
+	val selectedSeasonNumber: Int = 1,
+	val userIsLoggedIn: Boolean = false,
+	val response: State<Response>? = null
 )
 
 data class MovieListUiState(

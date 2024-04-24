@@ -1,42 +1,48 @@
 package com.roland.android.flick.ui.screens.details
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Done
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Share
-import androidx.compose.material3.ButtonDefaults.textButtonColors
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.StarBorder
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration.Indefinite
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
@@ -45,6 +51,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.PagingData
@@ -73,26 +80,33 @@ import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.OpenWithButton
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.RatingBar
+import com.roland.android.flick.ui.components.Snackbar
+import com.roland.android.flick.ui.components.SnackbarDuration
 import com.roland.android.flick.ui.components.VideoList
 import com.roland.android.flick.ui.components.showToast
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScreen
+import com.roland.android.flick.ui.screens.details.Buttons.Favorite
+import com.roland.android.flick.ui.screens.details.Buttons.Rate
+import com.roland.android.flick.ui.screens.details.Buttons.Watchlist
 import com.roland.android.flick.ui.screens.details.loading.MovieDetailsLoadingUi
 import com.roland.android.flick.ui.screens.details.sheets.CastDetailsSheet
 import com.roland.android.flick.ui.screens.details.sheets.SeasonSelectionSheet
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.IMDB_BASE_URL
+import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
+import com.roland.android.flick.utils.Constants.SERIES
 import com.roland.android.flick.utils.Constants.YEAR
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.getTrailer
 import com.roland.android.flick.utils.Extensions.getTrailerKey
+import com.roland.android.flick.utils.Extensions.refine
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.bounceClickable
 import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 @Composable
 fun MovieDetailsScreen(
@@ -103,40 +117,20 @@ fun MovieDetailsScreen(
 	navigate: (Screens) -> Unit
 ) {
 	val scrollState = rememberScrollState()
-	val snackbarHostState = remember { SnackbarHostState() }
-	val scope = rememberCoroutineScope()
-	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 
-	Scaffold(
-		snackbarHost = {
-			SnackbarHost(snackbarHostState) { data ->
-				errorMessage.value?.let {
-					Snackbar(
-						modifier = Modifier.padding(16.dp),
-						action = {
-							data.visuals.actionLabel?.let { label ->
-								TextButton(
-									onClick = { request(DetailsRequest.Retry) },
-									colors = textButtonColors(contentColor = colorScheme.inversePrimary)
-								) { Text(label) }
-							}
-						}
-					) {
-						Text(data.visuals.message)
-					}
-				}
-			}
-		}
-	) { paddingValues ->
+	Scaffold { paddingValues ->
 		CommonScreen(
 			state = if (isMovie) uiState.movieDetails else uiState.tvShowDetails,
 			paddingValues, loadingScreen = { error ->
-				MovieDetailsLoadingUi(scrollState, isLoading = error == null, navigate)
-				errorMessage.value = error
-				error?.let {
-					val actionLabel = stringResource(R.string.retry)
-					scope.launch {
-						snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
+				Box(contentAlignment = Alignment.BottomStart) {
+					MovieDetailsLoadingUi(scrollState, isLoading = error == null, navigate)
+					error?.let {
+						Snackbar(
+							message = it,
+							actionLabel = stringResource(R.string.retry),
+							action = { request(DetailsRequest.Retry) },
+							duration = SnackbarDuration.Indefinite
+						)
 					}
 				}
 			}
@@ -146,84 +140,174 @@ fun MovieDetailsScreen(
 			val inPortraitMode by remember(windowSize.width) {
 				derivedStateOf { windowSize.width == WindowType.Portrait }
 			}
-			val screenModifier = if (!inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
-			val columnModifier = if (inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
 			val videoHeightDivisor = if (inPortraitMode) 0.6f else 0.45f
+			val snackbarMessage = rememberSaveable { mutableStateOf<String?>(null) }
+			val requestToLogin = rememberSaveable { mutableStateOf(false) }
 
-			if (isMovie) {
-				Column(
-					modifier = screenModifier.padding(
-						bottom = paddingValues.calculateBottomPadding()
+			Box(contentAlignment = Alignment.BottomStart) {
+				if (isMovie) {
+					MoviesDetails(
+						movie = details as MovieDetailsModel,
+						uiState = uiState,
+						inPortraitMode = inPortraitMode,
+						scrollState = scrollState,
+						paddingValues = paddingValues,
+						screenHeight = screenHeight,
+						videoHeightDivisor = videoHeightDivisor,
+						logInRequest = { requestToLogin.value = true },
+						request = request,
+						action = action,
+						navigate = navigate
 					)
-				) {
-					val movie = details as MovieDetailsModel
-
-					VideoPlayer(
-						trailerKey = movie.details.videos.getTrailerKey(),
-						thumbnail = movie.details.backdropPath,
-						modifier = Modifier.height(screenHeight * videoHeightDivisor),
-						navigateUp = navigate
-					)
-					MovieDetails(
-						movie = movie.details,
-						casts = movie.details.credits.cast,
-						castDetails = uiState.castDetails,
-						recommendedMovies = movie.recommendedMovies,
-						similarMovies = movie.similarMovies,
-						genres = arrayOf(movie.movieGenres, movie.seriesGenres),
-						videos = movie.details.videos,
-						modifier = columnModifier,
-						castDetailsRequest = request,
-						detailsAction = action,
+				} else {
+					ShowDetails(
+						show = details as TvShowDetailsModel,
+						uiState = uiState,
+						inPortraitMode = inPortraitMode,
+						scrollState = scrollState,
+						paddingValues = paddingValues,
+						screenHeight = screenHeight,
+						videoHeightDivisor = videoHeightDivisor,
+						logInRequest = { requestToLogin.value = true },
+						request = request,
+						action = action,
 						navigate = navigate
 					)
 				}
-			} else {
-				Box(
-					modifier = Modifier.padding(
-						bottom = paddingValues.calculateBottomPadding()
+				if (snackbarMessage.value != null) {
+					Snackbar(
+						message = snackbarMessage.value!!,
+						onDismiss = { snackbarMessage.value = null }
 					)
-				) {
-					val show = details as TvShowDetailsModel
-					val openSeasonSelectionSheet = rememberSaveable { mutableStateOf(false) }
-
-					Column(screenModifier) {
-						VideoPlayer(
-							trailerKey = show.details.videos.getTrailerKey(),
-							thumbnail = show.details.backdropPath,
-							modifier = Modifier.height(screenHeight * videoHeightDivisor),
-							enabled = !openSeasonSelectionSheet.value,
-							navigateUp = navigate
-						)
-						MovieDetails(
-							series = show.details,
-							casts = show.details.credits.cast,
-							seasonDetails = uiState.seasonDetails,
-							castDetails = uiState.castDetails,
-							recommendedMovies = show.recommendedShows,
-							similarMovies = show.similarShows,
-							genres = arrayOf(show.movieGenres, show.seriesGenres),
-							selectedSeasonNumber = uiState.selectedSeasonNumber,
-							videos = show.details.videos,
-							modifier = columnModifier,
-							openSeasonSelectionSheet = { openSeasonSelectionSheet.value = true },
-							castDetailsRequest = request,
-							detailsAction = action,
-							navigate = navigate
-						)
-					}
-
-					SeasonSelectionSheet(
-						showSheet = openSeasonSelectionSheet.value,
-						seriesId = show.details.id,
-						selectedSeasonNumber = uiState.selectedSeasonNumber,
-						numberOfSeasons = show.details.numberOfSeasons,
-						onSeasonSelected = request,
-						closeSheet = { openSeasonSelectionSheet.value = false }
+				}
+				if (requestToLogin.value) {
+					Snackbar(
+						message = stringResource(R.string.sign_up_message),
+						actionLabel = stringResource(R.string.sign_up),
+						action = { navigate(Screens.AccountScreen) },
+						onDismiss = { requestToLogin.value = false }
 					)
 				}
 			}
+
+			// pops up custom snackbar to show response message returned from watchlist, favorite or rate actions.
+			LaunchedEffect(uiState.response) {
+				snackbarMessage.value = when (uiState.response) {
+					null -> null
+					is State.Error -> uiState.response.errorMessage.refine()
+					is State.Success -> uiState.response.data.statusMessage
+				}
+			}
 		}
+	}
+}
+
+@Composable
+private fun MoviesDetails(
+	movie: MovieDetailsModel,
+	uiState: MovieDetailsUiState,
+	inPortraitMode: Boolean,
+	scrollState: ScrollState,
+	paddingValues: PaddingValues,
+	screenHeight: Dp,
+	videoHeightDivisor: Float,
+	logInRequest: () -> Unit,
+	request: (DetailsRequest) -> Unit,
+	action: (MovieDetailsActions) -> Unit,
+	navigate: (Screens) -> Unit
+) {
+	val screenModifier = if (!inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
+	val columnModifier = if (inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
+
+	Column(
+		modifier = screenModifier.padding(
+			bottom = paddingValues.calculateBottomPadding()
+		)
+	) {
+		VideoPlayer(
+			trailerKey = movie.details.videos.getTrailerKey(),
+			thumbnail = movie.details.backdropPath,
+			modifier = Modifier.height(screenHeight * videoHeightDivisor),
+			navigateUp = navigate
+		)
+		MovieDetails(
+			movie = movie.details,
+			casts = movie.details.credits.cast,
+			castDetails = uiState.castDetails,
+			recommendedMovies = movie.recommendedMovies,
+			similarMovies = movie.similarMovies,
+			genres = arrayOf(movie.movieGenres, movie.seriesGenres),
+			videos = movie.details.videos,
+			modifier = columnModifier,
+			userIsLoggedIn = uiState.userIsLoggedIn,
+			logInRequest = logInRequest,
+			castDetailsRequest = request,
+			detailsAction = action,
+			navigate = navigate
+		)
+	}
+}
+
+@Composable
+private fun ShowDetails(
+	uiState: MovieDetailsUiState,
+	show: TvShowDetailsModel,
+	inPortraitMode: Boolean,
+	scrollState: ScrollState,
+	paddingValues: PaddingValues,
+	screenHeight: Dp,
+	videoHeightDivisor: Float,
+	logInRequest: () -> Unit,
+	request: (DetailsRequest) -> Unit,
+	action: (MovieDetailsActions) -> Unit,
+	navigate: (Screens) -> Unit
+) {
+	val screenModifier = if (!inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
+	val columnModifier = if (inPortraitMode) Modifier.verticalScroll(scrollState) else Modifier
+
+	Box(
+		modifier = Modifier.padding(
+			bottom = paddingValues.calculateBottomPadding()
+		)
+	) {
+		val openSeasonSelectionSheet = rememberSaveable { mutableStateOf(false) }
+
+		Column(screenModifier) {
+			VideoPlayer(
+				trailerKey = show.details.videos.getTrailerKey(),
+				thumbnail = show.details.backdropPath,
+				modifier = Modifier.height(screenHeight * videoHeightDivisor),
+				enabled = !openSeasonSelectionSheet.value,
+				navigateUp = navigate
+			)
+			MovieDetails(
+				series = show.details,
+				casts = show.details.credits.cast,
+				seasonDetails = uiState.seasonDetails,
+				castDetails = uiState.castDetails,
+				recommendedMovies = show.recommendedShows,
+				similarMovies = show.similarShows,
+				genres = arrayOf(show.movieGenres, show.seriesGenres),
+				selectedSeasonNumber = uiState.selectedSeasonNumber,
+				videos = show.details.videos,
+				modifier = columnModifier,
+				userIsLoggedIn = uiState.userIsLoggedIn,
+				logInRequest = logInRequest,
+				openSeasonSelectionSheet = { openSeasonSelectionSheet.value = true },
+				castDetailsRequest = request,
+				detailsAction = action,
+				navigate = navigate
+			)
+		}
+
+		SeasonSelectionSheet(
+			showSheet = openSeasonSelectionSheet.value,
+			seriesId = show.details.id,
+			selectedSeasonNumber = uiState.selectedSeasonNumber,
+			numberOfSeasons = show.details.numberOfSeasons,
+			onSeasonSelected = request,
+			closeSheet = { openSeasonSelectionSheet.value = false }
+		)
 	}
 }
 
@@ -240,6 +324,8 @@ private fun MovieDetails(
 	selectedSeasonNumber: Int? = null,
 	videos: List<Video>,
 	modifier: Modifier,
+	userIsLoggedIn: Boolean,
+	logInRequest: () -> Unit,
 	openSeasonSelectionSheet: () -> Unit = {},
 	castDetailsRequest: (DetailsRequest) -> Unit,
 	detailsAction: (MovieDetailsActions) -> Unit,
@@ -252,9 +338,13 @@ private fun MovieDetails(
 	Column(modifier) {
 		Details(movie, series)
 		ActionButtonsRow(
+			mediaId = movie?.id ?: series?.id ?: 0,
+			mediaType = if (movie == null) SERIES else MOVIES,
 			imdbId = movie?.imdbId ?: series?.externalIds?.imdbId,
 			trailerKey = videos.getTrailerKey(),
-			onClick = detailsAction
+			userIsLoggedIn = userIsLoggedIn,
+			onClick = detailsAction,
+			logInRequest = logInRequest
 		)
 		MovieCastList(
 			castList = casts,
@@ -409,38 +499,102 @@ private fun Details(
 
 @Composable
 private fun ActionButtonsRow(
+	mediaId: Int,
+	mediaType: String,
 	imdbId: String?,
 	trailerKey: String?,
-	onClick: (MovieDetailsActions) -> Unit
+	userIsLoggedIn: Boolean,
+	onClick: (MovieDetailsActions) -> Unit,
+	logInRequest: () -> Unit
 ) {
+	val context = LocalContext.current
+
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
 			.padding(vertical = 12.dp)
 			.horizontalScroll(rememberScrollState()),
-		horizontalArrangement = Arrangement.SpaceAround,
+		horizontalArrangement = Arrangement.spacedBy(20.dp),
 		verticalAlignment = Alignment.CenterVertically
 	) {
-		val context = LocalContext.current
-
-		OpenWithButton(imdbId, trailerKey)
-		Column(
-			modifier = Modifier
-				.padding(horizontal = 10.dp)
-				.bounceClickable {
-					imdbId?.let {
-						onClick(MovieDetailsActions.Share(IMDB_BASE_URL + it, context))
-					} ?: kotlin.run {
-						showToast(context)
+		Spacer(Modifier.width(8.dp))
+		Buttons.values().forEach { button ->
+			ActionButton(
+				nameRes = button.nameRes,
+				defaultIcon = button.defaultIcon,
+				doneIcon = button.doneIcon,
+				userIsLoggedIn = userIsLoggedIn,
+				onClick = {
+					val action = when (button) {
+						Watchlist -> MovieDetailsActions.AddToWatchlist(mediaId, mediaType)
+						Favorite -> MovieDetailsActions.FavoriteMedia(mediaId, mediaType)
+						Rate -> MovieDetailsActions.RateMedia(mediaId, mediaType, 0f)
 					}
+					onClick(action)
 				},
-			verticalArrangement = Arrangement.spacedBy(4.dp),
-			horizontalAlignment = Alignment.CenterHorizontally
-		) {
-			Icon(Icons.Rounded.Share, stringResource(R.string.share))
-			Text(stringResource(R.string.share))
+				logInRequest = logInRequest
+			)
 		}
+		OpenWithButton(imdbId, trailerKey)
+		ActionButton(
+			nameRes = R.string.share,
+			defaultIcon = Icons.Rounded.Share,
+			onClick = {
+				imdbId?.let {
+					onClick(MovieDetailsActions.Share(IMDB_BASE_URL + it, context))
+				} ?: kotlin.run {
+					showToast(context)
+				}
+			}
+		)
+		Spacer(Modifier.width(PADDING_WIDTH))
 	}
+}
+
+@Composable
+private fun ActionButton(
+	@StringRes nameRes: Int,
+	defaultIcon: ImageVector,
+	doneIcon: ImageVector? = null,
+	userIsLoggedIn: Boolean = true,
+	requestDone: Boolean = false,
+	requestLoading: Boolean = false,
+	onClick: () -> Unit,
+	logInRequest: () -> Unit = {}
+) {
+	Column(
+		modifier = Modifier
+			.padding(horizontal = 10.dp)
+			.bounceClickable {
+				if (!userIsLoggedIn) {
+					logInRequest()
+					return@bounceClickable
+				}
+				onClick()
+			},
+		verticalArrangement = Arrangement.spacedBy(4.dp),
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		if (requestLoading) {
+			CircularProgressIndicator()
+		} else {
+			Icon(
+				imageVector = if (requestDone) doneIcon!! else defaultIcon,
+				contentDescription = stringResource(nameRes)
+			)
+		}
+		Text(stringResource(nameRes))
+	}
+}
+
+private enum class Buttons(
+	@StringRes val nameRes: Int,
+	val defaultIcon: ImageVector,
+	val doneIcon: ImageVector
+) {
+	Watchlist(R.string.my_list, Icons.Rounded.Add, Icons.Rounded.Done),
+	Favorite(R.string.favorite, Icons.Rounded.FavoriteBorder, Icons.Rounded.Favorite),
+	Rate(R.string.rate, Icons.Rounded.StarBorder, Icons.Rounded.Star)
 }
 
 @Preview(showBackground = true)

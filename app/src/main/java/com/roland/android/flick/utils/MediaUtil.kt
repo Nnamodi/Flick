@@ -55,4 +55,22 @@ class MediaUtil @Inject constructor(
 		}
 	}
 
+	fun rateMedia(
+		mediaId: Int,
+		mediaType: String,
+		rateValue: Float,
+		result: (State<Response>) -> Unit
+	) {
+		coroutineScope.launch {
+			mediaUtilUseCase.execute(
+				MediaUtilUseCase.Request(
+					mediaType = mediaType,
+					mediaActions = MediaActions.Rate(mediaId, rateValue)
+				)
+			)
+				.map { converter.convertResponse(it) }
+				.collect { result(it) }
+		}
+	}
+
 }
