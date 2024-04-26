@@ -2,11 +2,20 @@ package com.roland.android.flick.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import com.roland.android.flick.state.State
@@ -152,4 +161,38 @@ fun <T1: Any, T2: Any, T3: Any, T4: Any, T5: Any, T6: Any>CommonScreen(
 			}
 		}
 	}
+}
+
+@Composable
+fun CommonScaffold(
+	modifier: Modifier = Modifier,
+	topBar: @Composable () -> Unit = {},
+	bottomBar: @Composable () -> Unit = {},
+	snackbarHost: @Composable () -> Unit = {},
+	floatingActionButton: @Composable () -> Unit = {},
+	floatingActionButtonPosition: FabPosition = FabPosition.End,
+	containerColor: Color = MaterialTheme.colorScheme.background,
+	contentColor: Color = contentColorFor(containerColor),
+	contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
+	content: @Composable (PaddingValues) -> Unit
+) {
+	Scaffold(
+		modifier = modifier,
+		topBar = topBar,
+		bottomBar = bottomBar,
+		snackbarHost = snackbarHost,
+		floatingActionButton = floatingActionButton,
+		floatingActionButtonPosition = floatingActionButtonPosition,
+		containerColor = containerColor,
+		contentColor = contentColor,
+		contentWindowInsets = contentWindowInsets,
+		content = {
+			Box(
+				modifier = Modifier.fillMaxSize(),
+				contentAlignment = Alignment.BottomStart
+			) {
+				content(it)
+			}
+		}
+	)
 }

@@ -14,17 +14,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration.Indefinite
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult.ActionPerformed
-import androidx.compose.material3.SnackbarResult.Dismissed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,37 +30,29 @@ import com.roland.android.flick.R
 import com.roland.android.flick.state.AccountUiState
 import com.roland.android.flick.ui.components.AccountTopBar
 import com.roland.android.flick.ui.components.HorizontalPosters
+import com.roland.android.flick.ui.components.Snackbar
+import com.roland.android.flick.ui.components.SnackbarDuration
 import com.roland.android.flick.ui.navigation.Screens
+import com.roland.android.flick.ui.screens.CommonScaffold
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.utils.Constants.NavigationBarHeight
 import com.roland.android.flick.utils.RowItems
 import com.roland.android.flick.utils.WindowType.Portrait
 import com.roland.android.flick.utils.rememberWindowSize
-import kotlinx.coroutines.launch
 
 @Composable
 fun AccountScreen(
 	uiState: AccountUiState,
-	action: (AccountActions) -> Unit,
+	action: (AccountActions?) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
-	val snackbarHostState = remember { SnackbarHostState() }
-	val scope = rememberCoroutineScope()
-	val snackbarMessage = rememberSaveable { mutableStateOf<String?>(null) }
+	val loadingErrorMessage = rememberSaveable { mutableStateOf<String?>(null) }
+	val actionResponseMessage = remember { mutableStateOf<String?>(null) }
 	val windowSize = rememberWindowSize()
 
-	Scaffold(
-		topBar = { AccountTopBar() },
-		snackbarHost = {
-			snackbarMessage.value?.let {
-				SnackbarHost(
-					hostState = snackbarHostState,
-					modifier = Modifier
-						.padding(bottom = if (windowSize.width == Portrait) NavigationBarHeight else 0.dp)
-				)
-			}
-		}
+	CommonScaffold(
+		topBar = { AccountTopBar() }
 	) { paddingValues ->
 		Column(
 			modifier = Modifier
@@ -93,20 +79,35 @@ fun AccountScreen(
 			MediaRows(
 				uiState = uiState,
 				paddingValues = paddingValues,
-				snackbarHostState = snackbarHostState,
 				action = action,
-				onError = { snackbarMessage.value = it },
-				onCancelResult = {
-					scope.launch {
-						snackbarMessage.value = it
-						if (snackbarHostState.showSnackbar(it) == Dismissed) {
-							snackbarMessage.value = null
-						}
-					}
-				},
+				onError = { loadingErrorMessage.value = it },
+				onCancelResult = { actionResponseMessage.value = it },
 				navigate = navigate
 			)
 		}
+
+		val snackbarPadding = if (windowSize.width == Portrait) NavigationBarHeight else 0.dp
+		if (actionResponseMessage.value != null) {
+			Snackbar(
+				message = actionResponseMessage.value!!,
+				modifier = Modifier.padding(bottom = snackbarPadding),
+				onDismiss = { actionResponseMessage.value = null }
+			)
+		}
+		if (loadingErrorMessage.value != null) {
+			Snackbar(
+				message = loadingErrorMessage.value!!,
+				modifier = Modifier.padding(bottom = snackbarPadding),
+				actionLabel = stringResource(R.string.retry),
+				action = { action(AccountActions.ReloadMedia) },
+				duration = SnackbarDuration.Indefinite
+			)
+		}
+	}
+
+	DisposableEffect(Unit) {
+		// prevents snackbar from popping again when navigating back to composable
+		onDispose { action(null) }
 	}
 }
 
@@ -114,14 +115,12 @@ fun AccountScreen(
 private fun MediaRows(
 	uiState: AccountUiState,
 	paddingValues: PaddingValues,
-	snackbarHostState: SnackbarHostState,
 	action: (AccountActions) -> Unit,
 	onError: (String?) -> Unit,
 	onCancelResult: (String) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
 	val (_, movies, shows, response) = uiState
-	val scope = rememberCoroutineScope()
 	val windowSize = rememberWindowSize()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 
@@ -130,17 +129,8 @@ private fun MediaRows(
 		loadingScreen = { error ->
 			AccountLoadingUi(isLoading = error == null)
 			onError(error)
-			error?.let {
-				val actionLabel = stringResource(R.string.retry)
-				scope.launch {
-					when (snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)) {
-						ActionPerformed -> action(AccountActions.ReloadMedia)
-						Dismissed -> {}
-					}
-				}
-			}
 		}
-	) { movieData, showData -> onError(null)
+	) { movieData, showData ->
 		Column {
 			HorizontalPosters(
 				moviesData = movieData.favoriteList,

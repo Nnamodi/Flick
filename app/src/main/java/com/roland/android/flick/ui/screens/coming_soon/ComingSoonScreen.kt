@@ -1,6 +1,5 @@
 package com.roland.android.flick.ui.screens.coming_soon
 
-import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -16,19 +15,6 @@ import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.ButtonDefaults.textButtonColors
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration.Indefinite
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -54,7 +40,10 @@ import com.roland.android.flick.state.ComingSoonUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.ComingSoonTopBar
 import com.roland.android.flick.ui.components.PosterType
+import com.roland.android.flick.ui.components.Snackbar
+import com.roland.android.flick.ui.components.SnackbarDuration
 import com.roland.android.flick.ui.navigation.Screens
+import com.roland.android.flick.ui.screens.CommonScaffold
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.MOVIES
@@ -62,13 +51,12 @@ import com.roland.android.flick.utils.Constants.NavigationBarHeight
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_X_LARGE
 import com.roland.android.flick.utils.Extensions.loadStateUi
-import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.WindowType.Portrait
 import com.roland.android.flick.utils.animatePagerItem
 import com.roland.android.flick.utils.dynamicPageWidth
 import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ComingSoonScreen(
@@ -78,48 +66,21 @@ fun ComingSoonScreen(
 	inFullScreen: (Boolean) -> Unit
 ) {
 	val (movieData, selectedCategory) = uiState
-	val snackbarHostState = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 	val scrollState = rememberScrollState()
 	val windowSize = rememberWindowSize()
 	val inPortraitMode by remember(windowSize.width) {
-		derivedStateOf { windowSize.width == WindowType.Portrait }
+		derivedStateOf { windowSize.width == Portrait }
 	}
 	var expanded by rememberSaveable { mutableStateOf(false) }
 	val itemExpanded: (Boolean) -> Unit = {
 		expanded = it; inFullScreen(it)
 	}
 
-	Scaffold(
+	CommonScaffold(
 		topBar = {
 			ComingSoonTopBar(selectedCategory, expanded, action) { itemExpanded(false) }
-		},
-		snackbarHost = {
-			SnackbarHost(snackbarHostState) { data ->
-				errorMessage.value?.let {
-					Snackbar(
-						modifier = Modifier
-							.padding(16.dp)
-							.padding(bottom = if (inPortraitMode) NavigationBarHeight else 0.dp),
-						action = {
-							data.visuals.actionLabel?.let {
-								TextButton(
-									onClick = { action(ComingSoonActions.Retry) },
-									colors = textButtonColors(contentColor = colorScheme.inversePrimary)
-								) { Text(it) }
-							}
-						},
-						dismissAction = {
-							IconButton(onClick = { errorMessage.value = null }) {
-								Icon(Icons.Rounded.Close, stringResource(R.string.close))
-							}
-						}
-					) {
-						Text(data.visuals.message)
-					}
-				}
-			}
 		}
 	) { paddingValues ->
 		CommonScreen(
@@ -127,12 +88,6 @@ fun ComingSoonScreen(
 			loadingScreen = { error ->
 				ComingSoonLoadingUi(scrollState, isLoading = error == null)
 				errorMessage.value = error
-				error?.let {
-					val actionLabel = stringResource(R.string.retry)
-					scope.launch {
-						snackbarHostState.showSnackbar(it, actionLabel, true, Indefinite)
-					}
-				}
 			}
 		) { movieData ->
 			val movies = (if (selectedCategory == MOVIES)
@@ -212,16 +167,9 @@ fun ComingSoonScreen(
 					}
 					movies.loadStateUi(
 						posterType = PosterType.ComingSoon,
-						largeBoxItemModifier = Modifier.animatePagerItem(page, pagerState)
-					) { error ->
-						errorMessage.value = error
-						error?.let {
-							val actionLabel = stringResource(R.string.retry)
-							scope.launch {
-								snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
-							}
-						}
-					}
+						largeBoxItemModifier = Modifier.animatePagerItem(page, pagerState),
+						error = { errorMessage.value = it }
+					)
 				}
 
 				// This is a workaround to fix a bug
@@ -231,6 +179,16 @@ fun ComingSoonScreen(
 					pagerState.animateScrollToPage(page = pagerState.pageCount - 4)
 				}
 			}
+		}
+
+		if (errorMessage.value != null) {
+			Snackbar(
+				message = errorMessage.value!!,
+				modifier = Modifier.padding(bottom = if (windowSize.width == Portrait) NavigationBarHeight else 0.dp),
+				actionLabel = stringResource(R.string.retry),
+				action = { action(ComingSoonActions.Retry) },
+				duration = SnackbarDuration.Indefinite
+			)
 		}
 	}
 

@@ -20,13 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration.Indefinite
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +42,10 @@ import com.roland.android.flick.state.CategorySelectionUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.MovieListTopBar
 import com.roland.android.flick.ui.components.MovieLists
+import com.roland.android.flick.ui.components.Snackbar
+import com.roland.android.flick.ui.components.SnackbarDuration
 import com.roland.android.flick.ui.navigation.Screens
+import com.roland.android.flick.ui.screens.CommonScaffold
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.screens.list.LoadingListUi
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
@@ -65,7 +62,6 @@ fun CategorySelectionScreen(
 	navigate: (Screens) -> Unit
 ) {
 	val (movieData, selectedGenreIds, selectedCollection) = uiState
-	val snackbarHostState = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
@@ -73,7 +69,7 @@ fun CategorySelectionScreen(
 	val scrollState = rememberLazyGridState()
 	val showSheet = rememberSaveable { mutableStateOf(selectedGenreIds.isEmpty()) }
 
-	Scaffold(
+	CommonScaffold(
 		topBar = {
 			CategorySelectionScreenTopBar(
 				selectionSheetClosed = !(showSheet.value && dataLoadedSuccessfully.value),
@@ -81,24 +77,6 @@ fun CategorySelectionScreen(
 				openSelectionSheet = { if (errorMessage.value == null) showSheet.value = true },
 				navigateUp = navigate
 			)
-		},
-		snackbarHost = {
-			SnackbarHost(snackbarHostState) { data ->
-				errorMessage.value?.let {
-					Snackbar(
-						modifier = Modifier.padding(16.dp),
-						action = {
-							data.visuals.actionLabel?.let {
-								TextButton(
-									onClick = { action(CategorySelectionActions.Retry) }
-								) { Text(it) }
-							}
-						}
-					) {
-						Text(data.visuals.message)
-					}
-				}
-			}
 		}
 	) { paddingValues ->
 		CommonScreen(
@@ -111,13 +89,6 @@ fun CategorySelectionScreen(
 					CategorySelectionSheetLoadingUi(error, paddingValues, action)
 				}
 				errorMessage.value = error
-				if (selectedGenreIds.isEmpty()) return@CommonScreen
-				error?.let {
-					val actionLabel = stringResource(R.string.retry)
-					scope.launch {
-						snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
-					}
-				}
 			}
 		) { data -> dataLoadedSuccessfully.value = true
 			Box {
@@ -125,16 +96,9 @@ fun CategorySelectionScreen(
 					paddingValues = paddingValues,
 					scrollState = scrollState,
 					movies = data.movieList.collectAsLazyPagingItems(),
-					onItemClick = { clickedMovieItem.value = it }
-				) { error ->
-					errorMessage.value = error
-					error?.let {
-						val actionLabel = stringResource(R.string.retry)
-						scope.launch {
-							snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
-						}
-					}
-				}
+					onItemClick = { clickedMovieItem.value = it },
+					error = { errorMessage.value = it }
+				)
 
 				CategorySelectionSheet(
 					showSheet = showSheet.value,
@@ -161,6 +125,15 @@ fun CategorySelectionScreen(
 					closeSheet = { clickedMovieItem.value = null }
 				)
 			}
+		}
+
+		if (errorMessage.value != null && selectedGenreIds.isNotEmpty()) {
+			Snackbar(
+				message = errorMessage.value!!,
+				actionLabel = stringResource(R.string.retry),
+				action = { action(CategorySelectionActions.Retry) },
+				duration = SnackbarDuration.Indefinite
+			)
 		}
 	}
 }

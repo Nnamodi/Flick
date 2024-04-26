@@ -7,15 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ButtonDefaults.textButtonColors
-import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration.Indefinite
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -24,9 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
@@ -34,7 +24,10 @@ import com.roland.android.flick.state.SearchUiState
 import com.roland.android.flick.ui.components.ChipSet
 import com.roland.android.flick.ui.components.MovieLists
 import com.roland.android.flick.ui.components.SearchTopBar
+import com.roland.android.flick.ui.components.Snackbar
+import com.roland.android.flick.ui.components.SnackbarDuration
 import com.roland.android.flick.ui.navigation.Screens
+import com.roland.android.flick.ui.screens.CommonScaffold
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.screens.list.LoadingListUi
 import com.roland.android.flick.ui.screens.search.SearchCategory.ALL
@@ -55,45 +48,15 @@ fun SearchScreen(
 	navigate: (Screens) -> Unit
 ) {
 	val (movieData, searchCategory, searchQuery) = uiState
-	val snackbarHostState = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 	val allScrollState = rememberLazyGridState()
 	val moviesScrollState = rememberLazyGridState()
 	val seriesScrollState = rememberLazyGridState()
-	val context = LocalContext.current
-	val onError: (String?) -> Unit = { error ->
-		errorMessage.value = error
-		error?.let {
-			val actionLabel = context.getString(R.string.retry)
-			scope.launch {
-				snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
-			}
-		}
-	}
 
-	Scaffold(
-		topBar = { SearchTopBar(uiState, action, navigate) },
-		snackbarHost = {
-			SnackbarHost(snackbarHostState) { data ->
-				errorMessage.value?.let {
-					Snackbar(
-						modifier = Modifier.padding(16.dp),
-						action = {
-							data.visuals.actionLabel?.let {
-								TextButton(
-									onClick = { action(SearchActions.Retry(searchQuery)) },
-									colors = textButtonColors(contentColor = colorScheme.inversePrimary)
-								) { Text(it) }
-							}
-						}
-					) {
-						Text(data.visuals.message)
-					}
-				}
-			}
-		}
+	CommonScaffold(
+		topBar = { SearchTopBar(uiState, action, navigate) }
 	) { paddingValues ->
 		CommonScreen(
 			state = movieData,
@@ -104,7 +67,7 @@ fun SearchScreen(
 					isLoading = error == null,
 					isSearchScreen = true
 				)
-				onError(error)
+				errorMessage.value = error
 			}
 		) { data ->
 			val windowSize = rememberWindowSize()
@@ -144,22 +107,25 @@ fun SearchScreen(
 							scrollState = allScrollState,
 							searchQueryEntered = searchQueryEntered,
 							movies = data.moviesAndShows.collectAsLazyPagingItems(),
-							onItemClick = { clickedMovieItem.value = it }
-						) { onError(it) }
+							onItemClick = { clickedMovieItem.value = it },
+							error = { errorMessage.value = it }
+						)
 
 						1 -> MovieLists(
 							scrollState = moviesScrollState,
 							searchQueryEntered = searchQueryEntered,
 							movies = data.movies.collectAsLazyPagingItems(),
-							onItemClick = { clickedMovieItem.value = it }
-						) { onError(it) }
+							onItemClick = { clickedMovieItem.value = it },
+							error = { errorMessage.value = it }
+						)
 
 						2 -> MovieLists(
 							scrollState = seriesScrollState,
 							searchQueryEntered = searchQueryEntered,
 							movies = data.tvShows.collectAsLazyPagingItems(),
-							onItemClick = { clickedMovieItem.value = it }
-						) { onError(it) }
+							onItemClick = { clickedMovieItem.value = it },
+							error = { errorMessage.value = it }
+						)
 					}
 				}
 			}
@@ -191,6 +157,15 @@ fun SearchScreen(
 			DisposableEffect(Unit) {
 				onDispose { rememberScrollStates.value = true }
 			}
+		}
+
+		if (errorMessage.value != null) {
+			Snackbar(
+				message = errorMessage.value!!,
+				actionLabel = stringResource(R.string.retry),
+				action = { action(SearchActions.Retry(searchQuery)) },
+				duration = SnackbarDuration.Indefinite
+			)
 		}
 	}
 }

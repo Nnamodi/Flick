@@ -29,7 +29,6 @@ import androidx.compose.material.icons.rounded.StarBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -85,6 +84,7 @@ import com.roland.android.flick.ui.components.SnackbarDuration
 import com.roland.android.flick.ui.components.VideoList
 import com.roland.android.flick.ui.components.showToast
 import com.roland.android.flick.ui.navigation.Screens
+import com.roland.android.flick.ui.screens.CommonScaffold
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.screens.details.Buttons.Favorite
 import com.roland.android.flick.ui.screens.details.Buttons.Rate
@@ -117,8 +117,10 @@ fun MovieDetailsScreen(
 	navigate: (Screens) -> Unit
 ) {
 	val scrollState = rememberScrollState()
+	val snackbarMessage = rememberSaveable { mutableStateOf<String?>(null) }
+	val requestToLogin = rememberSaveable { mutableStateOf(false) }
 
-	Scaffold { paddingValues ->
+	CommonScaffold { paddingValues ->
 		CommonScreen(
 			state = if (isMovie) uiState.movieDetails else uiState.tvShowDetails,
 			paddingValues, loadingScreen = { error ->
@@ -141,53 +143,35 @@ fun MovieDetailsScreen(
 				derivedStateOf { windowSize.width == WindowType.Portrait }
 			}
 			val videoHeightDivisor = if (inPortraitMode) 0.6f else 0.45f
-			val snackbarMessage = rememberSaveable { mutableStateOf<String?>(null) }
-			val requestToLogin = rememberSaveable { mutableStateOf(false) }
 
-			Box(contentAlignment = Alignment.BottomStart) {
-				if (isMovie) {
-					MoviesDetails(
-						movie = details as MovieDetailsModel,
-						uiState = uiState,
-						inPortraitMode = inPortraitMode,
-						scrollState = scrollState,
-						paddingValues = paddingValues,
-						screenHeight = screenHeight,
-						videoHeightDivisor = videoHeightDivisor,
-						logInRequest = { requestToLogin.value = true },
-						request = request,
-						action = action,
-						navigate = navigate
-					)
-				} else {
-					ShowDetails(
-						show = details as TvShowDetailsModel,
-						uiState = uiState,
-						inPortraitMode = inPortraitMode,
-						scrollState = scrollState,
-						paddingValues = paddingValues,
-						screenHeight = screenHeight,
-						videoHeightDivisor = videoHeightDivisor,
-						logInRequest = { requestToLogin.value = true },
-						request = request,
-						action = action,
-						navigate = navigate
-					)
-				}
-				if (snackbarMessage.value != null) {
-					Snackbar(
-						message = snackbarMessage.value!!,
-						onDismiss = { snackbarMessage.value = null }
-					)
-				}
-				if (requestToLogin.value) {
-					Snackbar(
-						message = stringResource(R.string.sign_up_message),
-						actionLabel = stringResource(R.string.sign_up),
-						action = { navigate(Screens.AccountScreen) },
-						onDismiss = { requestToLogin.value = false }
-					)
-				}
+			if (isMovie) {
+				MoviesDetails(
+					movie = details as MovieDetailsModel,
+					uiState = uiState,
+					inPortraitMode = inPortraitMode,
+					scrollState = scrollState,
+					paddingValues = paddingValues,
+					screenHeight = screenHeight,
+					videoHeightDivisor = videoHeightDivisor,
+					logInRequest = { requestToLogin.value = true },
+					request = request,
+					action = action,
+					navigate = navigate
+				)
+			} else {
+				ShowDetails(
+					show = details as TvShowDetailsModel,
+					uiState = uiState,
+					inPortraitMode = inPortraitMode,
+					scrollState = scrollState,
+					paddingValues = paddingValues,
+					screenHeight = screenHeight,
+					videoHeightDivisor = videoHeightDivisor,
+					logInRequest = { requestToLogin.value = true },
+					request = request,
+					action = action,
+					navigate = navigate
+				)
 			}
 
 			// pops up custom snackbar to show response message returned from watchlist, favorite or rate actions.
@@ -198,6 +182,20 @@ fun MovieDetailsScreen(
 					is State.Success -> uiState.response.data.statusMessage
 				}
 			}
+		}
+		if (snackbarMessage.value != null) {
+			Snackbar(
+				message = snackbarMessage.value!!,
+				onDismiss = { snackbarMessage.value = null }
+			)
+		}
+		if (requestToLogin.value) {
+			Snackbar(
+				message = stringResource(R.string.sign_up_message),
+				actionLabel = stringResource(R.string.sign_up),
+				action = { navigate(Screens.AccountScreen) },
+				onDismiss = { requestToLogin.value = false }
+			)
 		}
 	}
 }

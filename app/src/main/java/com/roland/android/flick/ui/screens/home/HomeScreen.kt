@@ -18,19 +18,6 @@ import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material3.ButtonDefaults.textButtonColors
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration.Indefinite
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -88,8 +75,11 @@ import com.roland.android.flick.ui.components.HomeTopBar
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.LargeItemPoster
 import com.roland.android.flick.ui.components.PosterType
+import com.roland.android.flick.ui.components.Snackbar
+import com.roland.android.flick.ui.components.SnackbarDuration
 import com.roland.android.flick.ui.components.ToggleButton
 import com.roland.android.flick.ui.navigation.Screens
+import com.roland.android.flick.ui.screens.CommonScaffold
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
@@ -98,7 +88,7 @@ import com.roland.android.flick.utils.Constants.NavigationBarHeight
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
 import com.roland.android.flick.utils.Constants.POSTER_WIDTH_LARGE
 import com.roland.android.flick.utils.Extensions.loadStateUi
-import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.WindowType.Portrait
 import com.roland.android.flick.utils.animatePagerItem
 import com.roland.android.flick.utils.dynamicPageWidth
 import com.roland.android.flick.utils.rememberWindowSize
@@ -112,7 +102,6 @@ fun HomeScreen(
 	navigate: (Screens) -> Unit
 ) {
 	val (movies, moviesByGenre, moviesByRegion, shows, showsByGenre, showsByRegion, selectedCategory) = uiState
-	val snackbarHostState = remember { SnackbarHostState() }
 	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
@@ -122,34 +111,8 @@ fun HomeScreen(
 		navigate(Screens.MovieListScreen(it.name))
 	}
 
-	Scaffold(
-		topBar = { HomeTopBar(navigate) },
-		snackbarHost = {
-			SnackbarHost(snackbarHostState) { data ->
-				errorMessage.value?.let {
-					Snackbar(
-						modifier = Modifier
-							.padding(16.dp)
-							.padding(bottom = if (windowSize.width == WindowType.Portrait) NavigationBarHeight else 0.dp),
-						action = {
-							data.visuals.actionLabel?.let {
-								TextButton(
-									onClick = { action(HomeActions.Retry) },
-									colors = textButtonColors(contentColor = colorScheme.inversePrimary)
-								) { Text(it) }
-							}
-						},
-						dismissAction = {
-							IconButton(onClick = { errorMessage.value = null }) {
-								Icon(Icons.Rounded.Close, stringResource(R.string.close))
-							}
-						}
-					) {
-						Text(data.visuals.message)
-					}
-				}
-			}
-		}
+	CommonScaffold(
+		topBar = { HomeTopBar(navigate) }
 	) { paddingValues ->
 		CommonScreen(
 			movies, moviesByGenre, moviesByRegion,
@@ -157,12 +120,6 @@ fun HomeScreen(
 			paddingValues, loadingScreen = { error ->
 				HomeLoadingUi(paddingValues, scrollState, isLoading = error == null)
 				errorMessage.value = error
-				error?.let {
-					val actionLabel = stringResource(R.string.retry)
-					scope.launch {
-						snackbarHostState.showSnackbar(it, actionLabel, true, Indefinite)
-					}
-				}
 			}
 		) { movieData1, movieData2, movieData3, showData1, showData2, showData3 ->
 			val trendingMovies = (if (selectedCategory == MOVIES)
@@ -237,86 +194,25 @@ fun HomeScreen(
 					}
 					trendingMovies.loadStateUi(
 						posterType = PosterType.Large,
-						largeBoxItemModifier = Modifier.animatePagerItem(page, pagerState)
-					) { error ->
-						errorMessage.value = error
-						error?.let {
-							val actionLabel = stringResource(R.string.retry)
-							scope.launch {
-								snackbarHostState.showSnackbar(it, actionLabel, duration = Indefinite)
-							}
-						}
-					}
+						largeBoxItemModifier = Modifier.animatePagerItem(page, pagerState),
+						error = { errorMessage.value = it }
+					)
 				}
 
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
-					header = stringResource(if (selectedCategory == MOVIES) R.string.in_theatres else R.string.new_releases),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
-
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData1.topRated else showData1.topRated,
-					header = stringResource(R.string.top_rated),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) TOP_RATED_MOVIES else TOP_RATED_SERIES) }
-
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
-					header = stringResource(R.string.anime),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) ANIME else ANIME_SERIES) }
-
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData2.comedy else showData2.comedy,
-					header = stringResource(R.string.comedy),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) COMEDY_MOVIES else COMEDY_SERIES) }
-
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData2.romedy else showData2.romedy,
-					header = stringResource(R.string.romedy),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) ROMEDY_MOVIES else ROMEDY_SERIES) }
-
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData2.sciFi else showData2.sciFi,
-					header = stringResource(R.string.sci_fi),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) SCI_FI_MOVIES else SCI_FI_SERIES) }
-
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData2.warStory else showData2.warStory,
-					header = stringResource(R.string.war_story),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) WAR_STORY_MOVIES else WAR_STORY_SERIES) }
-
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData3.nollywood else showData3.nollywood,
-					header = stringResource(R.string.nollywood),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) NOLLYWOOD_MOVIES else NOLLYWOOD_SERIES) }
-
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData3.korean else showData3.kDrama,
-					header = stringResource(if (selectedCategory == MOVIES) R.string.korean else R.string.k_drama),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) KOREAN_MOVIES else K_DRAMA) }
-
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData3.bollywood else showData3.bollywood,
-					header = stringResource(R.string.bollywood),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) BOLLYWOOD_MOVIES else BOLLYWOOD_SERIES) }
-
-				HorizontalPosters(
-					pagingData = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
-					header = stringResource(R.string.most_popular),
-					onMovieClick = { clickedMovieItem.value = it }
-				) { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
+				MediaRows(
+					movieData1 = movieData1,
+					showData1 = showData1,
+					movieData2 = movieData2,
+					showData2 = showData2,
+					movieData3 = movieData3,
+					showData3 = showData3,
+					selectedCategory = selectedCategory,
+					onMovieClick = { clickedMovieItem.value = it },
+					seeMore = seeMore
+				)
 
 				Spacer(Modifier.height(
-					50.dp + (if (windowSize.width == WindowType.Portrait) NavigationBarHeight else 0.dp)
+					50.dp + (if (windowSize.width == Portrait) NavigationBarHeight else 0.dp)
 				))
 			}
 
@@ -331,7 +227,96 @@ fun HomeScreen(
 				)
 			}
 		}
+
+		if (errorMessage.value != null) {
+			Snackbar(
+				message = errorMessage.value!!,
+				modifier = Modifier.padding(bottom = if (windowSize.width == Portrait) NavigationBarHeight else 0.dp),
+				actionLabel = stringResource(R.string.retry),
+				action = { action(HomeActions.Retry) },
+				duration = SnackbarDuration.Indefinite
+			)
+		}
 	}
+}
+
+@Composable
+private fun MediaRows(
+	movieData1: MoviesModel,
+	showData1: TvShowsModel,
+	movieData2: MoviesByGenreModel,
+	showData2: TvShowsByGenreModel,
+	movieData3: MoviesByRegionModel,
+	showData3: TvShowsByRegionModel,
+	selectedCategory: String,
+	onMovieClick: (Movie) -> Unit,
+	seeMore: (Category) -> Unit
+) {
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
+		header = stringResource(if (selectedCategory == MOVIES) R.string.in_theatres else R.string.new_releases),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
+
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData1.topRated else showData1.topRated,
+		header = stringResource(R.string.top_rated),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) TOP_RATED_MOVIES else TOP_RATED_SERIES) }
+
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
+		header = stringResource(R.string.anime),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) ANIME else ANIME_SERIES) }
+
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData2.comedy else showData2.comedy,
+		header = stringResource(R.string.comedy),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) COMEDY_MOVIES else COMEDY_SERIES) }
+
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData2.romedy else showData2.romedy,
+		header = stringResource(R.string.romedy),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) ROMEDY_MOVIES else ROMEDY_SERIES) }
+
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData2.sciFi else showData2.sciFi,
+		header = stringResource(R.string.sci_fi),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) SCI_FI_MOVIES else SCI_FI_SERIES) }
+
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData2.warStory else showData2.warStory,
+		header = stringResource(R.string.war_story),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) WAR_STORY_MOVIES else WAR_STORY_SERIES) }
+
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData3.nollywood else showData3.nollywood,
+		header = stringResource(R.string.nollywood),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) NOLLYWOOD_MOVIES else NOLLYWOOD_SERIES) }
+
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData3.korean else showData3.kDrama,
+		header = stringResource(if (selectedCategory == MOVIES) R.string.korean else R.string.k_drama),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) KOREAN_MOVIES else K_DRAMA) }
+
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData3.bollywood else showData3.bollywood,
+		header = stringResource(R.string.bollywood),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) BOLLYWOOD_MOVIES else BOLLYWOOD_SERIES) }
+
+	HorizontalPosters(
+		pagingData = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
+		header = stringResource(R.string.most_popular),
+		onMovieClick = onMovieClick
+	) { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
 }
 
 @Preview

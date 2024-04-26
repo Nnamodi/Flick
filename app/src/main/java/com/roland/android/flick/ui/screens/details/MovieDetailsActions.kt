@@ -20,6 +20,9 @@ sealed class MovieDetailsActions {
 		val rateValue: Float
 	) : MovieDetailsActions()
 
-	data class Share(val mediaUrl: String, val context: Context) : MovieDetailsActions()
+	data class Share(
+		val mediaUrl: String,
+		val context: Context
+	) : MovieDetailsActions()
 
 }

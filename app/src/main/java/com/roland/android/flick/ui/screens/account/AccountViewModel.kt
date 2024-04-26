@@ -17,6 +17,7 @@ import com.roland.android.flick.utils.MediaUtil
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -70,7 +71,7 @@ class AccountViewModel @Inject constructor(
 				AccountUseCase.Request(accountId, MediaType.Movies)
 			)
 				.map { converter.convertToAccountMovieData(it) }
-				.collect { data ->
+				.collectLatest { data ->
 					_accountUiState.update { it.copy(moviesData = data) }
 				}
 		}
@@ -82,18 +83,19 @@ class AccountViewModel @Inject constructor(
 				AccountUseCase.Request(accountId, MediaType.Shows)
 			)
 				.map { converter.convertToAccountTvShowsData(it) }
-				.collect { data ->
+				.collectLatest { data ->
 					_accountUiState.update { it.copy(showsData = data) }
 				}
 		}
 	}
 
-	fun accountActions(action: AccountActions) {
+	fun accountActions(action: AccountActions?) {
 		when (action) {
 			is AccountActions.UnFavoriteMedia -> removeFromFavorite(action.mediaId, action.mediaType)
 			is AccountActions.RemoveFromWatchlist -> removeFromWatchlist(action.mediaId, action.mediaType)
 			is AccountActions.DeleteMediaRating -> deleteMediaRating(action.mediaId, action.mediaType)
 			AccountActions.ReloadMedia -> reloadMedia()
+			else -> _accountUiState.update { it.copy(response = null) }
 		}
 	}
 
