@@ -28,7 +28,8 @@ data class TvShowsByGenreModel(
 data class TvShowsByRegionModel(
 	val nollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val kDrama: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val bollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty())
+	val bollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val recommendations: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty())
 )
 
 data class TvShowDetailsModel(

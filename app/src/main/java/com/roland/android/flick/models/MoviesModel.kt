@@ -26,7 +26,8 @@ data class MoviesByGenreModel(
 data class MoviesByRegionModel(
 	val nollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
 	val korean: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
-	val bollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty())
+	val bollywood: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty()),
+	val recommendations: MutableStateFlow<PagingData<Movie>> = MutableStateFlow(PagingData.empty())
 )
 
 data class MovieListModel(

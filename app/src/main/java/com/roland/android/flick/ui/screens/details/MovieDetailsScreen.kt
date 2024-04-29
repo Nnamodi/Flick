@@ -113,12 +113,12 @@ fun MovieDetailsScreen(
 	uiState: MovieDetailsUiState,
 	isMovie: Boolean,
 	request: (DetailsRequest) -> Unit,
-	action: (MovieDetailsActions) -> Unit,
+	action: (MovieDetailsActions?) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
 	val scrollState = rememberScrollState()
-	val snackbarMessage = rememberSaveable { mutableStateOf<String?>(null) }
-	val requestToLogin = rememberSaveable { mutableStateOf(false) }
+	val snackbarMessage = remember { mutableStateOf<String?>(null) }
+	val requestToLogin = remember { mutableStateOf(false) }
 
 	CommonScaffold { paddingValues ->
 		CommonScreen(
@@ -186,7 +186,7 @@ fun MovieDetailsScreen(
 		if (snackbarMessage.value != null) {
 			Snackbar(
 				message = snackbarMessage.value!!,
-				onDismiss = { snackbarMessage.value = null }
+				onDismiss = { action(null) }
 			)
 		}
 		if (requestToLogin.value) {

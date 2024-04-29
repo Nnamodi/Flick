@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.Category
 import com.roland.android.domain.usecase.GetMovieListUseCase
+import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.MovieListUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.ResponseConverter
@@ -26,8 +27,14 @@ class MovieListViewModel @Inject constructor(
 	private val _movieListUiState = MutableStateFlow(MovieListUiState())
 	var movieListUiState by mutableStateOf(_movieListUiState.value); private set
 	private var lastCategoryFetched by mutableStateOf<Category?>(null)
+	private var accountId by mutableStateOf("")
 
 	init {
+		viewModelScope.launch {
+			userAccountId.collect { id ->
+				accountId = id
+			}
+		}
 		viewModelScope.launch {
 			_movieListUiState.collect {
 				movieListUiState = it
@@ -46,7 +53,9 @@ class MovieListViewModel @Inject constructor(
 		if (category == lastCategoryFetched) return
 		_movieListUiState.value = MovieListUiState()
 		viewModelScope.launch {
-			movieListUseCase.execute(GetMovieListUseCase.Request(category))
+			movieListUseCase.execute(
+				GetMovieListUseCase.Request(category, accountId)
+			)
 				.map { converter.convertMovieListData(it) }
 				.collect { data ->
 					_movieListUiState.update { it.copy(movieData = data) }

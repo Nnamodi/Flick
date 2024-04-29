@@ -64,7 +64,6 @@ class MovieDetailsViewModel @Inject constructor(
 	}
 
 	fun detailsRequest(request: DetailsRequest) {
-		_movieDetailsUiState.update { it.copy(response = null) }
 		Log.i("NavigationInfo", "Action: $request")
 		when (request) {
 			is DetailsRequest.GetMovieDetails -> getMovieDetails(request.movieId)
@@ -144,8 +143,7 @@ class MovieDetailsViewModel @Inject constructor(
 		lastRequest?.let { detailsRequest(it) }
 	}
 
-	fun detailsAction(action: MovieDetailsActions) {
-		_movieDetailsUiState.update { it.copy(response = null) }
+	fun detailsAction(action: MovieDetailsActions?) {
 		when (action) {
 			is MovieDetailsActions.AddToWatchlist -> {
 				mediaUtil.watchlistMedia(
@@ -181,6 +179,9 @@ class MovieDetailsViewModel @Inject constructor(
 				)
 			}
 			is MovieDetailsActions.Share -> shareUrl(action.mediaUrl, action.context)
+			null -> {
+				_movieDetailsUiState.update { it.copy(response = null) }
+			}
 		}
 	}
 

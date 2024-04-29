@@ -48,6 +48,7 @@ class AccountViewModel @Inject constructor(
 			userAccountId.collect {
 				accountId = it
 				userLoggedIn = it.isNotEmpty()
+				if (!userLoggedIn) return@collect
 				fetchMovieData(); fetchShowData()
 			}
 		}

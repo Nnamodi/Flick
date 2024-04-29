@@ -18,17 +18,19 @@ class GetMoviesByRegionUseCase @Inject constructor(
 	override fun process(request: Request): Flow<Response> = combine(
 		movieRepository.fetchMoviesByRegion(NOLLYWOOD),
 		movieRepository.fetchMoviesByRegion(HALLYUWOOD),
-		movieRepository.fetchMoviesByRegion(BOLLYWOOD)
-	) { nigerian, korean, bollywood ->
-		Response(nigerian, korean, bollywood)
+		movieRepository.fetchMoviesByRegion(BOLLYWOOD),
+		movieRepository.fetchRecommendedMovies(request.accountId)
+	) { nigerian, korean, bollywood, recommendation ->
+		Response(nigerian, korean, bollywood, recommendation)
 	}
 
-	object Request : UseCase.Request
+	data class Request(val accountId: String) : UseCase.Request
 
 	data class Response(
 		val nigerianMovies: PagingData<Movie>,
 		val koreanMovies: PagingData<Movie>,
-		val bollywoodMovies: PagingData<Movie>
+		val bollywoodMovies: PagingData<Movie>,
+		val recommendedMovies: PagingData<Movie>
 	) : UseCase.Response
 
 }

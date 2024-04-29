@@ -42,6 +42,7 @@ import com.roland.android.domain.usecase.Category.COMEDY_SERIES
 import com.roland.android.domain.usecase.Category.IN_THEATRES
 import com.roland.android.domain.usecase.Category.KOREAN_MOVIES
 import com.roland.android.domain.usecase.Category.K_DRAMA
+import com.roland.android.domain.usecase.Category.MOVIES_FOR_YOU
 import com.roland.android.domain.usecase.Category.NEW_RELEASES
 import com.roland.android.domain.usecase.Category.NOLLYWOOD_MOVIES
 import com.roland.android.domain.usecase.Category.NOLLYWOOD_SERIES
@@ -51,6 +52,7 @@ import com.roland.android.domain.usecase.Category.ROMEDY_MOVIES
 import com.roland.android.domain.usecase.Category.ROMEDY_SERIES
 import com.roland.android.domain.usecase.Category.SCI_FI_MOVIES
 import com.roland.android.domain.usecase.Category.SCI_FI_SERIES
+import com.roland.android.domain.usecase.Category.SERIES_FOR_YOU
 import com.roland.android.domain.usecase.Category.TOP_RATED_MOVIES
 import com.roland.android.domain.usecase.Category.TOP_RATED_SERIES
 import com.roland.android.domain.usecase.Category.WAR_STORY_MOVIES
@@ -206,6 +208,7 @@ fun HomeScreen(
 					showData2 = showData2,
 					movieData3 = movieData3,
 					showData3 = showData3,
+					userIsLoggedIn = uiState.userIsLoggedIn,
 					selectedCategory = selectedCategory,
 					onMovieClick = { clickedMovieItem.value = it },
 					seeMore = seeMore
@@ -248,6 +251,7 @@ private fun MediaRows(
 	showData2: TvShowsByGenreModel,
 	movieData3: MoviesByRegionModel,
 	showData3: TvShowsByRegionModel,
+	userIsLoggedIn: Boolean,
 	selectedCategory: String,
 	onMovieClick: (Movie) -> Unit,
 	seeMore: (Category) -> Unit
@@ -257,6 +261,14 @@ private fun MediaRows(
 		header = stringResource(if (selectedCategory == MOVIES) R.string.in_theatres else R.string.new_releases),
 		onMovieClick = onMovieClick
 	) { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
+
+	if (userIsLoggedIn) {
+		HorizontalPosters(
+			pagingData = if (selectedCategory == MOVIES) movieData3.recommendations else showData3.recommendations,
+			header = stringResource(if (selectedCategory == MOVIES) R.string.movies_for_you else R.string.series_for_you),
+			onMovieClick = onMovieClick
+		) { seeMore(if (selectedCategory == MOVIES) MOVIES_FOR_YOU else SERIES_FOR_YOU) }
+	}
 
 	HorizontalPosters(
 		pagingData = if (selectedCategory == MOVIES) movieData1.topRated else showData1.topRated,

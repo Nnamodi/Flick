@@ -91,6 +91,8 @@
     <string name="favorite">Favorite</string>
     <string name="rate">Rate</string>
     <string name="sign_up_message">Sign up to avail this feature</string>
+    <string name="movies_for_you">Movies For You</string>
+    <string name="series_for_you">Series For You</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

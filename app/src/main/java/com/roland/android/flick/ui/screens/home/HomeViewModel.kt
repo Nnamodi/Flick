@@ -11,6 +11,7 @@ import com.roland.android.domain.usecase.GetMoviesUseCase
 import com.roland.android.domain.usecase.GetTvShowByRegionUseCase
 import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.domain.usecase.GetTvShowsByGenreUseCase
+import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.HomeUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.ResponseConverter
@@ -34,6 +35,7 @@ class HomeViewModel @Inject constructor(
 
 	private val _homeUiState = MutableStateFlow(HomeUiState())
 	var homeUiState by mutableStateOf(_homeUiState.value); private set
+	private var accountId by mutableStateOf("")
 
 	init {
 		loadMovies()
@@ -43,6 +45,17 @@ class HomeViewModel @Inject constructor(
 		loadTvShowsByGenre()
 		loadTvShowsByRegion()
 
+		viewModelScope.launch {
+			userAccountId.collect { id ->
+				val userIsLoggedIn = id.isNotEmpty()
+				accountId = id
+				_homeUiState.update {
+					it.copy(userIsLoggedIn = userIsLoggedIn)
+				}
+				if (!userIsLoggedIn) return@collect
+				loadMoviesByRegion(); loadTvShowsByRegion()
+			}
+		}
 		viewModelScope.launch {
 			_homeUiState.collect {
 				homeUiState = it
@@ -75,7 +88,7 @@ class HomeViewModel @Inject constructor(
 	private fun loadMoviesByRegion() {
 		viewModelScope.launch {
 			if (homeUiState.moviesByRegion is State.Error) _homeUiState.update { it.copy(moviesByRegion = null) }
-			moviesByRegionUseCase.execute(GetMoviesByRegionUseCase.Request)
+			moviesByRegionUseCase.execute(GetMoviesByRegionUseCase.Request(accountId))
 				.map { converter.convertMoviesByRegionData(it) }
 				.collect { data ->
 					_homeUiState.update { it.copy(moviesByRegion = data) }
@@ -108,7 +121,7 @@ class HomeViewModel @Inject constructor(
 	private fun loadTvShowsByRegion() {
 		viewModelScope.launch {
 			if (homeUiState.tvShowsByRegion is State.Error) _homeUiState.update { it.copy(tvShowsByRegion = null) }
-			tvShowByRegionUseCase.execute(GetTvShowByRegionUseCase.Request)
+			tvShowByRegionUseCase.execute(GetTvShowByRegionUseCase.Request(accountId))
 				.map { converter.convertTvShowsByRegionData(it) }
 				.collect { data ->
 					_homeUiState.update { it.copy(tvShowsByRegion = data) }

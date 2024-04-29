@@ -19,6 +19,7 @@ import com.roland.android.domain.usecase.Category.COMEDY_SERIES
 import com.roland.android.domain.usecase.Category.IN_THEATRES
 import com.roland.android.domain.usecase.Category.KOREAN_MOVIES
 import com.roland.android.domain.usecase.Category.K_DRAMA
+import com.roland.android.domain.usecase.Category.MOVIES_FOR_YOU
 import com.roland.android.domain.usecase.Category.NEW_RELEASES
 import com.roland.android.domain.usecase.Category.NOLLYWOOD_MOVIES
 import com.roland.android.domain.usecase.Category.NOLLYWOOD_SERIES
@@ -28,6 +29,7 @@ import com.roland.android.domain.usecase.Category.ROMEDY_MOVIES
 import com.roland.android.domain.usecase.Category.ROMEDY_SERIES
 import com.roland.android.domain.usecase.Category.SCI_FI_MOVIES
 import com.roland.android.domain.usecase.Category.SCI_FI_SERIES
+import com.roland.android.domain.usecase.Category.SERIES_FOR_YOU
 import com.roland.android.domain.usecase.Category.TOP_RATED_MOVIES
 import com.roland.android.domain.usecase.Category.TOP_RATED_SERIES
 import com.roland.android.domain.usecase.Category.TRENDING_MOVIES
@@ -54,6 +56,8 @@ class GetMovieListUseCase @Inject constructor(
 			TOP_RATED_SERIES -> tvShowRepository.fetchTopRatedShows()
 			POPULAR_MOVIES -> movieRepository.fetchPopularMovies()
 			POPULAR_SERIES -> tvShowRepository.fetchPopularShows()
+			MOVIES_FOR_YOU -> movieRepository.fetchRecommendedMovies(request.accountId)
+			SERIES_FOR_YOU -> tvShowRepository.fetchRecommendedTvShows(request.accountId)
 			// by genre
 			ANIME -> movieRepository.fetchMoviesByGenre(Constant.ANIME)
 			ANIME_SERIES -> tvShowRepository.fetchShowsByGenre(Constant.ANIME)
@@ -82,7 +86,10 @@ class GetMovieListUseCase @Inject constructor(
 		}
 	}
 
-	data class Request(val category: Category) : UseCase.Request
+	data class Request(
+		val category: Category,
+		val accountId: String
+	) : UseCase.Request
 
 	data class Response(
 		val movieList: PagingData<Movie>,
@@ -101,6 +108,8 @@ enum class Category {
 	TOP_RATED_SERIES,
 	POPULAR_MOVIES,
 	POPULAR_SERIES,
+	MOVIES_FOR_YOU,
+	SERIES_FOR_YOU,
 	// genres
 	ANIME,
 	ANIME_SERIES,

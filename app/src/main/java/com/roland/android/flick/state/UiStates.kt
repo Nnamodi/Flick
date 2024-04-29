@@ -32,7 +32,8 @@ data class HomeUiState(
 	val tvShows: State<TvShowsModel>? = null,
 	val tvShowsByGenre: State<TvShowsByGenreModel>? = null,
 	val tvShowsByRegion: State<TvShowsByRegionModel>? = null,
-	val selectedCategory: String = MOVIES
+	val selectedCategory: String = MOVIES,
+	val userIsLoggedIn: Boolean = false
 )
 
 data class ComingSoonUiState(

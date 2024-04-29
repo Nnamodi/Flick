@@ -137,7 +137,8 @@ class ResponseConverter @Inject constructor() {
 					MoviesByRegionModel(
 						result.data.nigerianMovies.refactor(),
 						result.data.koreanMovies.refactor(),
-						result.data.bollywoodMovies.refactor()
+						result.data.bollywoodMovies.refactor(),
+						result.data.recommendedMovies.refactor()
 					)
 				)
 			}
@@ -219,7 +220,8 @@ class ResponseConverter @Inject constructor() {
 					TvShowsByRegionModel(
 						result.data.nigerianShows.refactor(),
 						result.data.koreanShows.refactor(),
-						result.data.bollywoodShows.refactor()
+						result.data.bollywoodShows.refactor(),
+						result.data.recommendedShows.refactor()
 					)
 				)
 			}

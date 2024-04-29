@@ -12,6 +12,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.NavBar
 import com.roland.android.flick.ui.navigation.AppRoute
+import com.roland.android.flick.ui.navigation.AppRoute.MovieDetailsScreen
 import com.roland.android.flick.ui.navigation.NavActions
 import com.roland.android.flick.ui.screens.auth.AuthViewModel
 import com.roland.android.flick.ui.theme.FlickTheme
@@ -53,6 +55,8 @@ class MainActivity : ComponentActivity() {
 				val navController = rememberNavController()
 				val navActions = NavActions(navController)
 				var inFullScreen by rememberSaveable { mutableStateOf(false) }
+				val navBackStackEntry = navController.currentBackStack.collectAsState().value
+				val detailsScreenInBackStack = MovieDetailsScreen.route in navBackStackEntry.map { it.destination.route }
 				val windowSize = rememberWindowSize()
 				val inLandscapeMode by remember(windowSize.width) {
 					derivedStateOf { windowSize.width == WindowType.Landscape }
@@ -61,7 +65,7 @@ class MainActivity : ComponentActivity() {
 				Scaffold(
 					bottomBar = {
 						NavBar(
-							inFullScreen = inFullScreen,
+							inFullScreen = inFullScreen || detailsScreenInBackStack,
 							navController = navController
 						)
 					}

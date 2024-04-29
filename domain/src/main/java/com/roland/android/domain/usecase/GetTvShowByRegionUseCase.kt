@@ -18,17 +18,19 @@ class GetTvShowByRegionUseCase @Inject constructor(
 	override fun process(request: Request): Flow<Response> = combine(
 		tvShowRepository.fetchShowsByRegion(NOLLYWOOD),
 		tvShowRepository.fetchShowsByRegion(HALLYUWOOD),
-		tvShowRepository.fetchShowsByRegion(BOLLYWOOD)
-	) { nigerian, korean, bollywood ->
-		Response(nigerian, korean, bollywood)
+		tvShowRepository.fetchShowsByRegion(BOLLYWOOD),
+		tvShowRepository.fetchRecommendedTvShows(request.accountId)
+	) { nigerian, korean, bollywood, recommendation ->
+		Response(nigerian, korean, bollywood, recommendation)
 	}
 
-	object Request : UseCase.Request
+	data class Request(val accountId: String) : UseCase.Request
 
 	data class Response(
 		val nigerianShows: PagingData<Movie>,
 		val koreanShows: PagingData<Movie>,
-		val bollywoodShows: PagingData<Movie>
+		val bollywoodShows: PagingData<Movie>,
+		val recommendedShows: PagingData<Movie>
 	) : UseCase.Response
 
 }
