@@ -16,6 +16,8 @@ import com.roland.android.domain.usecase.Category.BOLLYWOOD_MOVIES
 import com.roland.android.domain.usecase.Category.BOLLYWOOD_SERIES
 import com.roland.android.domain.usecase.Category.COMEDY_MOVIES
 import com.roland.android.domain.usecase.Category.COMEDY_SERIES
+import com.roland.android.domain.usecase.Category.FAVORITED_MOVIES
+import com.roland.android.domain.usecase.Category.FAVORITED_SERIES
 import com.roland.android.domain.usecase.Category.IN_THEATRES
 import com.roland.android.domain.usecase.Category.KOREAN_MOVIES
 import com.roland.android.domain.usecase.Category.K_DRAMA
@@ -25,6 +27,8 @@ import com.roland.android.domain.usecase.Category.NOLLYWOOD_MOVIES
 import com.roland.android.domain.usecase.Category.NOLLYWOOD_SERIES
 import com.roland.android.domain.usecase.Category.POPULAR_MOVIES
 import com.roland.android.domain.usecase.Category.POPULAR_SERIES
+import com.roland.android.domain.usecase.Category.RATED_MOVIES
+import com.roland.android.domain.usecase.Category.RATED_SERIES
 import com.roland.android.domain.usecase.Category.ROMEDY_MOVIES
 import com.roland.android.domain.usecase.Category.ROMEDY_SERIES
 import com.roland.android.domain.usecase.Category.SCI_FI_MOVIES
@@ -36,6 +40,8 @@ import com.roland.android.domain.usecase.Category.TRENDING_MOVIES
 import com.roland.android.domain.usecase.Category.TRENDING_SERIES
 import com.roland.android.domain.usecase.Category.WAR_STORY_MOVIES
 import com.roland.android.domain.usecase.Category.WAR_STORY_SERIES
+import com.roland.android.domain.usecase.Category.WATCHLISTED_MOVIES
+import com.roland.android.domain.usecase.Category.WATCHLISTED_SERIES
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -56,8 +62,15 @@ class GetMovieListUseCase @Inject constructor(
 			TOP_RATED_SERIES -> tvShowRepository.fetchTopRatedShows()
 			POPULAR_MOVIES -> movieRepository.fetchPopularMovies()
 			POPULAR_SERIES -> tvShowRepository.fetchPopularShows()
+			// account
 			MOVIES_FOR_YOU -> movieRepository.fetchRecommendedMovies(request.accountId)
 			SERIES_FOR_YOU -> tvShowRepository.fetchRecommendedTvShows(request.accountId)
+			FAVORITED_MOVIES -> movieRepository.fetchFavoritedMovies(request.accountId)
+			FAVORITED_SERIES -> tvShowRepository.fetchFavoritedTvShows(request.accountId)
+			WATCHLISTED_MOVIES -> movieRepository.fetchWatchlistedMovies(request.accountId)
+			WATCHLISTED_SERIES -> tvShowRepository.fetchWatchlistedTvShows(request.accountId)
+			RATED_MOVIES -> movieRepository.fetchRatedMovies(request.accountId)
+			RATED_SERIES -> tvShowRepository.fetchRatedTvShows(request.accountId)
 			// by genre
 			ANIME -> movieRepository.fetchMoviesByGenre(Constant.ANIME)
 			ANIME_SERIES -> tvShowRepository.fetchShowsByGenre(Constant.ANIME)
@@ -108,8 +121,15 @@ enum class Category {
 	TOP_RATED_SERIES,
 	POPULAR_MOVIES,
 	POPULAR_SERIES,
+	// account
 	MOVIES_FOR_YOU,
 	SERIES_FOR_YOU,
+	FAVORITED_MOVIES,
+	FAVORITED_SERIES,
+	WATCHLISTED_MOVIES,
+	WATCHLISTED_SERIES,
+	RATED_MOVIES,
+	RATED_SERIES,
 	// genres
 	ANIME,
 	ANIME_SERIES,

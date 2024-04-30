@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.StarRate
 import androidx.compose.material3.ButtonDefaults.textButtonColors
 import androidx.compose.material3.Divider
@@ -31,9 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.roland.android.flick.R
 import com.roland.android.flick.ui.screens.home.HomeActions
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Extensions.roundOff
@@ -199,7 +203,9 @@ fun Header(
 fun Header(
 	header: String,
 	modifier: Modifier = Modifier,
-	onMediaTypeChange: (String) -> Unit
+	showSeeMore: Boolean,
+	onMediaTypeChange: (String) -> Unit,
+	seeMore: (String) -> Unit
 ) {
 	var selectedMediaType by rememberSaveable { mutableStateOf(MOVIES) }
 
@@ -214,12 +220,24 @@ fun Header(
 				.clip(MaterialTheme.shapes.medium),
 			color = colorScheme.surfaceTint
 		)
-		Text(
-			text = header,
-			modifier = Modifier.padding(start = 4.dp),
-			fontWeight = FontWeight.Bold,
-			fontSize = 16.sp
-		)
+		Row(
+			modifier = Modifier
+				.padding(start = 4.dp)
+				.clip(MaterialTheme.shapes.small)
+				.clickable(showSeeMore) { seeMore(selectedMediaType) }
+				.padding(6.dp),
+			verticalAlignment = Alignment.CenterVertically
+		) {
+			Text(
+				text = header,
+				modifier = Modifier.padding(horizontal = 4.dp),
+				fontWeight = FontWeight.Bold,
+				fontSize = 16.sp
+			)
+			if (showSeeMore) {
+				Icon(Icons.Rounded.KeyboardArrowRight, stringResource(R.string.more))
+			}
+		}
 		Spacer(Modifier.weight(1f))
 		ToggleButton(
 			selectedOption = selectedMediaType,

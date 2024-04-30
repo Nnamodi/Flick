@@ -93,6 +93,12 @@
     <string name="sign_up_message">Sign up to avail this feature</string>
     <string name="movies_for_you">Movies For You</string>
     <string name="series_for_you">Series For You</string>
+    <string name="favorited_movies">Your Favorite Movies</string>
+    <string name="favorited_series">Your Favorite Series</string>
+    <string name="watchlisted_movies">Your Watchlisted Movies</string>
+    <string name="watchlisted_series">Your Watchlisted Series</string>
+    <string name="rated_movies">Your Rated Movies</string>
+    <string name="rated_series">Your Rated Series</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

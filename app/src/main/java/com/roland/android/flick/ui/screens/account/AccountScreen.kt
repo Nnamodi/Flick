@@ -26,6 +26,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.roland.android.domain.entity.Movie
+import com.roland.android.domain.usecase.Category
+import com.roland.android.domain.usecase.Category.FAVORITED_MOVIES
+import com.roland.android.domain.usecase.Category.FAVORITED_SERIES
+import com.roland.android.domain.usecase.Category.RATED_MOVIES
+import com.roland.android.domain.usecase.Category.RATED_SERIES
+import com.roland.android.domain.usecase.Category.WATCHLISTED_MOVIES
+import com.roland.android.domain.usecase.Category.WATCHLISTED_SERIES
 import com.roland.android.flick.R
 import com.roland.android.flick.state.AccountUiState
 import com.roland.android.flick.ui.components.AccountTopBar
@@ -36,6 +43,7 @@ import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScaffold
 import com.roland.android.flick.ui.screens.CommonScreen
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
+import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.NavigationBarHeight
 import com.roland.android.flick.utils.RowItems
 import com.roland.android.flick.utils.WindowType.Portrait
@@ -123,6 +131,9 @@ private fun MediaRows(
 	val (_, movies, shows, response) = uiState
 	val windowSize = rememberWindowSize()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
+	val seeMore: (Category) -> Unit = {
+		navigate(Screens.MovieListScreen(it.name))
+	}
 
 	CommonScreen(
 		movies, shows, paddingValues,
@@ -142,7 +153,8 @@ private fun MediaRows(
 					action(AccountActions.UnFavoriteMedia(mediaId, mediaType))
 				},
 				onCancelled = onCancelResult,
-				onError = onCancelResult
+				onError = onCancelResult,
+				seeMore = { seeMore(if (it == MOVIES) FAVORITED_MOVIES else FAVORITED_SERIES) }
 			)
 
 			HorizontalPosters(
@@ -155,7 +167,8 @@ private fun MediaRows(
 					action(AccountActions.RemoveFromWatchlist(mediaId, mediaType))
 				},
 				onCancelled = onCancelResult,
-				onError = onCancelResult
+				onError = onCancelResult,
+				seeMore = { seeMore(if (it == MOVIES) WATCHLISTED_MOVIES else WATCHLISTED_SERIES) }
 			)
 
 			HorizontalPosters(
@@ -168,7 +181,8 @@ private fun MediaRows(
 					action(AccountActions.DeleteMediaRating(mediaId, mediaType))
 				},
 				onCancelled = onCancelResult,
-				onError = onCancelResult
+				onError = onCancelResult,
+				seeMore = { seeMore(if (it == MOVIES) RATED_MOVIES else RATED_SERIES) }
 			)
 
 			Spacer(

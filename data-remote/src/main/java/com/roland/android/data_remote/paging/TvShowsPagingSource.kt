@@ -289,12 +289,13 @@ class FavoritedShowsPagingSource(
 
 	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
 		return try {
-			val currentPage = params.key ?: INITIAL_PAGE
+			val lastPage = tvShowService.fetchFavoritedTvShows(accountId, 1).totalPages
+			val currentPage = params.key ?: lastPage
 			val movies = tvShowService.fetchFavoritedTvShows(accountId, currentPage)
 			LoadResult.Page(
-				data = convertToMovieList(movies).results,
-				prevKey = if (currentPage == 1) null else currentPage - 1,
-				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
+				data = convertToMovieList(movies).results.reversed(),
+				prevKey = if (currentPage == lastPage) null else currentPage + 1,
+				nextKey = if (currentPage == 1) null else currentPage - 1
 			)
 		} catch (e: Exception) {
 			LoadResult.Error(throwable = e)
@@ -345,12 +346,13 @@ class WatchlistedShowsPagingSource(
 
 	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
 		return try {
-			val currentPage = params.key ?: INITIAL_PAGE
+			val lastPage = tvShowService.fetchWatchlistedTvShows(accountId, 1).totalPages
+			val currentPage = params.key ?: lastPage
 			val movies = tvShowService.fetchWatchlistedTvShows(accountId, currentPage)
 			LoadResult.Page(
-				data = convertToMovieList(movies).results,
-				prevKey = if (currentPage == 1) null else currentPage - 1,
-				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
+				data = convertToMovieList(movies).results.reversed(),
+				prevKey = if (currentPage == lastPage) null else currentPage + 1,
+				nextKey = if (currentPage == 1) null else currentPage - 1
 			)
 		} catch (e: Exception) {
 			LoadResult.Error(throwable = e)
@@ -373,12 +375,13 @@ class RatedShowsPagingSource(
 
 	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
 		return try {
-			val currentPage = params.key ?: INITIAL_PAGE
+			val lastPage = tvShowService.fetchRatedTvShows(accountId, 1).totalPages
+			val currentPage = params.key ?: lastPage
 			val movies = tvShowService.fetchRatedTvShows(accountId, currentPage)
 			LoadResult.Page(
-				data = convertToMovieList(movies).results,
-				prevKey = if (currentPage == 1) null else currentPage - 1,
-				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
+				data = convertToMovieList(movies).results.reversed(),
+				prevKey = if (currentPage == lastPage) null else currentPage + 1,
+				nextKey = if (currentPage == 1) null else currentPage - 1
 			)
 		} catch (e: Exception) {
 			LoadResult.Error(throwable = e)

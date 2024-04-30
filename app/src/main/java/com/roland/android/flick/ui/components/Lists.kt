@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.components
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -239,7 +240,8 @@ fun HorizontalPosters(
 	onMovieClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit,
 	onCancelled: (String) -> Unit,
-	onError: (String) -> Unit
+	onError: (String) -> Unit,
+	seeMore: (String) -> Unit
 ) {
 	val pagerState = rememberPagerState { 2 }
 	val scope = rememberCoroutineScope()
@@ -252,10 +254,12 @@ fun HorizontalPosters(
 			Header(
 				header = header,
 				modifier = Modifier.padding(PADDING_WIDTH),
+				showSeeMore = arrayOf(moviesList, showsList)[pagerState.currentPage].itemCount > 5,
 				onMediaTypeChange = { mediaType ->
 					val selectedPage = if (mediaType == MOVIES) 0 else 1
 					scope.launch { pagerState.animateScrollToPage(selectedPage) }
-				}
+				},
+				seeMore = seeMore
 			)
 
 			PostersPager(
@@ -302,7 +306,7 @@ private fun PostersPager(
 		when (page) {
 			0 -> MovieListPage(
 				movieList = list1,
-				showFullList = true,
+				showFullList = !itemIsCancellable,
 				itemIsCancellable = itemIsCancellable,
 				onMovieClick = onMovieClick,
 				onCancel = onCancel
@@ -310,7 +314,7 @@ private fun PostersPager(
 
 			1 -> MovieListPage(
 				movieList = list2,
-				showFullList = true,
+				showFullList = !itemIsCancellable,
 				itemIsCancellable = itemIsCancellable,
 				onMovieClick = onMovieClick,
 				onCancel = onCancel
@@ -328,8 +332,7 @@ private fun MovieListPage(
 	onMovieClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
-	val list = movieList.itemSnapshotList.toMutableList()
-	val mediaList = if (itemIsCancellable) list.asReversed() else list
+	val mediaList = movieList.itemSnapshotList
 
 	LazyRow(
 		state = listState,
@@ -363,7 +366,10 @@ private fun MovieListPage(
 			}
 		}
 		item {
-			movieList.loadStateUi(PosterType.Small)
+			movieList.loadStateUi(
+				posterType = PosterType.Small,
+				error = { Toast.makeText(LocalContext.current, it, Toast.LENGTH_SHORT).show() }
+			)
 		}
 	}
 	if ((movieList.itemCount == 0) && (movieList.loadState.refresh is LoadState.NotLoading)) {

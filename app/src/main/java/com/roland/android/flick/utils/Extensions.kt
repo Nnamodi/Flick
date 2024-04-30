@@ -88,8 +88,15 @@ object Extensions {
 			Category.TOP_RATED_SERIES -> R.string.top_rated_series
 			Category.POPULAR_MOVIES -> R.string.popular_movies
 			Category.POPULAR_SERIES -> R.string.popular_series
+			// account
 			Category.MOVIES_FOR_YOU -> R.string.movies_for_you
 			Category.SERIES_FOR_YOU -> R.string.series_for_you
+			Category.FAVORITED_MOVIES -> R.string.favorited_movies
+			Category.FAVORITED_SERIES -> R.string.favorited_series
+			Category.WATCHLISTED_MOVIES -> R.string.watchlisted_movies
+			Category.WATCHLISTED_SERIES -> R.string.watchlisted_series
+			Category.RATED_MOVIES -> R.string.rated_movies
+			Category.RATED_SERIES -> R.string.rated_series
 			// genre
 			Category.ANIME -> R.string.anime
 			Category.ANIME_SERIES -> R.string.anime_series
