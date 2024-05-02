@@ -234,6 +234,7 @@ fun HomeScreen(
 		if (errorMessage.value != null) {
 			Snackbar(
 				message = errorMessage.value!!,
+				paddingValues = paddingValues,
 				modifier = Modifier.padding(bottom = if (windowSize.width == Portrait) NavigationBarHeight else 0.dp),
 				actionLabel = stringResource(R.string.retry),
 				action = { action(HomeActions.Retry) },

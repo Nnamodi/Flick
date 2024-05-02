@@ -21,9 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -211,9 +213,13 @@ fun SmallItemPoster(
 fun CancellableItemPoster(
 	movie: Movie,
 	modifier: Modifier = Modifier,
+	requestDone: Boolean,
 	onClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit
 ) {
+	val requestLoading = rememberSaveable { mutableStateOf(false) }
+	val actionHandled = rememberSaveable(requestDone) { mutableStateOf(requestDone) }
+
 	Box(
 		modifier = modifier
 			.padding(end = 12.dp)
@@ -234,16 +240,34 @@ fun CancellableItemPoster(
 			contentScale = ContentScale.Crop
 		)
 		Row(Modifier.fillMaxWidth()) {
-			Icon(
-				imageVector = Icons.Rounded.Cancel,
-				contentDescription = null,
-				modifier = Modifier
-					.padding(6.dp)
-					.clickable { onCancel(movie.id, mediaType) }
-			)
+			if (requestLoading.value) {
+				CircularProgressIndicator(
+					modifier = Modifier
+						.padding(6.dp)
+						.size(20.dp),
+					strokeWidth = 2.dp
+				)
+			} else {
+				Icon(
+					imageVector = Icons.Rounded.Cancel,
+					contentDescription = null,
+					modifier = Modifier
+						.padding(6.dp)
+						.clickable {
+							onCancel(movie.id, mediaType)
+							requestLoading.value = true
+						}
+				)
+			}
 			Spacer(Modifier.weight(1f))
 			RatingBar(Small, movie.voteAverage)
 		}
+	}
+
+	LaunchedEffect(actionHandled) {
+		if (!actionHandled.value) return@LaunchedEffect
+		requestLoading.value = false
+		actionHandled.value = false
 	}
 }
 

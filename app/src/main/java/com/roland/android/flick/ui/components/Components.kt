@@ -7,6 +7,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -87,6 +89,7 @@ fun RatingBar(
 fun Snackbar(
 	message: String,
 	modifier: Modifier = Modifier,
+	paddingValues: PaddingValues,
 	actionLabel: String? = null,
 	action: () -> Unit = {},
 	duration: SnackbarDuration = SnackbarDuration.Short,
@@ -101,7 +104,7 @@ fun Snackbar(
 	) {
 		SnackbarVisuals(
 			message = message,
-			modifier = modifier,
+			modifier = modifier.padding(bottom = paddingValues.calculateBottomPadding()),
 			actionLabel = actionLabel,
 			action = {
 				snackbarMessage.value = null
@@ -114,6 +117,14 @@ fun Snackbar(
 		delay(duration.millis)
 		snackbarMessage.value = null
 		onDismiss()
+	}
+
+	DisposableEffect(Unit) {
+		onDispose {
+			if (duration == SnackbarDuration.Indefinite) return@onDispose
+			snackbarMessage.value = null
+			onDismiss()
+		}
 	}
 }
 

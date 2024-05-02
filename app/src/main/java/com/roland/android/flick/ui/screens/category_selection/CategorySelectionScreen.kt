@@ -130,6 +130,7 @@ fun CategorySelectionScreen(
 		if (errorMessage.value != null && selectedGenreIds.isNotEmpty()) {
 			Snackbar(
 				message = errorMessage.value!!,
+				paddingValues = paddingValues,
 				actionLabel = stringResource(R.string.retry),
 				action = { action(CategorySelectionActions.Retry) },
 				duration = SnackbarDuration.Indefinite

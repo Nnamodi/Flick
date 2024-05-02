@@ -162,6 +162,7 @@ fun SearchScreen(
 		if (errorMessage.value != null) {
 			Snackbar(
 				message = errorMessage.value!!,
+				paddingValues = paddingValues,
 				actionLabel = stringResource(R.string.retry),
 				action = { action(SearchActions.Retry(searchQuery)) },
 				duration = SnackbarDuration.Indefinite

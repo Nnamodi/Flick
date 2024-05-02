@@ -99,6 +99,7 @@ fun AccountScreen(
 			Snackbar(
 				message = actionResponseMessage.value!!,
 				modifier = Modifier.padding(bottom = snackbarPadding),
+				paddingValues = paddingValues,
 				onDismiss = { actionResponseMessage.value = null }
 			)
 		}
@@ -106,6 +107,7 @@ fun AccountScreen(
 			Snackbar(
 				message = loadingErrorMessage.value!!,
 				modifier = Modifier.padding(bottom = snackbarPadding),
+				paddingValues = paddingValues,
 				actionLabel = stringResource(R.string.retry),
 				action = { action(AccountActions.ReloadMedia) },
 				duration = SnackbarDuration.Indefinite

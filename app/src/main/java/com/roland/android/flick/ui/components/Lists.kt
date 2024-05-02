@@ -1,6 +1,5 @@
 package com.roland.android.flick.ui.components
 
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -162,7 +161,6 @@ fun HorizontalPosters(
 	seeMore: () -> Unit
 ) {
 	val movieList = pagingData.collectAsLazyPagingItems()
-	val listState = rememberLazyListState()
 
 	Column(Modifier.padding(bottom = 12.dp)) {
 		Row(
@@ -187,13 +185,10 @@ fun HorizontalPosters(
 
 		MovieListPage(
 			movieList = movieList,
-			listState = listState,
 			showFullList = false,
 			onMovieClick = onMovieClick
 		)
 	}
-
-	ManageScrollState(listState = listState)
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -267,6 +262,7 @@ fun HorizontalPosters(
 				list2 = showsList,
 				pagerState = pagerState,
 				itemIsCancellable = true,
+				requestDone = response != null,
 				onMovieClick = onMovieClick,
 				onCancel = onCancel
 			)
@@ -296,6 +292,7 @@ private fun PostersPager(
 	list2: LazyPagingItems<Movie>,
 	pagerState: PagerState,
 	itemIsCancellable: Boolean = false,
+	requestDone: Boolean = false,
 	onMovieClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
@@ -308,6 +305,7 @@ private fun PostersPager(
 				movieList = list1,
 				showFullList = !itemIsCancellable,
 				itemIsCancellable = itemIsCancellable,
+				requestDone = requestDone,
 				onMovieClick = onMovieClick,
 				onCancel = onCancel
 			)
@@ -316,6 +314,7 @@ private fun PostersPager(
 				movieList = list2,
 				showFullList = !itemIsCancellable,
 				itemIsCancellable = itemIsCancellable,
+				requestDone = requestDone,
 				onMovieClick = onMovieClick,
 				onCancel = onCancel
 			)
@@ -329,6 +328,7 @@ private fun MovieListPage(
 	listState: LazyListState = rememberLazyListState(),
 	showFullList: Boolean,
 	itemIsCancellable: Boolean = false,
+	requestDone: Boolean = false,
 	onMovieClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
@@ -354,6 +354,7 @@ private fun MovieListPage(
 				if (itemIsCancellable) {
 					CancellableItemPoster(
 						movie = it,
+						requestDone = requestDone,
 						onClick = onMovieClick,
 						onCancel = onCancel
 					)
@@ -366,15 +367,14 @@ private fun MovieListPage(
 			}
 		}
 		item {
-			movieList.loadStateUi(
-				posterType = PosterType.Small,
-				error = { Toast.makeText(LocalContext.current, it, Toast.LENGTH_SHORT).show() }
-			)
+			movieList.loadStateUi(PosterType.Small)
 		}
 	}
 	if ((movieList.itemCount == 0) && (movieList.loadState.refresh is LoadState.NotLoading)) {
 		EmptyRow()
 	}
+
+	ManageScrollState(listState = listState)
 }
 
 @Composable

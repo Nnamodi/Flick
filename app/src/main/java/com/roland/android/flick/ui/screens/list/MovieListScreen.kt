@@ -75,6 +75,7 @@ fun MovieListScreen(
 		if (errorMessage.value != null) {
 			Snackbar(
 				message = errorMessage.value!!,
+				paddingValues = paddingValues,
 				actionLabel = stringResource(R.string.retry),
 				action = { action(MovieListActions.Retry(category)) },
 				duration = SnackbarDuration.Indefinite

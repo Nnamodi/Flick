@@ -144,6 +144,9 @@ class MovieDetailsViewModel @Inject constructor(
 	}
 
 	fun detailsAction(action: MovieDetailsActions?) {
+		action?.let {
+			_movieDetailsUiState.update { it.copy(response = null) }
+		}
 		when (action) {
 			is MovieDetailsActions.AddToWatchlist -> {
 				mediaUtil.watchlistMedia(

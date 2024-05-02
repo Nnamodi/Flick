@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -129,6 +130,7 @@ fun MovieDetailsScreen(
 					error?.let {
 						Snackbar(
 							message = it,
+							paddingValues = paddingValues,
 							actionLabel = stringResource(R.string.retry),
 							action = { request(DetailsRequest.Retry) },
 							duration = SnackbarDuration.Indefinite
@@ -186,12 +188,14 @@ fun MovieDetailsScreen(
 		if (snackbarMessage.value != null) {
 			Snackbar(
 				message = snackbarMessage.value!!,
+				paddingValues = paddingValues,
 				onDismiss = { action(null) }
 			)
 		}
 		if (requestToLogin.value) {
 			Snackbar(
 				message = stringResource(R.string.sign_up_message),
+				paddingValues = paddingValues,
 				actionLabel = stringResource(R.string.sign_up),
 				action = { navigate(Screens.AccountScreen) },
 				onDismiss = { requestToLogin.value = false }
@@ -228,7 +232,7 @@ private fun MoviesDetails(
 			modifier = Modifier.height(screenHeight * videoHeightDivisor),
 			navigateUp = navigate
 		)
-		MovieDetails(
+		Details(
 			movie = movie.details,
 			casts = movie.details.credits.cast,
 			castDetails = uiState.castDetails,
@@ -238,6 +242,7 @@ private fun MoviesDetails(
 			videos = movie.details.videos,
 			modifier = columnModifier,
 			userIsLoggedIn = uiState.userIsLoggedIn,
+			actionHandled = uiState.response != null,
 			logInRequest = logInRequest,
 			castDetailsRequest = request,
 			detailsAction = action,
@@ -278,7 +283,7 @@ private fun ShowDetails(
 				enabled = !openSeasonSelectionSheet.value,
 				navigateUp = navigate
 			)
-			MovieDetails(
+			Details(
 				series = show.details,
 				casts = show.details.credits.cast,
 				seasonDetails = uiState.seasonDetails,
@@ -290,6 +295,7 @@ private fun ShowDetails(
 				videos = show.details.videos,
 				modifier = columnModifier,
 				userIsLoggedIn = uiState.userIsLoggedIn,
+				actionHandled = uiState.response != null,
 				logInRequest = logInRequest,
 				openSeasonSelectionSheet = { openSeasonSelectionSheet.value = true },
 				castDetailsRequest = request,
@@ -310,7 +316,7 @@ private fun ShowDetails(
 }
 
 @Composable
-private fun MovieDetails(
+private fun Details(
 	movie: MovieDetails? = null,
 	series: Series? = null,
 	casts: List<Cast>,
@@ -323,6 +329,7 @@ private fun MovieDetails(
 	videos: List<Video>,
 	modifier: Modifier,
 	userIsLoggedIn: Boolean,
+	actionHandled: Boolean,
 	logInRequest: () -> Unit,
 	openSeasonSelectionSheet: () -> Unit = {},
 	castDetailsRequest: (DetailsRequest) -> Unit,
@@ -334,13 +341,14 @@ private fun MovieDetails(
 	val moreVideos = videos.filterNot { it == videos.getTrailer() }
 
 	Column(modifier) {
-		Details(movie, series)
+		Info(movie, series)
 		ActionButtonsRow(
 			mediaId = movie?.id ?: series?.id ?: 0,
 			mediaType = if (movie == null) SERIES else MOVIES,
 			imdbId = movie?.imdbId ?: series?.externalIds?.imdbId,
 			trailerKey = videos.getTrailerKey(),
 			userIsLoggedIn = userIsLoggedIn,
+			actionHandled = actionHandled,
 			onClick = detailsAction,
 			logInRequest = logInRequest
 		)
@@ -392,7 +400,7 @@ private fun MovieDetails(
 }
 
 @Composable
-private fun Details(
+private fun Info(
 	movie: MovieDetails?,
 	series: Series?
 ) {
@@ -502,6 +510,7 @@ private fun ActionButtonsRow(
 	imdbId: String?,
 	trailerKey: String?,
 	userIsLoggedIn: Boolean,
+	actionHandled: Boolean,
 	onClick: (MovieDetailsActions) -> Unit,
 	logInRequest: () -> Unit
 ) {
@@ -520,8 +529,8 @@ private fun ActionButtonsRow(
 			ActionButton(
 				nameRes = button.nameRes,
 				defaultIcon = button.defaultIcon,
-				doneIcon = button.doneIcon,
 				userIsLoggedIn = userIsLoggedIn,
+				requestDone = actionHandled,
 				onClick = {
 					val action = when (button) {
 						Watchlist -> MovieDetailsActions.AddToWatchlist(mediaId, mediaType)
@@ -553,35 +562,47 @@ private fun ActionButtonsRow(
 private fun ActionButton(
 	@StringRes nameRes: Int,
 	defaultIcon: ImageVector,
-	doneIcon: ImageVector? = null,
 	userIsLoggedIn: Boolean = true,
 	requestDone: Boolean = false,
-	requestLoading: Boolean = false,
 	onClick: () -> Unit,
 	logInRequest: () -> Unit = {}
 ) {
+	val requestLoading = rememberSaveable { mutableStateOf(false) }
+	val actionHandled = rememberSaveable(requestDone) { mutableStateOf(requestDone) }
+
 	Column(
 		modifier = Modifier
 			.padding(horizontal = 10.dp)
-			.bounceClickable {
+			.bounceClickable(!requestLoading.value) {
 				if (!userIsLoggedIn) {
 					logInRequest()
 					return@bounceClickable
 				}
-				onClick()
+				onClick(); requestLoading.value = true
 			},
 		verticalArrangement = Arrangement.spacedBy(4.dp),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		if (requestLoading) {
-			CircularProgressIndicator()
+		if (requestLoading.value) {
+			CircularProgressIndicator(
+				modifier = Modifier
+					.padding(bottom = 4.dp)
+					.size(20.dp),
+				strokeWidth = 2.dp
+			)
 		} else {
 			Icon(
-				imageVector = if (requestDone) doneIcon!! else defaultIcon,
+				imageVector = defaultIcon,
 				contentDescription = stringResource(nameRes)
 			)
 		}
 		Text(stringResource(nameRes))
+	}
+
+	LaunchedEffect(actionHandled) {
+		if (!actionHandled.value) return@LaunchedEffect
+		requestLoading.value = false
+		actionHandled.value = false
 	}
 }
 
