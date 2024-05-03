@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 val userAccountId = MutableStateFlow("")
 val userAccountDetails = MutableStateFlow<AccountDetails?>(null)
+val accountMediaUpdated = MutableStateFlow(false)
 
 data class TokenModel(
 	val requestTokenResponse: RequestTokenResponse? = null,

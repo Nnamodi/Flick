@@ -243,14 +243,17 @@ fun HorizontalPosters(
 	val moviesList = moviesData.collectAsLazyPagingItems()
 	val showsList = showsData.collectAsLazyPagingItems()
 	val context = LocalContext.current
+	var selectedMediaType by rememberSaveable { mutableStateOf(MOVIES) }
 
 	CommonScreen(response) { requestResult, loading, errorMessage ->
 		Column(Modifier.padding(bottom = 12.dp)) {
 			Header(
 				header = header,
 				modifier = Modifier.padding(PADDING_WIDTH),
+				selectedMediaType = selectedMediaType,
 				showSeeMore = arrayOf(moviesList, showsList)[pagerState.currentPage].itemCount > 5,
 				onMediaTypeChange = { mediaType ->
+					selectedMediaType = mediaType
 					val selectedPage = if (mediaType == MOVIES) 0 else 1
 					scope.launch { pagerState.animateScrollToPage(selectedPage) }
 				},
@@ -279,6 +282,7 @@ fun HorizontalPosters(
 				}
 				requestResult?.success == true -> {
 					onCancelled(context.getString(R.string.media_removed))
+					(if (selectedMediaType == MOVIES) moviesList else showsList).refresh()
 				}
 			}
 		}
@@ -325,7 +329,6 @@ private fun PostersPager(
 @Composable
 private fun MovieListPage(
 	movieList: LazyPagingItems<Movie>,
-	listState: LazyListState = rememberLazyListState(),
 	showFullList: Boolean,
 	itemIsCancellable: Boolean = false,
 	requestDone: Boolean = false,
@@ -333,6 +336,7 @@ private fun MovieListPage(
 	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
 	val mediaList = movieList.itemSnapshotList
+	val listState = rememberLazyListState()
 
 	LazyRow(
 		state = listState,
@@ -368,6 +372,7 @@ private fun MovieListPage(
 		}
 		item {
 			movieList.loadStateUi(PosterType.Small)
+			movieList.appendStateUi()
 		}
 	}
 	if ((movieList.itemCount == 0) && (movieList.loadState.refresh is LoadState.NotLoading)) {

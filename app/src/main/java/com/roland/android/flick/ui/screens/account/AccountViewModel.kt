@@ -10,9 +10,11 @@ import com.roland.android.domain.usecase.AccountUseCase
 import com.roland.android.domain.usecase.MediaActions
 import com.roland.android.domain.usecase.MediaType
 import com.roland.android.domain.usecase.MediaUtilUseCase
+import com.roland.android.flick.models.accountMediaUpdated
 import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.AccountUiState
+import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.MediaUtil
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -64,6 +66,12 @@ class AccountViewModel @Inject constructor(
 				}
 			}
 		}
+		viewModelScope.launch {
+			accountMediaUpdated.collectLatest {
+				if (!it) return@collectLatest
+				fetchMovieData(); fetchShowData()
+			}
+		}
 	}
 
 	private fun fetchMovieData() {
@@ -73,6 +81,10 @@ class AccountViewModel @Inject constructor(
 			)
 				.map { converter.convertToAccountMovieData(it) }
 				.collectLatest { data ->
+					if (accountUiState.moviesData !is State.Success) {
+						_accountUiState.update { it.copy(moviesData = data) }
+					}
+					if (data !is State.Success) return@collectLatest
 					_accountUiState.update { it.copy(moviesData = data) }
 				}
 		}
@@ -85,12 +97,17 @@ class AccountViewModel @Inject constructor(
 			)
 				.map { converter.convertToAccountTvShowsData(it) }
 				.collectLatest { data ->
+					if (accountUiState.showsData !is State.Success) {
+						_accountUiState.update { it.copy(showsData = data) }
+					}
+					if (data !is State.Success) return@collectLatest
 					_accountUiState.update { it.copy(showsData = data) }
 				}
 		}
 	}
 
 	fun accountActions(action: AccountActions?) {
+		action?.let { _accountUiState.update { it.copy(response = null) } }
 		when (action) {
 			is AccountActions.UnFavoriteMedia -> removeFromFavorite(action.mediaId, action.mediaType)
 			is AccountActions.RemoveFromWatchlist -> removeFromWatchlist(action.mediaId, action.mediaType)

@@ -155,9 +155,8 @@ private fun MediaRows(
 					action(AccountActions.UnFavoriteMedia(mediaId, mediaType))
 				},
 				onCancelled = onCancelResult,
-				onError = onCancelResult,
-				seeMore = { seeMore(if (it == MOVIES) FAVORITED_MOVIES else FAVORITED_SERIES) }
-			)
+				onError = onCancelResult
+			) { seeMore(if (it == MOVIES) FAVORITED_MOVIES else FAVORITED_SERIES) }
 
 			HorizontalPosters(
 				moviesData = movieData.watchlist,
@@ -169,9 +168,8 @@ private fun MediaRows(
 					action(AccountActions.RemoveFromWatchlist(mediaId, mediaType))
 				},
 				onCancelled = onCancelResult,
-				onError = onCancelResult,
-				seeMore = { seeMore(if (it == MOVIES) WATCHLISTED_MOVIES else WATCHLISTED_SERIES) }
-			)
+				onError = onCancelResult
+			) { seeMore(if (it == MOVIES) WATCHLISTED_MOVIES else WATCHLISTED_SERIES) }
 
 			HorizontalPosters(
 				moviesData = movieData.ratedList,
@@ -183,9 +181,8 @@ private fun MediaRows(
 					action(AccountActions.DeleteMediaRating(mediaId, mediaType))
 				},
 				onCancelled = onCancelResult,
-				onError = onCancelResult,
-				seeMore = { seeMore(if (it == MOVIES) RATED_MOVIES else RATED_SERIES) }
-			)
+				onError = onCancelResult
+			) { seeMore(if (it == MOVIES) RATED_MOVIES else RATED_SERIES) }
 
 			Spacer(
 				Modifier.height(

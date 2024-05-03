@@ -578,7 +578,9 @@ private fun ActionButton(
 					logInRequest()
 					return@bounceClickable
 				}
-				onClick(); requestLoading.value = true
+				onClick()
+				if (nameRes in setOf(R.string.rate, R.string.share)) return@bounceClickable
+				requestLoading.value = true
 			},
 		verticalArrangement = Arrangement.spacedBy(4.dp),
 		horizontalAlignment = Alignment.CenterHorizontally
