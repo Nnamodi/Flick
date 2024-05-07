@@ -109,42 +109,35 @@ class AccountViewModel @Inject constructor(
 	fun accountActions(action: AccountActions?) {
 		action?.let { _accountUiState.update { it.copy(response = null) } }
 		when (action) {
-			is AccountActions.UnFavoriteMedia -> removeFromFavorite(action.mediaId, action.mediaType)
-			is AccountActions.RemoveFromWatchlist -> removeFromWatchlist(action.mediaId, action.mediaType)
-			is AccountActions.DeleteMediaRating -> deleteMediaRating(action.mediaId, action.mediaType)
+			is AccountActions.UnFavoriteMedia -> {
+				mediaUtil.favoriteMedia(
+					accountId = userId,
+					mediaId = action.mediaId,
+					mediaType = action.mediaType,
+					favorite = false,
+					result = { data ->
+						_accountUiState.update { it.copy(response = data) }
+					}
+				)
+			}
+			is AccountActions.RemoveFromWatchlist -> {
+				mediaUtil.watchlistMedia(
+					accountId = userId,
+					mediaId = action.mediaId,
+					mediaType = action.mediaType,
+					watchlist = false,
+					result = { data ->
+						_accountUiState.update { it.copy(response = data) }
+					}
+				)
+			}
+			is AccountActions.DeleteMediaRating -> deleteMediaRating(
+				mediaId = action.mediaId,
+				mediaType = action.mediaType
+			)
 			AccountActions.ReloadMedia -> reloadMedia()
-			else -> _accountUiState.update { it.copy(response = null) }
+			null -> _accountUiState.update { it.copy(response = null) }
 		}
-	}
-
-	private fun removeFromFavorite(
-		mediaId: Int,
-		mediaType: String
-	) {
-		mediaUtil.favoriteMedia(
-			accountId = userId,
-			mediaId = mediaId,
-			mediaType = mediaType,
-			favorite = false,
-			result = { data ->
-				_accountUiState.update { it.copy(response = data) }
-			}
-		)
-	}
-
-	private fun removeFromWatchlist(
-		mediaId: Int,
-		mediaType: String
-	) {
-		mediaUtil.watchlistMedia(
-			accountId = userId,
-			mediaId = mediaId,
-			mediaType = mediaType,
-			watchlist = false,
-			result = { data ->
-				_accountUiState.update { it.copy(response = data) }
-			}
-		)
 	}
 
 	private fun deleteMediaRating(

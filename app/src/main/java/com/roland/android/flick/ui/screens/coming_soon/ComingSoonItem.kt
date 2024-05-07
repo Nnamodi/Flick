@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,6 +43,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,21 +61,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.flick.R
 import com.roland.android.flick.models.SampleData.genreList
 import com.roland.android.flick.models.SampleData.movie1
 import com.roland.android.flick.models.SampleData.movie5
+import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.ComingSoonItemPoster
 import com.roland.android.flick.ui.components.ExpandedComingSoonPoster
 import com.roland.android.flick.ui.components.PosterType
 import com.roland.android.flick.ui.components.PosterType.BackdropPoster
 import com.roland.android.flick.ui.components.PosterType.ComingSoon
 import com.roland.android.flick.ui.components.RatingBar
+import com.roland.android.flick.ui.components.Snackbar
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonItemState.Default
 import com.roland.android.flick.ui.screens.coming_soon.ComingSoonItemState.Expanded
+import com.roland.android.flick.ui.screens.details.ActionButtonsRow
+import com.roland.android.flick.ui.screens.details.MovieDetailsActions
+import com.roland.android.flick.ui.screens.details.MovieDetailsViewModel
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.PADDING_WIDTH
@@ -84,6 +92,7 @@ import com.roland.android.flick.utils.Constants.YEAR
 import com.roland.android.flick.utils.DynamicContainer
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.genres
+import com.roland.android.flick.utils.Extensions.refine
 import com.roland.android.flick.utils.Extensions.releaseDateRes
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.animatePagerItem
@@ -101,6 +110,74 @@ fun ComingSoonItem(
 	pagerState: PagerState,
 	maxHeight: Dp,
 	maxWidth: Dp,
+	viewModel: MovieDetailsViewModel = hiltViewModel(),
+	onExpand: () -> Unit,
+	viewMore: (Screens) -> Unit,
+	minimize: () -> Unit
+) {
+	val uiState = viewModel.movieDetailsUiState
+	val snackbarMessage = remember { mutableStateOf<String?>(null) }
+	val requestToLogin = remember { mutableStateOf(false) }
+
+	Box(contentAlignment = Alignment.BottomStart) {
+		ComingSoonItemVisuals(
+			movie = movie,
+			genreList = genreList,
+			expanded = expanded,
+			itemPage = itemPage,
+			pagerState = pagerState,
+			maxHeight = maxHeight,
+			maxWidth = maxWidth,
+			userIsLoggedIn = uiState.userIsLoggedIn,
+			actionHandled = uiState.response != null,
+			logInRequest = { requestToLogin.value = true },
+			detailsAction = viewModel::detailsAction,
+			onExpand = onExpand,
+			viewMore = viewMore,
+			minimize = minimize
+		)
+		if (snackbarMessage.value != null) {
+			Snackbar(
+				message = snackbarMessage.value!!,
+				paddingValues = PaddingValues(),
+				onDismiss = { viewModel.detailsAction(null) }
+			)
+		}
+		if (requestToLogin.value) {
+			Snackbar(
+				message = stringResource(R.string.sign_up_message),
+				paddingValues = PaddingValues(),
+				actionLabel = stringResource(R.string.sign_up),
+				action = { viewMore(Screens.AccountScreen) },
+				onDismiss = { requestToLogin.value = false }
+			)
+		}
+	}
+
+	// pops up custom snackbar to show response message returned from watchlist, favorite or rate actions.
+	LaunchedEffect(uiState.response) {
+		snackbarMessage.value = when (uiState.response) {
+			null -> null
+			is State.Error -> uiState.response.errorMessage.refine()
+			is State.Success -> uiState.response.data.statusMessage
+		}
+	}
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ComingSoonItemVisuals(
+	movie: Movie,
+	genreList: List<Genre>,
+	expanded: Boolean,
+	itemPage: Int,
+	pagerState: PagerState,
+	maxHeight: Dp,
+	maxWidth: Dp,
+	userIsLoggedIn: Boolean,
+	actionHandled: Boolean,
+	logInRequest: () -> Unit,
+	detailsAction: (MovieDetailsActions) -> Unit,
 	onExpand: () -> Unit,
 	viewMore: (Screens) -> Unit,
 	minimize: () -> Unit
@@ -232,6 +309,10 @@ fun ComingSoonItem(
 					ItemDetails(
 						movie = movie,
 						genreList = genreList,
+						userIsLoggedIn = userIsLoggedIn,
+						actionHandled = actionHandled,
+						logInRequest = logInRequest,
+						detailsAction = detailsAction,
 						viewMore = viewMore
 					)
 				}
@@ -245,6 +326,10 @@ fun ItemDetails(
 	movie: Movie,
 	genreList: List<Genre>,
 	inBottomSheet: Boolean = false,
+	userIsLoggedIn: Boolean,
+	actionHandled: Boolean,
+	logInRequest: () -> Unit,
+	detailsAction: (MovieDetailsActions) -> Unit,
 	viewMore: (Screens) -> Unit
 ) {
 	Column {
@@ -300,13 +385,26 @@ fun ItemDetails(
 			}
 			val movieType = if (movie.title != null) MOVIES else SERIES
 			val navInfo = Screens.MovieDetailsScreen(movieType, movie.id.toString())
-			Button(
-				onClick = { viewMore(navInfo) },
-				modifier = if (inBottomSheet) Modifier.fillMaxWidth() else Modifier
+			Row(
+				modifier = Modifier.fillMaxWidth(),
+				verticalAlignment = Alignment.CenterVertically
 			) {
-				Text(
-					text = stringResource(R.string.more),
-					modifier = Modifier.padding(horizontal = if (inBottomSheet) 0.dp else 20.dp)
+				Button(
+					onClick = { viewMore(navInfo) },
+					modifier = Modifier.weight(1f)
+				) {
+					Text(stringResource(R.string.more))
+				}
+				ActionButtonsRow(
+					mediaId = movie.id,
+					mediaType = if (movie.title == null) SERIES else MOVIES,
+					imdbId = null,
+					trailerKey = null,
+					userIsLoggedIn = userIsLoggedIn,
+					actionHandled = actionHandled,
+					inDetailsScreen = false,
+					onClick = detailsAction,
+					logInRequest = logInRequest
 				)
 			}
 		}

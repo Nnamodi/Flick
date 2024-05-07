@@ -142,11 +142,12 @@ private fun SnackbarVisuals(
 	) {
 		Text(
 			text = message,
-			modifier = Modifier.padding(20.dp),
+			modifier = Modifier
+				.weight(1f)
+				.padding(20.dp),
 			color = colorScheme.background,
 			style = MaterialTheme.typography.bodyMedium
 		)
-		Spacer(Modifier.weight(1f))
 		actionLabel?.let { label ->
 			TextButton(
 				onClick = action,

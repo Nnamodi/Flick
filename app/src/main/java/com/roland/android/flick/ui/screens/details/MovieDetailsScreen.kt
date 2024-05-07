@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -104,7 +105,7 @@ import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.getTrailer
 import com.roland.android.flick.utils.Extensions.getTrailerKey
 import com.roland.android.flick.utils.Extensions.refine
-import com.roland.android.flick.utils.WindowType
+import com.roland.android.flick.utils.WindowType.Portrait
 import com.roland.android.flick.utils.bounceClickable
 import com.roland.android.flick.utils.rememberWindowSize
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -142,7 +143,7 @@ fun MovieDetailsScreen(
 			val screenHeight = LocalConfiguration.current.screenWidthDp.dp
 			val windowSize = rememberWindowSize()
 			val inPortraitMode by remember(windowSize.width) {
-				derivedStateOf { windowSize.width == WindowType.Portrait }
+				derivedStateOf { windowSize.width == Portrait }
 			}
 			val videoHeightDivisor = if (inPortraitMode) 0.6f else 0.45f
 
@@ -504,31 +505,41 @@ private fun Info(
 }
 
 @Composable
-private fun ActionButtonsRow(
+fun ActionButtonsRow(
 	mediaId: Int,
 	mediaType: String,
 	imdbId: String?,
 	trailerKey: String?,
 	userIsLoggedIn: Boolean,
 	actionHandled: Boolean,
+	inDetailsScreen: Boolean = true,
 	onClick: (MovieDetailsActions) -> Unit,
 	logInRequest: () -> Unit
 ) {
 	val context = LocalContext.current
+	val buttons = Buttons.values().toMutableSet()
+	if (!inDetailsScreen) buttons.remove(Rate)
+	val rowModifier = if (inDetailsScreen) Modifier.fillMaxWidth() else Modifier
+	val windowSize = rememberWindowSize()
+	val horizontalArrangement = when {
+		!inDetailsScreen -> Arrangement.Start
+		windowSize.width == Portrait -> Arrangement.spacedBy(20.dp)
+		else -> Arrangement.SpaceAround
+	}
 
 	Row(
-		modifier = Modifier
-			.fillMaxWidth()
+		modifier = rowModifier
 			.padding(vertical = 12.dp)
 			.horizontalScroll(rememberScrollState()),
-		horizontalArrangement = Arrangement.spacedBy(20.dp),
+		horizontalArrangement = horizontalArrangement,
 		verticalAlignment = Alignment.CenterVertically
 	) {
-		Spacer(Modifier.width(8.dp))
-		Buttons.values().forEach { button ->
+		if (inDetailsScreen) Spacer(Modifier.width(8.dp))
+		buttons.forEach { button ->
 			ActionButton(
 				nameRes = button.nameRes,
 				defaultIcon = button.defaultIcon,
+				modifier = Modifier.scale(if (inDetailsScreen) 1f else 0.75f),
 				userIsLoggedIn = userIsLoggedIn,
 				requestDone = actionHandled,
 				onClick = {
@@ -542,19 +553,21 @@ private fun ActionButtonsRow(
 				logInRequest = logInRequest
 			)
 		}
-		OpenWithButton(imdbId, trailerKey)
-		ActionButton(
-			nameRes = R.string.share,
-			defaultIcon = Icons.Rounded.Share,
-			onClick = {
-				imdbId?.let {
-					onClick(MovieDetailsActions.Share(IMDB_BASE_URL + it, context))
-				} ?: kotlin.run {
-					showToast(context)
+		if (inDetailsScreen) {
+			OpenWithButton(imdbId, trailerKey)
+			ActionButton(
+				nameRes = R.string.share,
+				defaultIcon = Icons.Rounded.Share,
+				onClick = {
+					imdbId?.let {
+						onClick(MovieDetailsActions.Share(IMDB_BASE_URL + it, context))
+					} ?: kotlin.run {
+						showToast(context)
+					}
 				}
-			}
-		)
-		Spacer(Modifier.width(PADDING_WIDTH))
+			)
+			Spacer(Modifier.width(PADDING_WIDTH))
+		}
 	}
 }
 
@@ -562,6 +575,7 @@ private fun ActionButtonsRow(
 private fun ActionButton(
 	@StringRes nameRes: Int,
 	defaultIcon: ImageVector,
+	modifier: Modifier = Modifier,
 	userIsLoggedIn: Boolean = true,
 	requestDone: Boolean = false,
 	onClick: () -> Unit,
@@ -571,7 +585,7 @@ private fun ActionButton(
 	val actionHandled = rememberSaveable(requestDone) { mutableStateOf(requestDone) }
 
 	Column(
-		modifier = Modifier
+		modifier = modifier
 			.padding(horizontal = 10.dp)
 			.bounceClickable(!requestLoading.value) {
 				if (!userIsLoggedIn) {
