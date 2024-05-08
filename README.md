@@ -4,7 +4,7 @@ Watch trailers and browse info of millions of movies and series.
 ## Screenshots
 |::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|::::::::::::::::::::::::::::::::::::::::|
 |:--:|:--:|:--:|:--:|:--:|
-|![Launch screen](screenshots/launch_screen.png)|![Home screen](screenshots/home_screen.png)|![List screen](screenshots/list_screen.png)|![Details screen](screenshots/details_screen.png)|![Coming Soon screen](screenshots/coming_soon_screen.png)|
+|![Launch screen](screenshots/launch_screen.png)|![Home screen](screenshots/home_screen.png)|![Details screen](screenshots/details_screen.png)|![Category screen](screenshots/category_screen.png)|![Coming Soon screen](screenshots/coming_soon_screen.png)|
 
 ## About
 * The app uses [The Movie Database (TMDB) API](https://developer.themoviedb.org/docs) to fetch movie data.
@@ -13,7 +13,9 @@ Watch trailers and browse info of millions of movies and series.
 
     There are four _modules_ in this project:
 
-    `app` - The main module serving as the user interface/communication layer.
+    `app` - The main module serving as the user interface/communication layer
+
+    `data-local` - Stores and fetches stored data from local source using persistence frameworks
 
     `data-remote` - Fetches data from the internet and manipulates it
 
@@ -30,6 +32,7 @@ Watch trailers and browse info of millions of movies and series.
 * [Flow](https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutine.flow/-flow) - An asynchronous data stream that sequentially emits values and completes normally or with an exception.
 * [Stateflow](https://developer.android.com/kotlin/flow/stateflow-and-sharedflow) - An observable state-holder that emits data stream to its collectors - updating the UI incessantly.
 * [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel) - Stores UI-related data that isn't destroyed on UI changes.
+* [Datastore](https://developer.android.com/topic/libraries/architecture/datastore) - Jetpack DataStore is a data storage solution that allows you store key-value pairs asynchronously.
 * [Retrofit](https://square.github.io/retrofit) - A type-safe HTTP client for Android and Java.
 * [Moshi](https://sqaure.github.io/moshi) - A modern JSON library for Kotlin and Java.
 * [OkHttp](https://sqaure.github.io/okhttp) - An efficient HTTP & HTTP/2 client for Android and Java.
