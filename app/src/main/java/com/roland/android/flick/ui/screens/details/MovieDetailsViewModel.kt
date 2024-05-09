@@ -13,6 +13,8 @@ import com.roland.android.domain.usecase.GetCastDetailsUseCase
 import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
+import com.roland.android.domain.usecase.MediaActions
+import com.roland.android.domain.usecase.MediaUtilUseCase
 import com.roland.android.flick.R
 import com.roland.android.flick.models.accountMediaUpdated
 import com.roland.android.flick.models.userAccountDetails
@@ -33,6 +35,7 @@ class MovieDetailsViewModel @Inject constructor(
 	private val tvShowDetailsUseCase: GetTvShowDetailsUseCase,
 	private val seasonDetailsUseCase: GetSeasonDetailsUseCase,
 	private val castDetailsUseCase: GetCastDetailsUseCase,
+	private val mediaUtilUseCase: MediaUtilUseCase,
 	private val mediaUtil: MediaUtil,
 	private val converter: ResponseConverter
 ) : ViewModel() {
@@ -173,20 +176,37 @@ class MovieDetailsViewModel @Inject constructor(
 				)
 			}
 			is MovieDetailsActions.RateMedia -> {
-				if (action.rateValue == 0f) return // awaiting implementation
-				mediaUtil.rateMedia(
+				rateMedia(
 					mediaId = action.mediaId,
 					mediaType = action.mediaType,
-					rateValue = action.rateValue,
-					result = { response ->
-						_movieDetailsUiState.update { it.copy(response = response) }
-					}
+					rateValue = action.rateValue
 				)
 			}
 			is MovieDetailsActions.Share -> shareUrl(action.mediaUrl, action.context)
 			null -> {
 				_movieDetailsUiState.update { it.copy(response = null) }
 			}
+		}
+	}
+
+	private fun rateMedia(
+		mediaId: Int,
+		mediaType: String,
+		rateValue: Float
+	) {
+		viewModelScope.launch {
+			mediaUtilUseCase.execute(
+				MediaUtilUseCase.Request(
+					mediaType = mediaType,
+					mediaActions = MediaActions.Rate(mediaId, rateValue)
+				)
+			)
+				.map { converter.convertResponse(it) }
+				.collect { response ->
+					_movieDetailsUiState.update { it.copy(response = response) }
+					if (response !is State.Success) return@collect
+					accountMediaUpdated.value = true
+				}
 		}
 	}
 

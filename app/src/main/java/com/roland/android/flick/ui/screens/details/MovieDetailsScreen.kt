@@ -62,6 +62,7 @@ import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails
 import com.roland.android.domain.entity.Series
 import com.roland.android.domain.entity.Video
+import com.roland.android.domain.entity.auth_response.Response
 import com.roland.android.flick.R
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.MovieDetailsModel
@@ -88,11 +89,11 @@ import com.roland.android.flick.ui.components.showToast
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScaffold
 import com.roland.android.flick.ui.screens.CommonScreen
-import com.roland.android.flick.ui.screens.details.Buttons.Favorite
 import com.roland.android.flick.ui.screens.details.Buttons.Rate
 import com.roland.android.flick.ui.screens.details.Buttons.Watchlist
 import com.roland.android.flick.ui.screens.details.loading.MovieDetailsLoadingUi
 import com.roland.android.flick.ui.screens.details.sheets.CastDetailsSheet
+import com.roland.android.flick.ui.screens.details.sheets.RateMediaDialog
 import com.roland.android.flick.ui.screens.details.sheets.SeasonSelectionSheet
 import com.roland.android.flick.ui.sheets.MovieDetailsSheet
 import com.roland.android.flick.ui.theme.FlickTheme
@@ -244,6 +245,7 @@ private fun MoviesDetails(
 			modifier = columnModifier,
 			userIsLoggedIn = uiState.userIsLoggedIn,
 			actionHandled = uiState.response != null,
+			response = uiState.response,
 			logInRequest = logInRequest,
 			castDetailsRequest = request,
 			detailsAction = action,
@@ -297,6 +299,7 @@ private fun ShowDetails(
 				modifier = columnModifier,
 				userIsLoggedIn = uiState.userIsLoggedIn,
 				actionHandled = uiState.response != null,
+				response = uiState.response,
 				logInRequest = logInRequest,
 				openSeasonSelectionSheet = { openSeasonSelectionSheet.value = true },
 				castDetailsRequest = request,
@@ -323,6 +326,7 @@ private fun Details(
 	casts: List<Cast>,
 	seasonDetails: State<SeasonDetailsModel>? = null,
 	castDetails: State<CastDetailsModel>? = null,
+	response: State<Response>?,
 	recommendedMovies: MutableStateFlow<PagingData<Movie>>,
 	similarMovies: MutableStateFlow<PagingData<Movie>>,
 	genres: Array<List<Genre>>,
@@ -339,6 +343,7 @@ private fun Details(
 ) {
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val openCastDetailsSheet = remember { mutableStateOf(false) }
+	val openRateMediaDialog = remember { mutableStateOf(false) }
 	val moreVideos = videos.filterNot { it == videos.getTrailer() }
 
 	Column(modifier) {
@@ -351,6 +356,7 @@ private fun Details(
 			userIsLoggedIn = userIsLoggedIn,
 			actionHandled = actionHandled,
 			onClick = detailsAction,
+			openRateMediaDialog = { openRateMediaDialog.value = true },
 			logInRequest = logInRequest
 		)
 		MovieCastList(
@@ -396,6 +402,16 @@ private fun Details(
 			uiState = castDetails,
 			onMovieClick = { clickedMovieItem.value = it },
 			closeSheet = { openCastDetailsSheet.value = false }
+		)
+	}
+
+	if (openRateMediaDialog.value) {
+		RateMediaDialog(
+			movie = movie,
+			series = series,
+			response = response,
+			onMediaRated = detailsAction,
+			closeSheet = { openRateMediaDialog.value = false }
 		)
 	}
 }
@@ -514,6 +530,7 @@ fun ActionButtonsRow(
 	actionHandled: Boolean,
 	inDetailsScreen: Boolean = true,
 	onClick: (MovieDetailsActions) -> Unit,
+	openRateMediaDialog: () -> Unit = {},
 	logInRequest: () -> Unit
 ) {
 	val context = LocalContext.current
@@ -529,7 +546,7 @@ fun ActionButtonsRow(
 
 	Row(
 		modifier = rowModifier
-			.padding(vertical = 12.dp)
+			.padding(vertical = if (inDetailsScreen) 12.dp else 0.dp)
 			.horizontalScroll(rememberScrollState()),
 		horizontalArrangement = horizontalArrangement,
 		verticalAlignment = Alignment.CenterVertically
@@ -543,10 +560,12 @@ fun ActionButtonsRow(
 				userIsLoggedIn = userIsLoggedIn,
 				requestDone = actionHandled,
 				onClick = {
+					if (button == Rate) {
+						openRateMediaDialog(); return@ActionButton
+					}
 					val action = when (button) {
 						Watchlist -> MovieDetailsActions.AddToWatchlist(mediaId, mediaType)
-						Favorite -> MovieDetailsActions.FavoriteMedia(mediaId, mediaType)
-						Rate -> MovieDetailsActions.RateMedia(mediaId, mediaType, 0f)
+						else -> MovieDetailsActions.FavoriteMedia(mediaId, mediaType)
 					}
 					onClick(action)
 				},

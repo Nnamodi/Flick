@@ -99,6 +99,9 @@
     <string name="watchlisted_series">Your Watchlisted Series</string>
     <string name="rated_movies">Your Rated Movies</string>
     <string name="rated_series">Your Rated Series</string>
+    <string name="rate_movie">Rate movie</string>
+    <string name="rate_series">Rate series</string>
+    <string name="your_rating">Your rating: %d/10</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>
