@@ -1,5 +1,6 @@
 package com.roland.android.data_remote.utils
 
+import com.roland.android.data_remote.network.model.AccountRatingModel
 import com.roland.android.data_remote.network.model.CastDetailsModel
 import com.roland.android.data_remote.network.model.CastModel
 import com.roland.android.data_remote.network.model.DatesModel
@@ -32,6 +33,7 @@ import com.roland.android.data_remote.network.model.auth_response.SessionIdModel
 import com.roland.android.data_remote.network.model.auth_response.SessionIdResponseModel
 import com.roland.android.data_remote.network.model.auth_response.TmdbAvatarModel
 import com.roland.android.data_remote.network.model.auth_response.WatchlistMediaRequestModel
+import com.roland.android.domain.entity.AccountRating
 import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.Dates
@@ -240,6 +242,7 @@ object Converters {
 		movieModel.genreIds,
 		movieModel.backdropPath,
 		movieModel.posterPath,
+		convertToAccountRating(movieModel.accountRating),
 		movieModel.language,
 		movieModel.popularity,
 		movieModel.videoAvailable,
@@ -259,6 +262,7 @@ object Converters {
 		multiModel.genreIds ?: emptyList(),
 		multiModel.backdropPath,
 		multiModel.posterPath,
+		accountRating = AccountRating(),
 		multiModel.language ?: "",
 		multiModel.popularity,
 		multiModel.videoAvailable,
@@ -318,6 +322,11 @@ object Converters {
 	private fun convertToDates(datesModel: DatesModel?) = Dates(
 		datesModel?.maximum ?: "",
 		datesModel?.minimum ?: ""
+	)
+
+	private fun convertToAccountRating(accountRatingModel: AccountRatingModel) = AccountRating(
+		accountRatingModel.createdAt,
+		accountRatingModel.value,
 	)
 
 	private fun convertToProductionCompany(model: ProductionCompanyModel) = ProductionCompany(

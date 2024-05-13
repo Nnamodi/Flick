@@ -71,11 +71,19 @@ object Extensions {
 			val weekFormatter = SimpleDateFormat(DAY, Locale.getDefault())
 			val thisWeek = Calendar.getInstance()
 			thisWeek.add(Calendar.WEEK_OF_MONTH, 1)
-
 			return parsedDate?.let {
 				if (parsedDate <= thisWeek.time) weekFormatter.format(it) else formatter.format(it)
 			} ?: this
 		} catch (e: Exception) { "_" }
+	}
+
+	fun String?.isReleased(): Boolean {
+		return try {
+			val today = Calendar.getInstance().time
+			val dateFormat = SimpleDateFormat(DEFAULT_PATTERN, Locale.getDefault())
+			val releaseDate = dateFormat.parse(this ?: "") ?: today
+			releaseDate <= today
+		} catch (e: Exception) { true }
 	}
 
 	fun String.getName(): Int {
@@ -195,16 +203,22 @@ object Extensions {
 		Row(
 			modifier = Modifier
 				.fillMaxWidth()
-				.padding(20.dp)
 				.padding(top = 50.dp),
 			horizontalArrangement = Arrangement.Center
 		) {
 			when (loadState.append) {
 				is LoadState.Loading -> {
-					CircularProgressIndicator(Modifier.size(30.dp))
+					CircularProgressIndicator(
+						modifier = Modifier
+							.padding(20.dp)
+							.size(30.dp)
+					)
 				}
 				is LoadState.Error -> {
-					OutlinedButton(onClick = { retry() }) {
+					OutlinedButton(
+						onClick = { retry() },
+						modifier = Modifier.padding(20.dp)
+					) {
 						Text(stringResource(R.string.more))
 					}
 				}

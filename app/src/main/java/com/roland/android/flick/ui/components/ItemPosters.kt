@@ -5,12 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,11 +33,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -214,53 +220,79 @@ fun CancellableItemPoster(
 	movie: Movie,
 	modifier: Modifier = Modifier,
 	requestDone: Boolean,
+	showUserRating: Boolean,
 	onClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit
 ) {
 	val requestLoading = rememberSaveable { mutableStateOf(false) }
 	val actionHandled = rememberSaveable(requestDone) { mutableStateOf(requestDone) }
 
-	Box(
+	Column(
 		modifier = modifier
 			.padding(end = 12.dp)
-			.size(POSTER_WIDTH_SMALL, POSTER_HEIGHT_SMALL)
+			.width(POSTER_WIDTH_SMALL)
 			.bounceClickable { onClick(movie) }
 			.clip(MaterialTheme.shapes.large)
+			.background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)),
+		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		val mediaType = if (movie.title == null) SERIES else MOVIES
-		val state = remember { mutableStateOf<AsyncImagePainter.State>(Empty) }
-
-		AsyncImage(
-			model = MOVIE_IMAGE_BASE_URL_W342 + movie.posterPath,
-			contentDescription = movie.title ?: movie.tvName,
+		Box(
 			modifier = Modifier
-				.fillMaxSize()
-				.painterPlaceholder(state.value),
-			onState = { state.value = it },
-			contentScale = ContentScale.Crop
-		)
-		Row(Modifier.fillMaxWidth()) {
-			if (requestLoading.value) {
-				CircularProgressIndicator(
-					modifier = Modifier
-						.padding(6.dp)
-						.size(20.dp),
-					strokeWidth = 2.dp
-				)
-			} else {
-				Icon(
-					imageVector = Icons.Rounded.Cancel,
-					contentDescription = null,
-					modifier = Modifier
-						.padding(6.dp)
-						.clickable {
-							onCancel(movie.id, mediaType)
-							requestLoading.value = true
-						}
-				)
+				.height(POSTER_HEIGHT_SMALL)
+				.clip(MaterialTheme.shapes.large)
+		) {
+			val mediaType = if (movie.title == null) SERIES else MOVIES
+			val state = remember { mutableStateOf<AsyncImagePainter.State>(Empty) }
+
+			AsyncImage(
+				model = MOVIE_IMAGE_BASE_URL_W342 + movie.posterPath,
+				contentDescription = movie.title ?: movie.tvName,
+				modifier = Modifier
+					.fillMaxSize()
+					.painterPlaceholder(state.value),
+				onState = { state.value = it },
+				contentScale = ContentScale.Crop
+			)
+			Row(
+				modifier = Modifier.fillMaxWidth(),
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				if (requestLoading.value) {
+					CircularProgressIndicator(
+						modifier = Modifier
+							.padding(6.dp)
+							.size(20.dp),
+						strokeWidth = 2.dp
+					)
+				} else {
+					Icon(
+						imageVector = Icons.Rounded.Cancel,
+						contentDescription = null,
+						modifier = Modifier
+							.padding(6.dp)
+							.scale(0.8f)
+							.clickable {
+								onCancel(movie.id, mediaType)
+								requestLoading.value = true
+							}
+							.clip(CircleShape)
+							.background(Color.Black),
+						tint = Color.White
+					)
+				}
+				Spacer(Modifier.weight(1f))
+				RatingBar(Small, movie.voteAverage)
 			}
-			Spacer(Modifier.weight(1f))
-			RatingBar(Small, movie.voteAverage)
+		}
+
+		if (showUserRating) {
+			Text(
+				text = stringResource(R.string.your_rating, movie.accountRating.value),
+				modifier = Modifier.padding(12.dp),
+				fontSize = 12.sp,
+				fontStyle = FontStyle.Italic,
+				textAlign = TextAlign.Center
+			)
 		}
 	}
 

@@ -37,7 +37,7 @@ data class Series(
 
 data class ExternalIds(
 	val id: Int = 0,
-	val imdbId: String = "",
+	val imdbId: String? = null,
 	val tvdbId: Int? = null,
 	val wikidataId: String? = null,
 	val facebookId: String? = null,

@@ -105,6 +105,7 @@ import com.roland.android.flick.utils.Constants.YEAR
 import com.roland.android.flick.utils.Extensions.dateFormat
 import com.roland.android.flick.utils.Extensions.getTrailer
 import com.roland.android.flick.utils.Extensions.getTrailerKey
+import com.roland.android.flick.utils.Extensions.isReleased
 import com.roland.android.flick.utils.Extensions.refine
 import com.roland.android.flick.utils.WindowType.Portrait
 import com.roland.android.flick.utils.bounceClickable
@@ -355,6 +356,7 @@ private fun Details(
 			trailerKey = videos.getTrailerKey(),
 			userIsLoggedIn = userIsLoggedIn,
 			actionHandled = actionHandled,
+			mediaIsReleased = (movie?.releaseDate ?: series?.firstAirDate).isReleased(),
 			onClick = detailsAction,
 			openRateMediaDialog = { openRateMediaDialog.value = true },
 			logInRequest = logInRequest
@@ -433,12 +435,13 @@ private fun Info(
 		modifier = Modifier.padding(horizontal = PADDING_WIDTH),
 		verticalAlignment = Alignment.CenterVertically
 	) {
-		val releaseDate = (movie?.releaseDate ?: series?.firstAirDate)?.dateFormat(YEAR)
+		val mediaReleaseDate = movie?.releaseDate ?: series?.firstAirDate
+		val releaseDate = mediaReleaseDate?.dateFormat(YEAR)
 		val lastAirDate = series?.lastAirDate?.dateFormat(YEAR)
 
 		releaseDate?.let {
 			Text(
-				text = releaseDate,
+				text = if (mediaReleaseDate.isReleased()) it else stringResource(R.string.coming_soon),
 				modifier = Modifier.alpha(0.8f),
 				fontSize = 12.sp,
 				fontStyle = FontStyle.Italic,
@@ -446,7 +449,7 @@ private fun Info(
 			)
 		}
 		lastAirDate?.let {
-			if (!series.inProduction && (lastAirDate != releaseDate)) {
+			if (!series.inProduction && (lastAirDate != releaseDate) && mediaReleaseDate.isReleased()) {
 				Text(
 					text = "-$lastAirDate",
 					modifier = Modifier.alpha(0.8f),
@@ -456,7 +459,7 @@ private fun Info(
 				)
 			}
 		}
-		if (series?.inProduction == true) {
+		if (series?.inProduction == true && mediaReleaseDate.isReleased()) {
 			Text(
 				text = stringResource(R.string.in_production),
 				modifier = Modifier
@@ -529,13 +532,14 @@ fun ActionButtonsRow(
 	userIsLoggedIn: Boolean,
 	actionHandled: Boolean,
 	inDetailsScreen: Boolean = true,
+	mediaIsReleased: Boolean = false,
 	onClick: (MovieDetailsActions) -> Unit,
 	openRateMediaDialog: () -> Unit = {},
 	logInRequest: () -> Unit
 ) {
 	val context = LocalContext.current
 	val buttons = Buttons.values().toMutableSet()
-	if (!inDetailsScreen) buttons.remove(Rate)
+	if (!inDetailsScreen || !mediaIsReleased) buttons.remove(Rate)
 	val rowModifier = if (inDetailsScreen) Modifier.fillMaxWidth() else Modifier
 	val windowSize = rememberWindowSize()
 	val horizontalArrangement = when {

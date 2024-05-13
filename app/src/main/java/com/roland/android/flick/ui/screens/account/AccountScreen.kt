@@ -176,6 +176,7 @@ private fun MediaRows(
 				showsData = showData.ratedList,
 				header = stringResource(R.string.rated),
 				response = response,
+				showUserRating = true,
 				onMovieClick = { clickedMovieItem.value = it },
 				onCancel = { mediaId, mediaType ->
 					action(AccountActions.DeleteMediaRating(mediaId, mediaType))

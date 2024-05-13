@@ -6,12 +6,18 @@ Watch trailers and browse info of millions of movies and series.
 |:--:|:--:|:--:|:--:|:--:|
 |![Launch screen](screenshots/launch_screen.png)|![Home screen](screenshots/home_screen.png)|![Details screen](screenshots/details_screen.png)|![Category screen](screenshots/category_screen.png)|![Coming Soon screen](screenshots/coming_soon_screen.png)|
 
+## Features
+* Create an account in app or sign-in, for a personalized experience
+* Add movies and series to your watchlist
+* Favorite your best movies and series
+* Rate released movies and series as you like it
+
 ## About
 * The app uses [The Movie Database (TMDB) API](https://developer.themoviedb.org/docs) to fetch movie data.
 
 * This project was built with Clean Architecture and MVVM pattern.
 
-    There are four _modules_ in this project:
+    There are five _modules_ in this project:
 
     `app` - The main module serving as the user interface/communication layer
 

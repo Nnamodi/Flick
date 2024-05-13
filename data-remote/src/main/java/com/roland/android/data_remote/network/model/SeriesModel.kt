@@ -73,7 +73,7 @@ data class ExternalIdsModel(
 	@Json(name = "id")
 	val id: Int = 0,
 	@Json(name = "imdb_id")
-	val imdbId: String = "",
+	val imdbId: String? = null,
 	@Json(name = "tvdb_id")
 	val tvdbId: Int? = null,
 	@Json(name = "wikidata_id")

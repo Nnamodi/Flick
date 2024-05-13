@@ -1,6 +1,7 @@
 package com.roland.android.flick.models
 
 import androidx.paging.PagingData
+import com.roland.android.domain.entity.AccountRating
 import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.Episode
@@ -22,7 +23,8 @@ object SampleData {
 		overview = "The story of J. Robert Oppenheimer's role in the development of the atomic bomb during World War II.",
 		genreIds = listOf(11, 24, 5),
 		voteAverage = 8.2,
-		releaseDate = "2024-02-12"
+		releaseDate = "2024-02-12",
+		accountRating = AccountRating(value = 9)
 	)
 	private val movie2 = Movie(
 		id = 1,
@@ -58,9 +60,6 @@ object SampleData {
 	)
 
 	val trendingMovies = PagingData.from(listOf(movie1, movie2, movie3, movie4)).refactor()
-	val popularMovies = PagingData.from(listOf(movie1, movie2)).refactor()
-	val nowPlayingMovies = PagingData.from(listOf(movie1, movie2, movie4)).refactor()
-	val topRatedMovies = PagingData.from(listOf(movie1, movie4)).refactor()
 	val upcomingMovies = PagingData.from(listOf(movie1, movie2, movie3, movie4, movie5)).refactor()
 	val bollywoodMovies = PagingData.from(listOf(movie1, movie2, movie3)).refactor()
 	val animeCollections = PagingData.from(listOf(movie1, movie3)).refactor()
@@ -99,9 +98,6 @@ object SampleData {
 
 	// TvShows
 	val trendingShows = PagingData.from(listOf(movie2, movie3, movie4)).refactor()
-	val popularShows = PagingData.from(listOf(movie1, movie2, movie3, movie4)).refactor()
-	val showsAiringToday = PagingData.from(listOf(movie1, movie2, movie4)).refactor()
-	val topRatedShows = PagingData.from(listOf(movie1, movie2)).refactor()
 	val showsSoonToAir = PagingData.from(listOf(movie1, movie4)).refactor()
 	val bollywoodShows = PagingData.from(listOf(movie1, movie2, movie3, movie4)).refactor()
 	val animeShows = PagingData.from(listOf(movie1, movie3, movie4)).refactor()
@@ -150,7 +146,6 @@ object SampleData {
 			Episode(id = 6, name = "Episode 7", voteAverage = 5.8)
 		)
 	)
-	val episodeDetails = Episode(episodeNumber = 1)
 
 	// Other
 	val genreList = listOf(
@@ -160,13 +155,6 @@ object SampleData {
 		Genre(15, "Drama"),
 		Genre(24, "Adventure"),
 		Genre(7, "Thriller")
-	)
-	private val movieCredits = MovieCredits(
-		cast = listOf(
-			Cast(name = "Jack Jones", character = "Red"),
-			Cast(name = "Downey Furry", character = "Pioneer"),
-			Cast(name = "William Tarnish", character = "Aram")
-		)
 	)
 	val movieCastDetails = CastDetails(
 		name = "Jack Jones",

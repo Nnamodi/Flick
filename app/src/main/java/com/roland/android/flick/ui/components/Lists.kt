@@ -232,6 +232,7 @@ fun HorizontalPosters(
 	showsData: MutableStateFlow<PagingData<Movie>>,
 	header: String,
 	response: State<Response>?,
+	showUserRating: Boolean = false,
 	onMovieClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit,
 	onCancelled: (String) -> Unit,
@@ -266,6 +267,7 @@ fun HorizontalPosters(
 				pagerState = pagerState,
 				itemIsCancellable = true,
 				requestDone = response != null,
+				showUserRating = showUserRating,
 				onMovieClick = onMovieClick,
 				onCancel = onCancel
 			)
@@ -297,6 +299,7 @@ private fun PostersPager(
 	pagerState: PagerState,
 	itemIsCancellable: Boolean = false,
 	requestDone: Boolean = false,
+	showUserRating: Boolean = false,
 	onMovieClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
@@ -310,6 +313,7 @@ private fun PostersPager(
 				showFullList = !itemIsCancellable,
 				itemIsCancellable = itemIsCancellable,
 				requestDone = requestDone,
+				showUserRating = showUserRating,
 				onMovieClick = onMovieClick,
 				onCancel = onCancel
 			)
@@ -319,6 +323,7 @@ private fun PostersPager(
 				showFullList = !itemIsCancellable,
 				itemIsCancellable = itemIsCancellable,
 				requestDone = requestDone,
+				showUserRating = showUserRating,
 				onMovieClick = onMovieClick,
 				onCancel = onCancel
 			)
@@ -332,6 +337,7 @@ private fun MovieListPage(
 	showFullList: Boolean,
 	itemIsCancellable: Boolean = false,
 	requestDone: Boolean = false,
+	showUserRating: Boolean = false,
 	onMovieClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
@@ -359,6 +365,7 @@ private fun MovieListPage(
 					CancellableItemPoster(
 						movie = it,
 						requestDone = requestDone,
+						showUserRating = showUserRating,
 						onClick = onMovieClick,
 						onCancel = onCancel
 					)

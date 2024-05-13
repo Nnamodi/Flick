@@ -7,6 +7,7 @@ data class Movie(
 	val genreIds: List<Int> = emptyList(),
 	val backdropPath: String? = null,
 	val posterPath: String? = null,
+	val accountRating: AccountRating = AccountRating(),
 	val language: String = "",
 	val popularity: Double = 0.0,
 	val videoAvailable: Boolean? = null,
@@ -18,4 +19,9 @@ data class Movie(
 	val tvName: String? = null,
 	val firstAirDate: String? = null,
 	val originCountry: List<String>? = null
+)
+
+data class AccountRating(
+	val createdAt: String = "",
+	val value: Int = 0
 )
