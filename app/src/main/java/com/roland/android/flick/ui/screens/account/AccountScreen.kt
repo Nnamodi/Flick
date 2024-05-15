@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.usecase.Category
 import com.roland.android.domain.usecase.Category.FAVORITED_MOVIES
@@ -57,6 +58,8 @@ fun AccountScreen(
 ) {
 	val loadingErrorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 	val actionResponseMessage = remember { mutableStateOf<String?>(null) }
+	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
+	var genres = arrayOf<List<Genre>>()
 	val windowSize = rememberWindowSize()
 
 	CommonScaffold(
@@ -88,9 +91,22 @@ fun AccountScreen(
 				uiState = uiState,
 				paddingValues = paddingValues,
 				action = action,
+				onMovieClick = { clickedMovieItem.value = it },
+				fetchGenres = { genres = it },
 				onError = { loadingErrorMessage.value = it },
 				onCancelResult = { actionResponseMessage.value = it },
 				navigate = navigate
+			)
+		}
+
+		if (clickedMovieItem.value != null) {
+			val itemIsMovie = clickedMovieItem.value!!.title != null
+
+			MovieDetailsSheet(
+				movie = clickedMovieItem.value!!,
+				genreList = if (itemIsMovie) genres[0] else genres[1],
+				viewMore = navigate,
+				closeSheet = { clickedMovieItem.value = null }
 			)
 		}
 
@@ -125,6 +141,8 @@ fun AccountScreen(
 private fun MediaRows(
 	uiState: AccountUiState,
 	paddingValues: PaddingValues,
+	onMovieClick: (Movie) -> Unit,
+	fetchGenres: (Array<List<Genre>>) -> Unit,
 	action: (AccountActions) -> Unit,
 	onError: (String?) -> Unit,
 	onCancelResult: (String) -> Unit,
@@ -132,7 +150,6 @@ private fun MediaRows(
 ) {
 	val (_, movies, shows, response) = uiState
 	val windowSize = rememberWindowSize()
-	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val seeMore: (Category) -> Unit = {
 		navigate(Screens.MovieListScreen(it.name))
 	}
@@ -143,14 +160,14 @@ private fun MediaRows(
 			AccountLoadingUi(isLoading = error == null)
 			onError(error)
 		}
-	) { movieData, showData ->
+	) { movieData, showData -> fetchGenres(arrayOf(movieData.genres, showData.genres))
 		Column {
 			HorizontalPosters(
 				moviesData = movieData.favoriteList,
 				showsData = showData.favoriteList,
 				header = stringResource(R.string.favorites),
 				response = response,
-				onMovieClick = { clickedMovieItem.value = it },
+				onMovieClick = onMovieClick,
 				onCancel = { mediaId, mediaType ->
 					action(AccountActions.UnFavoriteMedia(mediaId, mediaType))
 				},
@@ -163,7 +180,7 @@ private fun MediaRows(
 				showsData = showData.watchlist,
 				header = stringResource(R.string.watchlist),
 				response = response,
-				onMovieClick = { clickedMovieItem.value = it },
+				onMovieClick = onMovieClick,
 				onCancel = { mediaId, mediaType ->
 					action(AccountActions.RemoveFromWatchlist(mediaId, mediaType))
 				},
@@ -177,7 +194,7 @@ private fun MediaRows(
 				header = stringResource(R.string.rated),
 				response = response,
 				showUserRating = true,
-				onMovieClick = { clickedMovieItem.value = it },
+				onMovieClick = onMovieClick,
 				onCancel = { mediaId, mediaType ->
 					action(AccountActions.DeleteMediaRating(mediaId, mediaType))
 				},
@@ -189,17 +206,6 @@ private fun MediaRows(
 				Modifier.height(
 					50.dp + (if (windowSize.width == Portrait) NavigationBarHeight else 0.dp)
 				)
-			)
-		}
-
-		if (clickedMovieItem.value != null) {
-			val itemIsMovie = clickedMovieItem.value!!.title != null
-
-			MovieDetailsSheet(
-				movie = clickedMovieItem.value!!,
-				genreList = if (itemIsMovie) movieData.genres else showData.genres,
-				viewMore = navigate,
-				closeSheet = { clickedMovieItem.value = null }
 			)
 		}
 	}

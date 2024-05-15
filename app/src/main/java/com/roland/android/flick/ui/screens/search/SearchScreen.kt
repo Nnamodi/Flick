@@ -155,7 +155,11 @@ fun SearchScreen(
 			}
 
 			DisposableEffect(Unit) {
-				onDispose { rememberScrollStates.value = true }
+				onDispose {
+					rememberScrollStates.value = true
+					if (searchQuery.isNotEmpty()) return@onDispose
+					action(SearchActions.ToggleCategory(ALL))
+				}
 			}
 		}
 

@@ -102,6 +102,7 @@
     <string name="rate_movie">Rate movie</string>
     <string name="rate_series">Rate series</string>
     <string name="your_rating">Your rating: %d/10</string>
+    <string name="sign_up_appeal">Sign up for a personalized experience and to unlock more features like watchlisting, favoriting and rating movies and series as you like it.</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

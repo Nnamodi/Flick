@@ -1,11 +1,17 @@
 package com.roland.android.flick.ui.screens.auth
 
 import android.net.Uri
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -16,15 +22,27 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.roland.android.domain.entity.auth_response.RequestToken
+import com.roland.android.flick.R
+import com.roland.android.flick.models.AccountModel
+import com.roland.android.flick.models.ResponseModel
 import com.roland.android.flick.models.TokenModel
 import com.roland.android.flick.state.AuthUiState
+import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.SignUpButton
 import com.roland.android.flick.ui.screens.CommonScreen
+import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.ChromeTabUtils
 import com.roland.android.flick.utils.Constants
+import com.roland.android.flick.utils.Constants.NavigationBarHeight
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.rememberWindowSize
 
@@ -104,20 +122,60 @@ private fun SignUpScreen(
 	val inPortraitMode by remember(windowSize) {
 		derivedStateOf { windowSize.width == WindowType.Portrait }
 	}
-	val bottomPadding = if (inPortraitMode) Constants.NavigationBarHeight else 0.dp
+	val bottomPadding = if (inPortraitMode) NavigationBarHeight else 0.dp
 
 	Box(
-		modifier = Modifier
-			.fillMaxSize()
-			.padding(bottom = bottomPadding + paddingValues.calculateBottomPadding()),
+		modifier = Modifier.fillMaxSize(),
 		contentAlignment = Alignment.BottomCenter
 	) {
-		// Random movie image for the background
-		SignUpButton(
-			loading = isLoading,
-			failed = requestFailed || approvalCancelled,
-			completed = tokenData?.accessTokenResponse?.success == true,
-			onClick = { action(AuthActions.GenerateRequest) }
+		Image(
+			painter = painterResource(R.drawable.sign_in_background),
+			contentDescription = null,
+			modifier = Modifier.fillMaxSize(),
+			contentScale = ContentScale.Crop
 		)
+		Column(
+			modifier = Modifier
+				.padding(bottom = bottomPadding + paddingValues.calculateBottomPadding())
+				.padding(32.dp)
+				.clip(MaterialTheme.shapes.large)
+				.background(MaterialTheme.colorScheme.background.copy(alpha = 0.7f))
+				.padding(20.dp)
+				.animateContentSize(),
+			horizontalAlignment = Alignment.CenterHorizontally
+		) {
+			Text(
+				text = stringResource(R.string.app_name),
+				modifier = Modifier.padding(bottom = 20.dp),
+				color = MaterialTheme.colorScheme.onBackground,
+				fontWeight = FontWeight.Bold,
+				style = MaterialTheme.typography.titleLarge
+			)
+			Text(
+				text = stringResource(R.string.sign_up_appeal),
+				modifier = Modifier.padding(bottom = 30.dp),
+				color = MaterialTheme.colorScheme.onBackground
+			)
+			SignUpButton(
+				loading = isLoading,
+				failed = requestFailed || approvalCancelled,
+				completed = tokenData?.accessTokenResponse?.success == true,
+				modifier = Modifier.padding(horizontal = 20.dp),
+				onClick = { action(AuthActions.GenerateRequest) }
+			)
+		}
+	}
+}
+
+@Preview
+@Composable
+private fun SignUpScreenPreview() {
+	FlickTheme(darkTheme = true) {
+		val uiState = AuthUiState(
+			tokenData = State.Success(TokenModel()),
+			responseData = State.Success(ResponseModel()),
+			accountData = State.Success(AccountModel())
+		)
+		SignUpScreen(uiState) {}
 	}
 }

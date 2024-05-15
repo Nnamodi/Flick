@@ -15,12 +15,12 @@ data class MovieModel(
 	val backdropPath: String? = null,
 	@Json(name = "poster_path")
 	val posterPath: String? = null,
-	@Json(name = "account_rating")
-	val accountRating: AccountRatingModel = AccountRatingModel(),
 	@Json(name = "original_language")
 	val language: String = "",
 	@Json(name = "popularity")
 	val popularity: Double = 0.0,
+	@Json(name = "rating")
+	val rating: Int = 0,
 	@Json(name = "video")
 	val videoAvailable: Boolean? = null,
 	@Json(name = "vote_average")
@@ -38,11 +38,4 @@ data class MovieModel(
 	val firstAirDate: String? = null,
 	@Json(name = "origin_country")
 	val originCountry: List<String>? = null
-)
-
-data class AccountRatingModel(
-	@Json(name = "created_at")
-	val createdAt: String = "",
-	@Json(name = "value")
-	val value: Int = 0
 )
