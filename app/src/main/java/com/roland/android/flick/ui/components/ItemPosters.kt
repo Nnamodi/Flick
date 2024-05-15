@@ -287,8 +287,8 @@ fun CancellableItemPoster(
 
 		if (showUserRating) {
 			Text(
-				text = stringResource(R.string.your_rating, movie.accountRating.value),
-				modifier = Modifier.padding(12.dp),
+				text = stringResource(R.string.your_rating, movie.rating),
+				modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
 				fontSize = 12.sp,
 				fontStyle = FontStyle.Italic,
 				textAlign = TextAlign.Center

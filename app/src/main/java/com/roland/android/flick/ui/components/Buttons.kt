@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -282,11 +283,12 @@ fun SignUpButton(
 	loading: Boolean,
 	failed: Boolean,
 	completed: Boolean,
+	modifier: Modifier = Modifier,
 	onClick: () -> Unit
 ) {
 	val requestFailed = rememberSaveable(failed) { mutableStateOf(failed) }
 
-	Column(Modifier.padding(40.dp)) {
+	Column(modifier) {
 		when {
 			completed -> {
 				Icon(
@@ -295,9 +297,6 @@ fun SignUpButton(
 					modifier = Modifier.size(50.dp),
 					tint = Color.Green
 				)
-			}
-			loading -> {
-				CircularProgressIndicator()
 			}
 			requestFailed.value -> {
 				Icon(
@@ -310,12 +309,27 @@ fun SignUpButton(
 			else -> {
 				Button(
 					onClick = onClick,
-					modifier = Modifier.fillMaxWidth()
+					modifier = Modifier.fillMaxWidth(),
+					enabled = !loading
 				) {
-					Text(
-						text = stringResource(R.string.sign_up),
-						style = MaterialTheme.typography.titleMedium
-					)
+					if (loading) {
+						CircularProgressIndicator(
+							modifier = Modifier.size(20.dp),
+							strokeWidth = 2.dp
+						)
+					} else {
+						Icon(
+							painter = painterResource(R.drawable.app_logo),
+							contentDescription = null,
+							modifier = Modifier
+								.padding(end = 20.dp)
+								.scale(0.9f)
+						)
+						Text(
+							text = stringResource(R.string.sign_up),
+							style = MaterialTheme.typography.titleMedium
+						)
+					}
 				}
 			}
 		}

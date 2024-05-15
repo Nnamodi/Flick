@@ -14,8 +14,9 @@ class ChromeTabUtils(private val context: Context) {
 		.build()
 	private val intent = CustomTabsIntent.Builder()
 		.setDefaultColorSchemeParams(defaultColor)
-		.setStartAnimations(context, R.anim.slide_in_bottom, R.anim.slide_out_bottom)
-		.setExitAnimations(context, R.anim.slide_in_bottom, R.anim.slide_out_bottom)
+		.setShowTitle(true)
+		.setStartAnimations(context, R.anim.slide_in_bottom, R.anim.popup_exit)
+		.setExitAnimations(context, R.anim.popup_enter, R.anim.slide_out_bottom)
 		.build()
 
 	fun launchUrl(mediaUrl: String) {
