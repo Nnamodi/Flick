@@ -263,9 +263,10 @@ private fun MediaRows(
 		onMovieClick = onMovieClick
 	) { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
 
-	if (userIsLoggedIn) {
+	val recommendations = if (selectedCategory == MOVIES) movieData3.recommendations else showData3.recommendations
+	if (userIsLoggedIn && recommendations.collectAsLazyPagingItems().itemSnapshotList.isNotEmpty()) {
 		HorizontalPosters(
-			pagingData = if (selectedCategory == MOVIES) movieData3.recommendations else showData3.recommendations,
+			pagingData = recommendations,
 			header = stringResource(if (selectedCategory == MOVIES) R.string.movies_for_you else R.string.series_for_you),
 			onMovieClick = onMovieClick
 		) { seeMore(if (selectedCategory == MOVIES) MOVIES_FOR_YOU else SERIES_FOR_YOU) }

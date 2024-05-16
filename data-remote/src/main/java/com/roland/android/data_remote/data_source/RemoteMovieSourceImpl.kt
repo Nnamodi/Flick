@@ -223,24 +223,28 @@ class RemoteMovieSourceImpl @Inject constructor(
 
 	override fun favoriteMovie(
 		accountId: Int,
+		sessionId: String,
 		request: FavoriteMediaRequest
 	): Flow<Response> = flow {
 		val requestModel = convertFromFavoriteMediaRequest(request)
-		emit(movieService.favoriteMovie(accountId, requestModel))
+		emit(movieService.favoriteMovie(accountId, sessionId, requestModel))
 	}.map { responseModel ->
 		convertToResponse(responseModel)
 	}.catch {
 		throw UseCaseException.MovieException(it)
 	}
 
-	override fun fetchFavoritedMovies(accountId: String): Flow<PagingData<Movie>> {
+	override fun fetchFavoritedMovies(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
 				pageSize = MAX_PAGE_SIZE,
 				prefetchDistance = MAX_PAGE_SIZE / 2
 			),
 			pagingSourceFactory = {
-				FavoritedMoviesPagingSource(movieService, accountId)
+				FavoritedMoviesPagingSource(movieService, accountId, sessionId)
 			}
 		).flow
 			.distinctUntilChanged()
@@ -263,24 +267,28 @@ class RemoteMovieSourceImpl @Inject constructor(
 
 	override fun watchlistMovie(
 		accountId: Int,
+		sessionId: String,
 		request: WatchlistMediaRequest,
 	): Flow<Response> = flow {
 		val requestModel = convertFromWatchlistMediaRequest(request)
-		emit(movieService.watchlistMovie(accountId, requestModel))
+		emit(movieService.watchlistMovie(accountId, sessionId, requestModel))
 	}.map { responseModel ->
 		convertToResponse(responseModel)
 	}.catch {
 		throw UseCaseException.MovieException(it)
 	}
 
-	override fun fetchWatchlistedMovies(accountId: String): Flow<PagingData<Movie>> {
+	override fun fetchWatchlistedMovies(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
 				pageSize = MAX_PAGE_SIZE,
 				prefetchDistance = MAX_PAGE_SIZE / 2
 			),
 			pagingSourceFactory = {
-				WatchlistedMoviesPagingSource(movieService, accountId)
+				WatchlistedMoviesPagingSource(movieService, accountId, sessionId)
 			}
 		).flow
 			.distinctUntilChanged()
@@ -289,32 +297,39 @@ class RemoteMovieSourceImpl @Inject constructor(
 
 	override fun rateMovie(
 		movieId: Int,
+		sessionId: String,
 		request: RateMediaRequest
 	): Flow<Response> = flow {
 		val requestModel = convertFromRateMediaRequest(request)
-		emit(movieService.rateMovie(movieId, requestModel))
+		emit(movieService.rateMovie(movieId, sessionId, requestModel))
 	}.map { responseModel ->
 		convertToResponse(responseModel)
 	}.catch {
 		throw UseCaseException.MovieException(it)
 	}
 
-	override fun deleteMovieRating(movieId: Int): Flow<Response> = flow {
-		emit(movieService.deleteMovieRating(movieId))
+	override fun deleteMovieRating(
+		movieId: Int,
+		sessionId: String
+	): Flow<Response> = flow {
+		emit(movieService.deleteMovieRating(movieId, sessionId))
 	}.map { responseModel ->
 		convertToResponse(responseModel)
 	}.catch {
 		throw UseCaseException.MovieException(it)
 	}
 
-	override fun fetchRatedMovies(accountId: String): Flow<PagingData<Movie>> {
+	override fun fetchRatedMovies(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
 				pageSize = MAX_PAGE_SIZE,
 				prefetchDistance = MAX_PAGE_SIZE / 2
 			),
 			pagingSourceFactory = {
-				RatedMoviesPagingSource(movieService, accountId)
+				RatedMoviesPagingSource(movieService, accountId, sessionId)
 			}
 		).flow
 			.distinctUntilChanged()

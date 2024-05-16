@@ -12,6 +12,7 @@ import com.roland.android.domain.entity.auth_response.SessionId
 import com.roland.android.domain.usecase.AuthRequest
 import com.roland.android.domain.usecase.AuthUseCase
 import com.roland.android.flick.models.TokenModel
+import com.roland.android.flick.models.accountSessionId
 import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.AuthUiState
@@ -110,6 +111,7 @@ class AuthViewModel @Inject constructor(
 				.map { converter.convertResponseData(it) }
 				.collect { data ->
 					if (data !is State.Success) return@collect
+					accountSessionId.value = data.data.sessionIdResponse?.sessionId
 					val sessionId = data.data.sessionIdResponse?.sessionId
 						.takeIf { accessToken != null }
 					getAccountDetails(sessionId)

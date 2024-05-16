@@ -18,6 +18,7 @@ class MediaUtil @Inject constructor(
 
 	fun favoriteMedia(
 		accountId: Int,
+		sessionId: String,
 		mediaId: Int,
 		mediaType: String,
 		favorite: Boolean,
@@ -28,6 +29,7 @@ class MediaUtil @Inject constructor(
 				MediaUtilUseCase.Request(
 					accountId = accountId,
 					mediaType = mediaType,
+					sessionId = sessionId,
 					mediaActions = MediaActions.Favorite(mediaId, favorite)
 				)
 			)
@@ -42,6 +44,7 @@ class MediaUtil @Inject constructor(
 
 	fun watchlistMedia(
 		accountId: Int,
+		sessionId: String,
 		mediaId: Int,
 		mediaType: String,
 		watchlist: Boolean,
@@ -52,6 +55,7 @@ class MediaUtil @Inject constructor(
 				MediaUtilUseCase.Request(
 					accountId = accountId,
 					mediaType = mediaType,
+					sessionId = sessionId,
 					mediaActions = MediaActions.Watchlist(mediaId, watchlist)
 				)
 			)

@@ -1,7 +1,6 @@
 package com.roland.android.flick.models
 
 import androidx.paging.PagingData
-import com.roland.android.domain.entity.AccountRating
 import com.roland.android.domain.entity.Cast
 import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.Episode
@@ -24,7 +23,7 @@ object SampleData {
 		genreIds = listOf(11, 24, 5),
 		voteAverage = 8.2,
 		releaseDate = "2024-02-12",
-		accountRating = AccountRating(value = 9)
+		rating = 9
 	)
 	private val movie2 = Movie(
 		id = 1,

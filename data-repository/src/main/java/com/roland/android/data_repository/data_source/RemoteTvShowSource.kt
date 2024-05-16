@@ -53,27 +53,42 @@ interface RemoteTvShowSource {
 
 	fun favoriteTvShow(
 		accountId: Int,
+		sessionId: String,
 		request: FavoriteMediaRequest
 	): Flow<Response>
 
-	fun fetchFavoritedTvShows(accountId: String): Flow<PagingData<Movie>>
+	fun fetchFavoritedTvShows(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>>
 
 	fun fetchRecommendedTvShows(accountId: String): Flow<PagingData<Movie>>
 
 	fun watchlistTvShow(
 		accountId: Int,
+		sessionId: String,
 		request: WatchlistMediaRequest
 	): Flow<Response>
 
-	fun fetchWatchlistedTvShows(accountId: String): Flow<PagingData<Movie>>
+	fun fetchWatchlistedTvShows(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>>
 
 	fun rateTvShow(
 		seriesId: Int,
+		sessionId: String,
 		request: RateMediaRequest
 	): Flow<Response>
 
-	fun deleteTvShowRating(seriesId: Int): Flow<Response>
+	fun deleteTvShowRating(
+		seriesId: Int,
+		sessionId: String
+	): Flow<Response>
 
-	fun fetchRatedTvShows(accountId: String): Flow<PagingData<Movie>>
+	fun fetchRatedTvShows(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>>
 
 }

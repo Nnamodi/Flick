@@ -47,27 +47,42 @@ class MovieRepositoryImpl @Inject constructor(
 
 	override fun favoriteMovie(
 		accountId: Int,
+		sessionId: String,
 		request: FavoriteMediaRequest
-	): Flow<Response> = remoteMovieSource.favoriteMovie(accountId, request)
+	): Flow<Response> = remoteMovieSource.favoriteMovie(accountId, sessionId, request)
 
-	override fun fetchFavoritedMovies(accountId: String): Flow<PagingData<Movie>> = remoteMovieSource.fetchFavoritedMovies(accountId)
+	override fun fetchFavoritedMovies(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> = remoteMovieSource.fetchFavoritedMovies(accountId, sessionId)
 
 	override fun fetchRecommendedMovies(accountId: String): Flow<PagingData<Movie>> = remoteMovieSource.fetchRecommendedMovies(accountId)
 
 	override fun watchlistMovie(
 		accountId: Int,
+		sessionId: String,
 		request: WatchlistMediaRequest
-	): Flow<Response> = remoteMovieSource.watchlistMovie(accountId, request)
+	): Flow<Response> = remoteMovieSource.watchlistMovie(accountId, sessionId, request)
 
-	override fun fetchWatchlistedMovies(accountId: String): Flow<PagingData<Movie>> = remoteMovieSource.fetchWatchlistedMovies(accountId)
+	override fun fetchWatchlistedMovies(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> = remoteMovieSource.fetchWatchlistedMovies(accountId, sessionId)
 
 	override fun rateMovie(
 		movieId: Int,
+		sessionId: String,
 		request: RateMediaRequest
-	): Flow<Response> = remoteMovieSource.rateMovie(movieId, request)
+	): Flow<Response> = remoteMovieSource.rateMovie(movieId, sessionId, request)
 
-	override fun deleteMovieRating(movieId: Int): Flow<Response> = remoteMovieSource.deleteMovieRating(movieId)
+	override fun deleteMovieRating(
+		movieId: Int,
+		sessionId: String
+	): Flow<Response> = remoteMovieSource.deleteMovieRating(movieId, sessionId)
 
-	override fun fetchRatedMovies(accountId: String): Flow<PagingData<Movie>> = remoteMovieSource.fetchRatedMovies(accountId)
+	override fun fetchRatedMovies(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> = remoteMovieSource.fetchRatedMovies(accountId, sessionId)
 
 }
