@@ -26,6 +26,7 @@ class MediaUtilUseCase @Inject constructor(
 				favoriteMedia(
 					accountId = request.accountId,
 					mediaType = request.mediaType,
+					sessionId = request.sessionId,
 					request = FavoriteMediaRequest(
 						mediaId = request.mediaActions.mediaId,
 						mediaType = request.mediaType,
@@ -37,6 +38,7 @@ class MediaUtilUseCase @Inject constructor(
 				watchlistMedia(
 					accountId = request.accountId,
 					mediaType = request.mediaType,
+					sessionId = request.sessionId,
 					request = WatchlistMediaRequest(
 						mediaId = request.mediaActions.mediaId,
 						mediaType = request.mediaType,
@@ -48,13 +50,15 @@ class MediaUtilUseCase @Inject constructor(
 				rateMedia(
 					mediaId = request.mediaActions.mediaId,
 					mediaType = request.mediaType,
+					sessionId = request.sessionId,
 					request = RateMediaRequest(request.mediaActions.rateValue)
 				)
 			}
 			is DeleteRating -> {
 				deleteMediaRating(
 					mediaId = request.mediaActions.mediaId,
-					mediaType = request.mediaType
+					mediaType = request.mediaType,
+					sessionId = request.sessionId
 				)
 			}
 		}.map { Response(it) }
@@ -63,45 +67,50 @@ class MediaUtilUseCase @Inject constructor(
 	private fun favoriteMedia(
 		accountId: Int,
 		mediaType: String,
+		sessionId: String,
 		request: FavoriteMediaRequest
 	) = if (mediaType == Movies) {
-		movieRepository.favoriteMovie(accountId, request)
+		movieRepository.favoriteMovie(accountId, sessionId, request)
 	} else {
-		tvShowRepository.favoriteTvShow(accountId, request)
+		tvShowRepository.favoriteTvShow(accountId, sessionId, request)
 	}
 
 	private fun watchlistMedia(
 		accountId: Int,
 		mediaType: String,
+		sessionId: String,
 		request: WatchlistMediaRequest
 	) = if (mediaType == Movies) {
-		movieRepository.watchlistMovie(accountId, request)
+		movieRepository.watchlistMovie(accountId, sessionId, request)
 	} else {
-		tvShowRepository.watchlistTvShow(accountId, request)
+		tvShowRepository.watchlistTvShow(accountId, sessionId, request)
 	}
 
 	private fun rateMedia(
 		mediaId: Int,
 		mediaType: String,
+		sessionId: String,
 		request: RateMediaRequest
 	) = if (mediaType == Movies) {
-		movieRepository.rateMovie(mediaId, request)
+		movieRepository.rateMovie(mediaId, sessionId, request)
 	} else {
-		tvShowRepository.rateTvShow(mediaId, request)
+		tvShowRepository.rateTvShow(mediaId, sessionId, request)
 	}
 
 	private fun deleteMediaRating(
 		mediaId: Int,
-		mediaType: String
+		mediaType: String,
+		sessionId: String
 	) = if (mediaType == Movies) {
-		movieRepository.deleteMovieRating(mediaId)
+		movieRepository.deleteMovieRating(mediaId, sessionId)
 	} else {
-		tvShowRepository.deleteTvShowRating(mediaId)
+		tvShowRepository.deleteTvShowRating(mediaId, sessionId)
 	}
 
 	data class Request(
 		val accountId: Int = 0,
 		val mediaType: String,
+		val sessionId: String,
 		val mediaActions: MediaActions
 	) : UseCase.Request
 

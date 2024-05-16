@@ -14,7 +14,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface AuthService {
 
@@ -34,9 +34,9 @@ interface AuthService {
 		@Body accessToken: AccessTokenModel
 	): SessionIdResponseModel
 
-	@GET("/3/account/{account_id}")
+	@GET("/3/account")
 	suspend fun getAccountDetails(
-		@Path("account_id") accountId: String
+		@Query("session_id") sessionId: String
 	): AccountDetailsModel
 
 	@DELETE("/3/authentication/session/convert/4")

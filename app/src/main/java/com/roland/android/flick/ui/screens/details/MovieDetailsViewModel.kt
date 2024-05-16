@@ -17,6 +17,7 @@ import com.roland.android.domain.usecase.MediaActions
 import com.roland.android.domain.usecase.MediaUtilUseCase
 import com.roland.android.flick.R
 import com.roland.android.flick.models.accountMediaUpdated
+import com.roland.android.flick.models.accountSessionId
 import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.state.MovieDetailsUiState
 import com.roland.android.flick.state.State
@@ -43,6 +44,7 @@ class MovieDetailsViewModel @Inject constructor(
 	var movieDetailsUiState by mutableStateOf(_movieDetailsUiState.value); private set
 	private var lastRequest by mutableStateOf<DetailsRequest?>(null)
 	private var accountId by mutableIntStateOf(0)
+	private var sessionId by mutableStateOf("")
 
 	// cache details info to avoid unnecessary reload
 	private var lastMovieIdFetched by mutableStateOf<Int?>(null)
@@ -50,6 +52,11 @@ class MovieDetailsViewModel @Inject constructor(
 	private var lastCastIdFetched by mutableStateOf<Int?>(null)
 
 	init {
+		viewModelScope.launch {
+			accountSessionId.collect {
+				sessionId = it ?: ""
+			}
+		}
 		viewModelScope.launch {
 			userAccountDetails.collect { user ->
 				user?.let {
@@ -156,6 +163,7 @@ class MovieDetailsViewModel @Inject constructor(
 			is MovieDetailsActions.AddToWatchlist -> {
 				mediaUtil.watchlistMedia(
 					accountId = accountId,
+					sessionId = sessionId,
 					mediaId = action.mediaId,
 					mediaType = action.mediaType,
 					watchlist = true,
@@ -167,6 +175,7 @@ class MovieDetailsViewModel @Inject constructor(
 			is MovieDetailsActions.FavoriteMedia -> {
 				mediaUtil.favoriteMedia(
 					accountId = accountId,
+					sessionId = sessionId,
 					mediaId = action.mediaId,
 					mediaType = action.mediaType,
 					favorite = true,
@@ -198,6 +207,7 @@ class MovieDetailsViewModel @Inject constructor(
 			mediaUtilUseCase.execute(
 				MediaUtilUseCase.Request(
 					mediaType = mediaType,
+					sessionId = sessionId,
 					mediaActions = MediaActions.Rate(mediaId, rateValue)
 				)
 			)

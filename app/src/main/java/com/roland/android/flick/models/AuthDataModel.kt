@@ -10,6 +10,7 @@ import com.roland.android.domain.entity.auth_response.Response
 import com.roland.android.domain.entity.auth_response.SessionIdResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 
+val accountSessionId = MutableStateFlow<String?>(null)
 val userAccountId = MutableStateFlow("")
 val userAccountDetails = MutableStateFlow<AccountDetails?>(null)
 val accountMediaUpdated = MutableStateFlow(false)

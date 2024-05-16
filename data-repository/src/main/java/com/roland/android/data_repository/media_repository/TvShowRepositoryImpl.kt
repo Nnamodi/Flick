@@ -65,27 +65,42 @@ class TvShowRepositoryImpl @Inject constructor(
 
 	override fun favoriteTvShow(
 		accountId: Int,
+		sessionId: String,
 		request: FavoriteMediaRequest
-	): Flow<Response> = remoteTvShowSource.favoriteTvShow(accountId, request)
+	): Flow<Response> = remoteTvShowSource.favoriteTvShow(accountId, sessionId, request)
 
-	override fun fetchFavoritedTvShows(accountId: String): Flow<PagingData<Movie>> = remoteTvShowSource.fetchFavoritedTvShows(accountId)
+	override fun fetchFavoritedTvShows(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> = remoteTvShowSource.fetchFavoritedTvShows(accountId, sessionId)
 
 	override fun fetchRecommendedTvShows(accountId: String): Flow<PagingData<Movie>> = remoteTvShowSource.fetchRecommendedTvShows(accountId)
 
 	override fun watchlistTvShow(
 		accountId: Int,
+		sessionId: String,
 		request: WatchlistMediaRequest,
-	): Flow<Response> = remoteTvShowSource.watchlistTvShow(accountId, request)
+	): Flow<Response> = remoteTvShowSource.watchlistTvShow(accountId, sessionId, request)
 
-	override fun fetchWatchlistedTvShows(accountId: String): Flow<PagingData<Movie>> = remoteTvShowSource.fetchWatchlistedTvShows(accountId)
+	override fun fetchWatchlistedTvShows(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> = remoteTvShowSource.fetchWatchlistedTvShows(accountId, sessionId)
 
 	override fun rateTvShow(
 		seriesId: Int,
+		sessionId: String,
 		request: RateMediaRequest
-	): Flow<Response> = remoteTvShowSource.rateTvShow(seriesId, request)
+	): Flow<Response> = remoteTvShowSource.rateTvShow(seriesId, sessionId, request)
 
-	override fun deleteTvShowRating(seriesId: Int): Flow<Response> = remoteTvShowSource.deleteTvShowRating(seriesId)
+	override fun deleteTvShowRating(
+		seriesId: Int,
+		sessionId: String
+	): Flow<Response> = remoteTvShowSource.deleteTvShowRating(seriesId, sessionId)
 
-	override fun fetchRatedTvShows(accountId: String): Flow<PagingData<Movie>> = remoteTvShowSource.fetchRatedTvShows(accountId)
+	override fun fetchRatedTvShows(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> = remoteTvShowSource.fetchRatedTvShows(accountId, sessionId)
 
 }

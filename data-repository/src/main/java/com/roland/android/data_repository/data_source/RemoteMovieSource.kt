@@ -42,27 +42,42 @@ interface RemoteMovieSource {
 
 	fun favoriteMovie(
 		accountId: Int,
+		sessionId: String,
 		request: FavoriteMediaRequest
 	): Flow<Response>
 
-	fun fetchFavoritedMovies(accountId: String): Flow<PagingData<Movie>>
+	fun fetchFavoritedMovies(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>>
 
 	fun fetchRecommendedMovies(accountId: String): Flow<PagingData<Movie>>
 
 	fun watchlistMovie(
 		accountId: Int,
+		sessionId: String,
 		request: WatchlistMediaRequest
 	): Flow<Response>
 
-	fun fetchWatchlistedMovies(accountId: String): Flow<PagingData<Movie>>
+	fun fetchWatchlistedMovies(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>>
 
 	fun rateMovie(
 		movieId: Int,
+		sessionId: String,
 		request: RateMediaRequest
 	): Flow<Response>
 
-	fun deleteMovieRating(movieId: Int): Flow<Response>
+	fun deleteMovieRating(
+		movieId: Int,
+		sessionId: String
+	): Flow<Response>
 
-	fun fetchRatedMovies(accountId: String): Flow<PagingData<Movie>>
+	fun fetchRatedMovies(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>>
 
 }

@@ -20,9 +20,9 @@ class AccountUseCase @Inject constructor(
 	override fun process(request: Request): Flow<Response> {
 		return when (request.mediaType) {
 			Movies -> combine(
-				movieRepository.fetchFavoritedMovies(request.accountId),
-				movieRepository.fetchWatchlistedMovies(request.accountId),
-				movieRepository.fetchRatedMovies(request.accountId),
+				movieRepository.fetchFavoritedMovies(request.accountId, request.sessionId),
+				movieRepository.fetchWatchlistedMovies(request.accountId, request.sessionId),
+				movieRepository.fetchRatedMovies(request.accountId, request.sessionId),
 				movieRepository.fetchMovieGenres()
 			) { favorited, watchlisted, rated, genres ->
 				Response(
@@ -33,9 +33,9 @@ class AccountUseCase @Inject constructor(
 				)
 			}
 			Shows -> combine(
-				tvShowRepository.fetchFavoritedTvShows(request.accountId),
-				tvShowRepository.fetchWatchlistedTvShows(request.accountId),
-				tvShowRepository.fetchRatedTvShows(request.accountId),
+				tvShowRepository.fetchFavoritedTvShows(request.accountId, request.sessionId),
+				tvShowRepository.fetchWatchlistedTvShows(request.accountId, request.sessionId),
+				tvShowRepository.fetchRatedTvShows(request.accountId, request.sessionId),
 				tvShowRepository.fetchTvShowGenres()
 			) { favorited, watchlisted, rated, genres ->
 				Response(
@@ -49,7 +49,8 @@ class AccountUseCase @Inject constructor(
 	}
 
 	data class Request(
-		val accountId: String,
+		val accountId: Int,
+		val sessionId: String,
 		val mediaType: MediaType
 	) : UseCase.Request
 

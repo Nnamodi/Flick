@@ -65,12 +65,12 @@ class GetMovieListUseCase @Inject constructor(
 			// account
 			MOVIES_FOR_YOU -> movieRepository.fetchRecommendedMovies(request.accountId)
 			SERIES_FOR_YOU -> tvShowRepository.fetchRecommendedTvShows(request.accountId)
-			FAVORITED_MOVIES -> movieRepository.fetchFavoritedMovies(request.accountId)
-			FAVORITED_SERIES -> tvShowRepository.fetchFavoritedTvShows(request.accountId)
-			WATCHLISTED_MOVIES -> movieRepository.fetchWatchlistedMovies(request.accountId)
-			WATCHLISTED_SERIES -> tvShowRepository.fetchWatchlistedTvShows(request.accountId)
-			RATED_MOVIES -> movieRepository.fetchRatedMovies(request.accountId)
-			RATED_SERIES -> tvShowRepository.fetchRatedTvShows(request.accountId)
+			FAVORITED_MOVIES -> movieRepository.fetchFavoritedMovies(request.userId, request.sessionId)
+			FAVORITED_SERIES -> tvShowRepository.fetchFavoritedTvShows(request.userId, request.sessionId)
+			WATCHLISTED_MOVIES -> movieRepository.fetchWatchlistedMovies(request.userId, request.sessionId)
+			WATCHLISTED_SERIES -> tvShowRepository.fetchWatchlistedTvShows(request.userId, request.sessionId)
+			RATED_MOVIES -> movieRepository.fetchRatedMovies(request.userId, request.sessionId)
+			RATED_SERIES -> tvShowRepository.fetchRatedTvShows(request.userId, request.sessionId)
 			// by genre
 			ANIME -> movieRepository.fetchMoviesByGenre(Constant.ANIME)
 			ANIME_SERIES -> tvShowRepository.fetchShowsByGenre(Constant.ANIME)
@@ -101,7 +101,9 @@ class GetMovieListUseCase @Inject constructor(
 
 	data class Request(
 		val category: Category,
-		val accountId: String
+		val accountId: String,
+		val userId: Int,
+		val sessionId: String,
 	) : UseCase.Request
 
 	data class Response(

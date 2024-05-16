@@ -312,18 +312,18 @@ class SearchedMoviesAndShowsPagingSource(
 
 class FavoritedMoviesPagingSource(
 	private val movieService: MovieService,
-	private val accountId: String
+	private val accountId: Int,
+	private val sessionId: String
 ) : PagingSource<Int, Movie>() {
 
 	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
 		return try {
-			val lastPage = movieService.fetchFavoritedMovies(accountId, 1).totalPages
-			val currentPage = params.key ?: lastPage
-			val movies = movieService.fetchFavoritedMovies(accountId, currentPage)
+			val currentPage = params.key ?: INITIAL_PAGE
+			val movies = movieService.fetchFavoritedMovies(accountId, sessionId, currentPage)
 			LoadResult.Page(
-				data = convertToMovieList(movies).results.reversed(),
-				prevKey = if (currentPage == lastPage) null else currentPage + 1,
-				nextKey = if (currentPage == 1) null else currentPage - 1
+				data = convertToMovieList(movies).results,
+				prevKey = if (currentPage == 1) null else currentPage - 1,
+				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
 			)
 		} catch (e: Exception) {
 			LoadResult.Error(throwable = e)
@@ -369,18 +369,18 @@ class MoviesRecommendedPagingSource(
 
 class WatchlistedMoviesPagingSource(
 	private val movieService: MovieService,
-	private val accountId: String
+	private val accountId: Int,
+	private val sessionId: String
 ) : PagingSource<Int, Movie>() {
 
 	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
 		return try {
-			val lastPage = movieService.fetchWatchlistedMovies(accountId, 1).totalPages
-			val currentPage = params.key ?: lastPage
-			val movies = movieService.fetchWatchlistedMovies(accountId, currentPage)
+			val currentPage = params.key ?: INITIAL_PAGE
+			val movies = movieService.fetchWatchlistedMovies(accountId, sessionId, currentPage)
 			LoadResult.Page(
-				data = convertToMovieList(movies).results.reversed(),
-				prevKey = if (currentPage == lastPage) null else currentPage + 1,
-				nextKey = if (currentPage == 1) null else currentPage - 1
+				data = convertToMovieList(movies).results,
+				prevKey = if (currentPage == 1) null else currentPage - 1,
+				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
 			)
 		} catch (e: Exception) {
 			LoadResult.Error(throwable = e)
@@ -398,18 +398,18 @@ class WatchlistedMoviesPagingSource(
 
 class RatedMoviesPagingSource(
 	private val movieService: MovieService,
-	private val accountId: String
+	private val accountId: Int,
+	private val sessionId: String
 ) : PagingSource<Int, Movie>() {
 
 	override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Movie> {
 		return try {
-			val lastPage = movieService.fetchRatedMovies(accountId, 1).totalPages
-			val currentPage = params.key ?: lastPage
-			val movies = movieService.fetchRatedMovies(accountId, currentPage)
+			val currentPage = params.key ?: INITIAL_PAGE
+			val movies = movieService.fetchRatedMovies(accountId, sessionId, currentPage)
 			LoadResult.Page(
-				data = convertToMovieList(movies).results.reversed(),
-				prevKey = if (currentPage == lastPage) null else currentPage + 1,
-				nextKey = if (currentPage == 1) null else currentPage - 1
+				data = convertToMovieList(movies).results,
+				prevKey = if (currentPage == 1) null else currentPage - 1,
+				nextKey = if (movies.results.isEmpty()) null else currentPage + 1
 			)
 		} catch (e: Exception) {
 			LoadResult.Error(throwable = e)

@@ -236,24 +236,28 @@ class RemoteTvShowSourceImpl @Inject constructor(
 
 	override fun favoriteTvShow(
 		accountId: Int,
+		sessionId: String,
 		request: FavoriteMediaRequest
 	): Flow<Response> = flow {
 		val requestModel = convertFromFavoriteMediaRequest(request)
-		emit(tvShowService.favoriteTvShow(accountId, requestModel))
+		emit(tvShowService.favoriteTvShow(accountId, sessionId, requestModel))
 	}.map { responseModel ->
 		convertToResponse(responseModel)
 	}.catch {
 		throw UseCaseException.MovieException(it)
 	}
 
-	override fun fetchFavoritedTvShows(accountId: String): Flow<PagingData<Movie>> {
+	override fun fetchFavoritedTvShows(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
 				pageSize = MAX_PAGE_SIZE,
 				prefetchDistance = MAX_PAGE_SIZE / 2
 			),
 			pagingSourceFactory = {
-				FavoritedShowsPagingSource(tvShowService, accountId)
+				FavoritedShowsPagingSource(tvShowService, accountId, sessionId)
 			}
 		).flow
 			.distinctUntilChanged()
@@ -276,24 +280,28 @@ class RemoteTvShowSourceImpl @Inject constructor(
 
 	override fun watchlistTvShow(
 		accountId: Int,
+		sessionId: String,
 		request: WatchlistMediaRequest,
 	): Flow<Response> = flow {
 		val requestModel = convertFromWatchlistMediaRequest(request)
-		emit(tvShowService.watchlistTvShow(accountId, requestModel))
+		emit(tvShowService.watchlistTvShow(accountId, sessionId, requestModel))
 	}.map { responseModel ->
 		convertToResponse(responseModel)
 	}.catch {
 		throw UseCaseException.MovieException(it)
 	}
 
-	override fun fetchWatchlistedTvShows(accountId: String): Flow<PagingData<Movie>> {
+	override fun fetchWatchlistedTvShows(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
 				pageSize = MAX_PAGE_SIZE,
 				prefetchDistance = MAX_PAGE_SIZE / 2
 			),
 			pagingSourceFactory = {
-				WatchlistedShowsPagingSource(tvShowService, accountId)
+				WatchlistedShowsPagingSource(tvShowService, accountId, sessionId)
 			}
 		).flow
 			.distinctUntilChanged()
@@ -302,32 +310,39 @@ class RemoteTvShowSourceImpl @Inject constructor(
 
 	override fun rateTvShow(
 		seriesId: Int,
+		sessionId: String,
 		request: RateMediaRequest
 	): Flow<Response> = flow {
 		val requestModel = convertFromRateMediaRequest(request)
-		emit(tvShowService.rateTvShow(seriesId, requestModel))
+		emit(tvShowService.rateTvShow(seriesId, sessionId, requestModel))
 	}.map { responseModel ->
 		convertToResponse(responseModel)
 	}.catch {
 		throw UseCaseException.MovieException(it)
 	}
 
-	override fun deleteTvShowRating(seriesId: Int): Flow<Response> = flow {
-		emit(tvShowService.deleteTvShowRating(seriesId))
+	override fun deleteTvShowRating(
+		seriesId: Int,
+		sessionId: String
+	): Flow<Response> = flow {
+		emit(tvShowService.deleteTvShowRating(seriesId, sessionId))
 	}.map { responseModel ->
 		convertToResponse(responseModel)
 	}.catch {
 		throw UseCaseException.MovieException(it)
 	}
 
-	override fun fetchRatedTvShows(accountId: String): Flow<PagingData<Movie>> {
+	override fun fetchRatedTvShows(
+		accountId: Int,
+		sessionId: String
+	): Flow<PagingData<Movie>> {
 		return Pager(
 			config = PagingConfig(
 				pageSize = MAX_PAGE_SIZE,
 				prefetchDistance = MAX_PAGE_SIZE / 2
 			),
 			pagingSourceFactory = {
-				RatedShowsPagingSource(tvShowService, accountId)
+				RatedShowsPagingSource(tvShowService, accountId, sessionId)
 			}
 		).flow
 			.distinctUntilChanged()

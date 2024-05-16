@@ -117,14 +117,17 @@ interface MovieService {
 	@POST("/3/account/{account_id}/favorite")
 	suspend fun favoriteMovie(
 		@Path("account_id") accountId: Int,
+		@Query("session_id") sessionId: String,
 		@Body request: FavoriteMediaRequestModel
 	): ResponseModel
 
-	@GET("/4/account/{account_object_id}/movie/favorites")
+	@GET("/3/account/{account_id}/favorite/movies")
 	suspend fun fetchFavoritedMovies(
-		@Path("account_object_id") accountId: String,
+		@Path("account_id") accountId: Int,
+		@Query("session_id") sessionId: String,
 		@Query("page") page: Int,
-		@Query("language") language: String = "en_US"
+		@Query("language") language: String = "en_US",
+		@Query("sort_by") sortBy: String = "created_at.desc"
 	): MovieListModel
 
 	@GET("/4/account/{account_object_id}/movie/recommendations")
@@ -137,32 +140,39 @@ interface MovieService {
 	@POST("/3/account/{account_id}/watchlist")
 	suspend fun watchlistMovie(
 		@Path("account_id") accountId: Int,
+		@Query("session_id") sessionId: String,
 		@Body request: WatchlistMediaRequestModel
 	): ResponseModel
 
-	@GET("/4/account/{account_object_id}/movie/watchlist")
+	@GET("/3/account/{account_id}/watchlist/movies")
 	suspend fun fetchWatchlistedMovies(
-		@Path("account_object_id") accountId: String,
+		@Path("account_id") accountId: Int,
+		@Query("session_id") sessionId: String,
 		@Query("page") page: Int,
-		@Query("language") language: String = "en_US"
+		@Query("language") language: String = "en_US",
+		@Query("sort_by") sortBy: String = "created_at.desc"
 	): MovieListModel
 
 	@POST("/3/movie/{movie_id}/rating")
 	suspend fun rateMovie(
 		@Path("movie_id") movieId: Int,
+		@Query("session_id") sessionId: String,
 		@Body request: RateMediaRequestModel
 	): ResponseModel
 
 	@DELETE("/3/movie/{movie_id}/rating")
 	suspend fun deleteMovieRating(
-		@Path("movie_id") movieId: Int
+		@Path("movie_id") movieId: Int,
+		@Query("session_id") sessionId: String
 	): ResponseModel
 
-	@GET("/4/account/{account_object_id}/movie/rated")
+	@GET("/3/account/{account_id}/rated/movies")
 	suspend fun fetchRatedMovies(
-		@Path("account_object_id") accountId: String,
+		@Path("account_id") accountId: Int,
+		@Query("session_id") sessionId: String,
 		@Query("page") page: Int,
-		@Query("language") language: String = "en_US"
+		@Query("language") language: String = "en_US",
+		@Query("sort_by") sortBy: String = "created_at.desc"
 	): MovieListModel
 
 }

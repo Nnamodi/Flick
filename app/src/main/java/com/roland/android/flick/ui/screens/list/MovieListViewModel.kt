@@ -1,12 +1,15 @@
 package com.roland.android.flick.ui.screens.list
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.Category
 import com.roland.android.domain.usecase.GetMovieListUseCase
+import com.roland.android.flick.models.accountSessionId
+import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.MovieListUiState
 import com.roland.android.flick.state.State
@@ -28,11 +31,23 @@ class MovieListViewModel @Inject constructor(
 	var movieListUiState by mutableStateOf(_movieListUiState.value); private set
 	private var lastCategoryFetched by mutableStateOf<Category?>(null)
 	private var accountId by mutableStateOf("")
+	private var userId by mutableIntStateOf(0)
+	private var sessionId by mutableStateOf("")
 
 	init {
 		viewModelScope.launch {
 			userAccountId.collect { id ->
 				accountId = id
+			}
+		}
+		viewModelScope.launch {
+			userAccountDetails.collect { user ->
+				userId = user?.id ?: 0
+			}
+		}
+		viewModelScope.launch {
+			accountSessionId.collect { id ->
+				sessionId = id ?: ""
 			}
 		}
 		viewModelScope.launch {
@@ -54,7 +69,12 @@ class MovieListViewModel @Inject constructor(
 		_movieListUiState.value = MovieListUiState()
 		viewModelScope.launch {
 			movieListUseCase.execute(
-				GetMovieListUseCase.Request(category, accountId)
+				GetMovieListUseCase.Request(
+					category = category,
+					accountId = accountId,
+					userId = userId,
+					sessionId = sessionId
+				)
 			)
 				.map { converter.convertMovieListData(it) }
 				.collect { data ->

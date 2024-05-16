@@ -11,8 +11,8 @@ import com.roland.android.domain.usecase.MediaActions
 import com.roland.android.domain.usecase.MediaType
 import com.roland.android.domain.usecase.MediaUtilUseCase
 import com.roland.android.flick.models.accountMediaUpdated
+import com.roland.android.flick.models.accountSessionId
 import com.roland.android.flick.models.userAccountDetails
-import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.AccountUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.MediaUtil
@@ -35,35 +35,29 @@ class AccountViewModel @Inject constructor(
 
 	private val _accountUiState = MutableStateFlow(AccountUiState())
 	var accountUiState by mutableStateOf(_accountUiState.value); private set
-	private var accountId by mutableStateOf("")
+	private var sessionId by mutableStateOf("")
 	private var userId by mutableIntStateOf(0)
 	var userLoggedIn by mutableStateOf(false); private set
 
 	init {
 		viewModelScope.launch {
-			userAccountDetails.collect { data ->
-				if (data == null) return@collect
-				_accountUiState.update { it.copy(accountDetails = data) }
-			}
-		}
-		viewModelScope.launch {
-			userAccountId.collect {
-				accountId = it
-				userLoggedIn = it.isNotEmpty()
+			userAccountDetails.collect { account ->
+				if (account == null) return@collect
+				userId = account.id
+				_accountUiState.update { it.copy(accountDetails = account) }
+				userLoggedIn = account.id != 0
 				if (!userLoggedIn) return@collect
 				fetchMovieData(); fetchShowData()
 			}
 		}
 		viewModelScope.launch {
-			_accountUiState.collect {
-				accountUiState = it
+			accountSessionId.collect {
+				sessionId = it ?: ""
 			}
 		}
 		viewModelScope.launch {
-			userAccountDetails.collect { user ->
-				user?.let {
-					userId = user.id
-				}
+			_accountUiState.collect {
+				accountUiState = it
 			}
 		}
 		viewModelScope.launch {
@@ -77,7 +71,7 @@ class AccountViewModel @Inject constructor(
 	private fun fetchMovieData() {
 		viewModelScope.launch {
 			accountUseCase.execute(
-				AccountUseCase.Request(accountId, MediaType.Movies)
+				AccountUseCase.Request(userId, sessionId, MediaType.Movies)
 			)
 				.map { converter.convertToAccountMovieData(it) }
 				.collectLatest { data ->
@@ -93,7 +87,7 @@ class AccountViewModel @Inject constructor(
 	private fun fetchShowData() {
 		viewModelScope.launch {
 			accountUseCase.execute(
-				AccountUseCase.Request(accountId, MediaType.Shows)
+				AccountUseCase.Request(userId, sessionId, MediaType.Shows)
 			)
 				.map { converter.convertToAccountTvShowsData(it) }
 				.collectLatest { data ->
@@ -112,6 +106,7 @@ class AccountViewModel @Inject constructor(
 			is AccountActions.UnFavoriteMedia -> {
 				mediaUtil.favoriteMedia(
 					accountId = userId,
+					sessionId = sessionId,
 					mediaId = action.mediaId,
 					mediaType = action.mediaType,
 					favorite = false,
@@ -123,6 +118,7 @@ class AccountViewModel @Inject constructor(
 			is AccountActions.RemoveFromWatchlist -> {
 				mediaUtil.watchlistMedia(
 					accountId = userId,
+					sessionId = sessionId,
 					mediaId = action.mediaId,
 					mediaType = action.mediaType,
 					watchlist = false,
@@ -148,6 +144,7 @@ class AccountViewModel @Inject constructor(
 			mediaUtilUseCase.execute(
 				MediaUtilUseCase.Request(
 					mediaType = mediaType,
+					sessionId = sessionId,
 					mediaActions = MediaActions.DeleteRating(mediaId)
 				)
 			)
