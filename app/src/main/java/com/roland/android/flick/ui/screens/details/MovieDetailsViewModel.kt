@@ -14,10 +14,11 @@ import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
 import com.roland.android.domain.usecase.GetTvShowDetailsUseCase
 import com.roland.android.domain.usecase.MediaActions
+import com.roland.android.domain.usecase.MediaCategory
 import com.roland.android.domain.usecase.MediaUtilUseCase
 import com.roland.android.flick.R
-import com.roland.android.flick.models.accountMediaUpdated
 import com.roland.android.flick.models.accountSessionId
+import com.roland.android.flick.models.updatedMediaCategory
 import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.state.MovieDetailsUiState
 import com.roland.android.flick.state.State
@@ -158,7 +159,6 @@ class MovieDetailsViewModel @Inject constructor(
 		action?.let {
 			_movieDetailsUiState.update { it.copy(response = null) }
 		}
-		accountMediaUpdated.value = false
 		when (action) {
 			is MovieDetailsActions.AddToWatchlist -> {
 				mediaUtil.watchlistMedia(
@@ -215,7 +215,7 @@ class MovieDetailsViewModel @Inject constructor(
 				.collect { response ->
 					_movieDetailsUiState.update { it.copy(response = response) }
 					if (response !is State.Success) return@collect
-					accountMediaUpdated.value = true
+					updatedMediaCategory.value = MediaCategory.Rated
 				}
 		}
 	}

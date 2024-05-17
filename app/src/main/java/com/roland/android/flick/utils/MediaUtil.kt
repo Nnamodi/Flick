@@ -2,8 +2,9 @@ package com.roland.android.flick.utils
 
 import com.roland.android.domain.entity.auth_response.Response
 import com.roland.android.domain.usecase.MediaActions
+import com.roland.android.domain.usecase.MediaCategory
 import com.roland.android.domain.usecase.MediaUtilUseCase
-import com.roland.android.flick.models.accountMediaUpdated
+import com.roland.android.flick.models.updatedMediaCategory
 import com.roland.android.flick.state.State
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.map
@@ -36,8 +37,8 @@ class MediaUtil @Inject constructor(
 				.map { converter.convertResponse(it) }
 				.collect {
 					result(it)
-					if (it !is State.Success || !favorite) return@collect
-					accountMediaUpdated.value = true
+					if (it !is State.Success) return@collect
+					updatedMediaCategory.value = MediaCategory.Favorited
 				}
 		}
 	}
@@ -62,8 +63,8 @@ class MediaUtil @Inject constructor(
 				.map { converter.convertResponse(it) }
 				.collect {
 					result(it)
-					if (it !is State.Success || !watchlist) return@collect
-					accountMediaUpdated.value = true
+					if (it !is State.Success) return@collect
+					updatedMediaCategory.value = MediaCategory.Watchlisted
 				}
 		}
 	}

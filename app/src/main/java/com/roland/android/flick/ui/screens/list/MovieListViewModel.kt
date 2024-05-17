@@ -7,8 +7,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.Category
+import com.roland.android.domain.usecase.Category.FAVORITED_MOVIES
+import com.roland.android.domain.usecase.Category.FAVORITED_SERIES
+import com.roland.android.domain.usecase.Category.RATED_MOVIES
+import com.roland.android.domain.usecase.Category.RATED_SERIES
+import com.roland.android.domain.usecase.Category.WATCHLISTED_MOVIES
+import com.roland.android.domain.usecase.Category.WATCHLISTED_SERIES
 import com.roland.android.domain.usecase.GetMovieListUseCase
 import com.roland.android.flick.models.accountSessionId
+import com.roland.android.flick.models.updatedMediaCategory
 import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.MovieListUiState
@@ -48,6 +55,12 @@ class MovieListViewModel @Inject constructor(
 		viewModelScope.launch {
 			accountSessionId.collect { id ->
 				sessionId = id ?: ""
+			}
+		}
+		viewModelScope.launch {
+			updatedMediaCategory.collect {
+				val accountMediaCategories = setOf(WATCHLISTED_MOVIES, WATCHLISTED_SERIES, FAVORITED_MOVIES, FAVORITED_SERIES, RATED_MOVIES, RATED_SERIES)
+				if (lastCategoryFetched in accountMediaCategories) _movieListUiState.value = MovieListUiState()
 			}
 		}
 		viewModelScope.launch {

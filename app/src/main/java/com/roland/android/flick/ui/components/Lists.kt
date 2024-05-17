@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
@@ -284,7 +283,6 @@ fun HorizontalPosters(
 				}
 				requestResult?.success == true -> {
 					onCancelled(context.getString(R.string.media_removed))
-					(if (selectedMediaType == MOVIES) moviesList else showsList).refresh()
 				}
 			}
 		}
@@ -341,8 +339,12 @@ private fun MovieListPage(
 	onMovieClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
-	val mediaList = movieList.itemSnapshotList
 	val listState = rememberLazyListState()
+	val listSize = if (showFullList) {
+		movieList.itemCount
+	} else {
+		min(20, movieList.itemCount)
+	}
 
 	LazyRow(
 		state = listState,
@@ -351,16 +353,8 @@ private fun MovieListPage(
 			end = PADDING_WIDTH - 12.dp
 		)
 	) {
-		val listSize = if (showFullList) {
-			mediaList.size
-		} else {
-			min(20, mediaList.size)
-		}
-		itemsIndexed(
-			items = mediaList.take(listSize),
-			key = { id, item -> item?.id ?: id }
-		) { _, movie ->
-			movie?.let {
+		items(listSize) { index ->
+			movieList[index]?.let {
 				if (itemIsCancellable) {
 					CancellableItemPoster(
 						movie = it,

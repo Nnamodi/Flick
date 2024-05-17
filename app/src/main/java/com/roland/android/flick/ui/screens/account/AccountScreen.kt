@@ -148,23 +148,24 @@ private fun MediaRows(
 	onCancelResult: (String) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
-	val (_, movies, shows, response) = uiState
+	val (_, favoritedMedia, watchlistedMedia, ratedMedia, response) = uiState
 	val windowSize = rememberWindowSize()
 	val seeMore: (Category) -> Unit = {
 		navigate(Screens.MovieListScreen(it.name))
 	}
 
 	CommonScreen(
-		movies, shows, paddingValues,
-		loadingScreen = { error ->
+		favoritedMedia, watchlistedMedia, ratedMedia,
+		paddingValues, loadingScreen = { error ->
 			AccountLoadingUi(isLoading = error == null)
 			onError(error)
 		}
-	) { movieData, showData -> fetchGenres(arrayOf(movieData.genres, showData.genres))
+	) { favorited, watchlisted, rated ->
+		fetchGenres(arrayOf(watchlisted.movieGenres, favorited.showGenres))
 		Column {
 			HorizontalPosters(
-				moviesData = movieData.favoriteList,
-				showsData = showData.favoriteList,
+				moviesData = favorited.movies,
+				showsData = favorited.shows,
 				header = stringResource(R.string.favorites),
 				response = response,
 				onMovieClick = onMovieClick,
@@ -176,8 +177,8 @@ private fun MediaRows(
 			) { seeMore(if (it == MOVIES) FAVORITED_MOVIES else FAVORITED_SERIES) }
 
 			HorizontalPosters(
-				moviesData = movieData.watchlist,
-				showsData = showData.watchlist,
+				moviesData = watchlisted.movies,
+				showsData = watchlisted.shows,
 				header = stringResource(R.string.watchlist),
 				response = response,
 				onMovieClick = onMovieClick,
@@ -189,8 +190,8 @@ private fun MediaRows(
 			) { seeMore(if (it == MOVIES) WATCHLISTED_MOVIES else WATCHLISTED_SERIES) }
 
 			HorizontalPosters(
-				moviesData = movieData.ratedList,
-				showsData = showData.ratedList,
+				moviesData = rated.movies,
+				showsData = rated.shows,
 				header = stringResource(R.string.rated),
 				response = response,
 				showUserRating = true,

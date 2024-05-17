@@ -19,16 +19,17 @@ import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.domain.usecase.GetTvShowsByGenreUseCase
 import com.roland.android.domain.usecase.GetUpcomingMoviesUseCase
 import com.roland.android.domain.usecase.MediaUtilUseCase
-import com.roland.android.flick.models.AccountMediaModel
 import com.roland.android.flick.models.AccountModel
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.CategorySelectionModel
 import com.roland.android.flick.models.ComingSoonModel
+import com.roland.android.flick.models.FavoritedMediaModel
 import com.roland.android.flick.models.MovieDetailsModel
 import com.roland.android.flick.models.MovieListModel
 import com.roland.android.flick.models.MoviesByGenreModel
 import com.roland.android.flick.models.MoviesByRegionModel
 import com.roland.android.flick.models.MoviesModel
+import com.roland.android.flick.models.RatedMediaModel
 import com.roland.android.flick.models.ResponseModel
 import com.roland.android.flick.models.SearchModel
 import com.roland.android.flick.models.SeasonDetailsModel
@@ -37,6 +38,7 @@ import com.roland.android.flick.models.TvShowDetailsModel
 import com.roland.android.flick.models.TvShowsByGenreModel
 import com.roland.android.flick.models.TvShowsByRegionModel
 import com.roland.android.flick.models.TvShowsModel
+import com.roland.android.flick.models.WatchlistedMediaModel
 import com.roland.android.flick.state.State
 import com.roland.android.flick.utils.Extensions.refactor
 import javax.inject.Inject
@@ -64,19 +66,18 @@ class ResponseConverter @Inject constructor() {
 		}
 	}
 
-	fun convertToAccountMovieData(
+	fun convertToWatchlistedMedia(
 		result: Result<AccountUseCase.Response>
-	): State<AccountMediaModel> {
+	): State<WatchlistedMediaModel> {
 		return when (result) {
 			is Result.Error -> {
 				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
 				State.Success(
-					AccountMediaModel(
-						result.data.favoritedMovies.refactor(),
+					WatchlistedMediaModel(
 						result.data.watchlistedMovies.refactor(),
-						result.data.ratedMovies.refactor(),
+						result.data.watchlistedShows.refactor(),
 						result.data.movieGenres
 					)
 				)
@@ -84,20 +85,37 @@ class ResponseConverter @Inject constructor() {
 		}
 	}
 
-	fun convertToAccountTvShowsData(
+	fun convertToFavoritedMedia(
 		result: Result<AccountUseCase.Response>
-	): State<AccountMediaModel> {
+	): State<FavoritedMediaModel> {
 		return when (result) {
 			is Result.Error -> {
 				State.Error(result.exception.localizedMessage.orEmpty())
 			}
 			is Result.Success -> {
 				State.Success(
-					AccountMediaModel(
+					FavoritedMediaModel(
+						result.data.favoritedMovies.refactor(),
 						result.data.favoritedShows.refactor(),
-						result.data.watchlistedShows.refactor(),
-						result.data.ratedShows.refactor(),
 						result.data.showGenres
+					)
+				)
+			}
+		}
+	}
+
+	fun convertToRatedMedia(
+		result: Result<AccountUseCase.Response>
+	): State<RatedMediaModel> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(
+					RatedMediaModel(
+						result.data.ratedMovies.refactor(),
+						result.data.ratedShows.refactor()
 					)
 				)
 			}
@@ -339,6 +357,7 @@ class ResponseConverter @Inject constructor() {
 				State.Success(
 					SeasonDetailsModel(
 						result.data.season,
+						result.data.episode,
 						result.data.showCasts
 					)
 				)

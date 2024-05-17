@@ -5,8 +5,9 @@ import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.repository.MovieRepository
 import com.roland.android.domain.repository.TvShowRepository
-import com.roland.android.domain.usecase.MediaType.Movies
-import com.roland.android.domain.usecase.MediaType.Shows
+import com.roland.android.domain.usecase.MediaCategory.Favorited
+import com.roland.android.domain.usecase.MediaCategory.Rated
+import com.roland.android.domain.usecase.MediaCategory.Watchlisted
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import javax.inject.Inject
@@ -18,31 +19,36 @@ class AccountUseCase @Inject constructor(
 ) : UseCase<AccountUseCase.Request, AccountUseCase.Response>(configuration) {
 
 	override fun process(request: Request): Flow<Response> {
-		return when (request.mediaType) {
-			Movies -> combine(
-				movieRepository.fetchFavoritedMovies(request.accountId, request.sessionId),
+		return when (request.mediaCategory) {
+			Watchlisted -> combine(
 				movieRepository.fetchWatchlistedMovies(request.accountId, request.sessionId),
-				movieRepository.fetchRatedMovies(request.accountId, request.sessionId),
+				tvShowRepository.fetchWatchlistedTvShows(request.accountId, request.sessionId),
 				movieRepository.fetchMovieGenres()
-			) { favorited, watchlisted, rated, genres ->
+			) { movies, shows, genres ->
 				Response(
-					favoritedMovies = favorited,
-					watchlistedMovies = watchlisted,
-					ratedMovies = rated,
+					watchlistedMovies = movies,
+					watchlistedShows = shows,
 					movieGenres = genres
 				)
 			}
-			Shows -> combine(
+			Favorited -> combine(
+				movieRepository.fetchFavoritedMovies(request.accountId, request.sessionId),
 				tvShowRepository.fetchFavoritedTvShows(request.accountId, request.sessionId),
-				tvShowRepository.fetchWatchlistedTvShows(request.accountId, request.sessionId),
-				tvShowRepository.fetchRatedTvShows(request.accountId, request.sessionId),
 				tvShowRepository.fetchTvShowGenres()
-			) { favorited, watchlisted, rated, genres ->
+				) { movies, shows, genres ->
 				Response(
-					favoritedShows = favorited,
-					watchlistedShows = watchlisted,
-					ratedShows = rated,
+					favoritedMovies = movies,
+					favoritedShows = shows,
 					showGenres = genres
+				)
+			}
+			Rated -> combine(
+				movieRepository.fetchRatedMovies(request.accountId, request.sessionId),
+				tvShowRepository.fetchRatedTvShows(request.accountId, request.sessionId)
+			) { movies, shows ->
+				Response(
+					ratedMovies = movies,
+					ratedShows = shows
 				)
 			}
 		}
@@ -51,7 +57,7 @@ class AccountUseCase @Inject constructor(
 	data class Request(
 		val accountId: Int,
 		val sessionId: String,
-		val mediaType: MediaType
+		val mediaCategory: MediaCategory
 	) : UseCase.Request
 
 	data class Response(
@@ -68,6 +74,6 @@ class AccountUseCase @Inject constructor(
 
 }
 
-enum class MediaType {
-	Movies, Shows
+enum class MediaCategory {
+	Watchlisted, Favorited, Rated
 }

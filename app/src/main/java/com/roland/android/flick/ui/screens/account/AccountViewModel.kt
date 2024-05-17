@@ -8,9 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.AccountUseCase
 import com.roland.android.domain.usecase.MediaActions
-import com.roland.android.domain.usecase.MediaType
+import com.roland.android.domain.usecase.MediaCategory
 import com.roland.android.domain.usecase.MediaUtilUseCase
-import com.roland.android.flick.models.accountMediaUpdated
+import com.roland.android.flick.models.updatedMediaCategory
 import com.roland.android.flick.models.accountSessionId
 import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.state.AccountUiState
@@ -47,7 +47,7 @@ class AccountViewModel @Inject constructor(
 				_accountUiState.update { it.copy(accountDetails = account) }
 				userLoggedIn = account.id != 0
 				if (!userLoggedIn) return@collect
-				fetchMovieData(); fetchShowData()
+				reloadMedia()
 			}
 		}
 		viewModelScope.launch {
@@ -61,41 +61,61 @@ class AccountViewModel @Inject constructor(
 			}
 		}
 		viewModelScope.launch {
-			accountMediaUpdated.collectLatest {
-				if (!it) return@collectLatest
-				fetchMovieData(); fetchShowData()
+			updatedMediaCategory.collectLatest { category ->
+				when (category) {
+					null -> return@collectLatest
+					MediaCategory.Watchlisted -> fetchWatchlistMedia()
+					MediaCategory.Favorited -> fetchFavoritedMedia()
+					MediaCategory.Rated -> fetchRatedMedia()
+				}
 			}
 		}
 	}
 
-	private fun fetchMovieData() {
+	private fun fetchWatchlistMedia() {
 		viewModelScope.launch {
 			accountUseCase.execute(
-				AccountUseCase.Request(userId, sessionId, MediaType.Movies)
+				AccountUseCase.Request(userId, sessionId, MediaCategory.Watchlisted)
 			)
-				.map { converter.convertToAccountMovieData(it) }
+				.map { converter.convertToWatchlistedMedia(it) }
 				.collectLatest { data ->
-					if (accountUiState.moviesData !is State.Success) {
-						_accountUiState.update { it.copy(moviesData = data) }
+					if (accountUiState.watchlistedMedia !is State.Success) {
+						_accountUiState.update { it.copy(watchlistedMedia = data) }
 					}
 					if (data !is State.Success) return@collectLatest
-					_accountUiState.update { it.copy(moviesData = data) }
+					_accountUiState.update { it.copy(watchlistedMedia = data) }
 				}
 		}
 	}
 
-	private fun fetchShowData() {
+	private fun fetchFavoritedMedia() {
 		viewModelScope.launch {
 			accountUseCase.execute(
-				AccountUseCase.Request(userId, sessionId, MediaType.Shows)
+				AccountUseCase.Request(userId, sessionId, MediaCategory.Favorited)
 			)
-				.map { converter.convertToAccountTvShowsData(it) }
+				.map { converter.convertToFavoritedMedia(it) }
 				.collectLatest { data ->
-					if (accountUiState.showsData !is State.Success) {
-						_accountUiState.update { it.copy(showsData = data) }
+					if (accountUiState.favoritedMedia !is State.Success) {
+						_accountUiState.update { it.copy(favoritedMedia = data) }
 					}
 					if (data !is State.Success) return@collectLatest
-					_accountUiState.update { it.copy(showsData = data) }
+					_accountUiState.update { it.copy(favoritedMedia = data) }
+				}
+		}
+	}
+
+	private fun fetchRatedMedia() {
+		viewModelScope.launch {
+			accountUseCase.execute(
+				AccountUseCase.Request(userId, sessionId, MediaCategory.Rated)
+			)
+				.map { converter.convertToRatedMedia(it) }
+				.collectLatest { data ->
+					if (accountUiState.ratedMedia !is State.Success) {
+						_accountUiState.update { it.copy(ratedMedia = data) }
+					}
+					if (data !is State.Success) return@collectLatest
+					_accountUiState.update { it.copy(ratedMedia = data) }
 				}
 		}
 	}
@@ -151,13 +171,15 @@ class AccountViewModel @Inject constructor(
 				.map { converter.convertResponse(it) }
 				.collect { data ->
 					_accountUiState.update { it.copy(response = data) }
+					if (data !is State.Success) return@collect
+					updatedMediaCategory.value = MediaCategory.Favorited
 				}
 		}
 	}
 
 	private fun reloadMedia() {
-		_accountUiState.update { it.copy(moviesData = null, showsData = null) }
-		fetchMovieData(); fetchShowData()
+		_accountUiState.update { it.copy(watchlistedMedia = null, favoritedMedia = null, ratedMedia = null) }
+		fetchWatchlistMedia(); fetchFavoritedMedia(); fetchRatedMedia()
 	}
 
 }
