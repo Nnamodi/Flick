@@ -1,7 +1,8 @@
 package com.roland.android.data_repository
 
-import com.roland.android.data_repository.auth.AuthRepositoryImpl
-import com.roland.android.data_repository.auth.AuthUtil
+import com.roland.android.data_repository.data_source.local.LocalAuthDataSource
+import com.roland.android.data_repository.data_source.remote.AuthUtil
+import com.roland.android.data_repository.repository.AuthRepositoryImpl
 import com.roland.android.domain.entity.auth_response.AccessToken
 import com.roland.android.domain.entity.auth_response.AccessTokenResponse
 import com.roland.android.domain.entity.auth_response.AccountDetails
@@ -22,7 +23,8 @@ import org.mockito.kotlin.whenever
 class AuthRepositoryImplTest {
 
 	private val authUtil = mock<AuthUtil>()
-	private val authRepositoryImpl = AuthRepositoryImpl(authUtil)
+	private val localAuthSource = mock<LocalAuthDataSource>()
+	private val authRepositoryImpl = AuthRepositoryImpl(authUtil, localAuthSource)
 
 	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test

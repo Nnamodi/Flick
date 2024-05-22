@@ -1,4 +1,4 @@
-package com.roland.android.data_repository.data_source
+package com.roland.android.data_repository.data_source.remote
 
 import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.MovieCredits

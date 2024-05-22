@@ -1,7 +1,7 @@
-package com.roland.android.data_repository.media_repository
+package com.roland.android.data_repository.repository
 
 import androidx.paging.PagingData
-import com.roland.android.data_repository.data_source.RemoteMovieSource
+import com.roland.android.data_repository.data_source.remote.RemoteMovieSource
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails

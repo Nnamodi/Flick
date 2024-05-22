@@ -1,7 +1,7 @@
-package com.roland.android.data_repository.media_repository
+package com.roland.android.data_repository.repository
 
 import androidx.paging.PagingData
-import com.roland.android.data_repository.data_source.RemoteTvShowSource
+import com.roland.android.data_repository.data_source.remote.RemoteTvShowSource
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie

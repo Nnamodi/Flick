@@ -1,12 +1,14 @@
 package com.roland.android.data_repository.di
 
-import com.roland.android.data_repository.auth.AuthRepositoryImpl
-import com.roland.android.data_repository.media_repository.CastRepositoryImpl
-import com.roland.android.data_repository.media_repository.MovieRepositoryImpl
-import com.roland.android.data_repository.media_repository.TvShowRepositoryImpl
+import com.roland.android.data_repository.repository.AuthRepositoryImpl
+import com.roland.android.data_repository.repository.CastRepositoryImpl
+import com.roland.android.data_repository.repository.MovieRepositoryImpl
+import com.roland.android.data_repository.repository.SettingsRepositoryImpl
+import com.roland.android.data_repository.repository.TvShowRepositoryImpl
 import com.roland.android.domain.repository.AuthRepository
 import com.roland.android.domain.repository.CastRepository
 import com.roland.android.domain.repository.MovieRepository
+import com.roland.android.domain.repository.SettingsRepository
 import com.roland.android.domain.repository.TvShowRepository
 import dagger.Binds
 import dagger.Module
@@ -28,5 +30,8 @@ abstract class RepositoryModule {
 
 	@Binds
 	abstract fun bindTvShowRepository(tvShowRepositoryImpl: TvShowRepositoryImpl): TvShowRepository
+
+	@Binds
+	abstract fun bindSettingsRepository(settingsRepositoryImpl: SettingsRepositoryImpl): SettingsRepository
 
 }

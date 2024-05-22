@@ -1,6 +1,5 @@
 package com.roland.android.data_remote.data_source
 
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -29,7 +28,7 @@ import com.roland.android.data_remote.utils.Converters.convertToGenreList
 import com.roland.android.data_remote.utils.Converters.convertToResponse
 import com.roland.android.data_remote.utils.Converters.convertToSeason
 import com.roland.android.data_remote.utils.Converters.convertToShowDetails
-import com.roland.android.data_repository.data_source.RemoteTvShowSource
+import com.roland.android.data_repository.data_source.remote.RemoteTvShowSource
 import com.roland.android.domain.entity.Episode
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie

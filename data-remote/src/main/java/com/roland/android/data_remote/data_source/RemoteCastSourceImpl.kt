@@ -3,7 +3,7 @@ package com.roland.android.data_remote.data_source
 import com.roland.android.data_remote.network.service.CastService
 import com.roland.android.data_remote.utils.Converters.convertToCastDetails
 import com.roland.android.data_remote.utils.Converters.convertToMovieCredits
-import com.roland.android.data_repository.data_source.RemoteCastSource
+import com.roland.android.data_repository.data_source.remote.RemoteCastSource
 import com.roland.android.domain.entity.CastDetails
 import com.roland.android.domain.entity.MovieCredits
 import com.roland.android.domain.entity.UseCaseException

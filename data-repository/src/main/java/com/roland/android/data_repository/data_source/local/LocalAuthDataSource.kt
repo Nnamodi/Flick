@@ -1,4 +1,4 @@
-package com.roland.android.data_repository.auth
+package com.roland.android.data_repository.data_source.local
 
 import com.roland.android.domain.entity.auth_response.AccessToken
 import com.roland.android.domain.entity.auth_response.AccountDetails

@@ -8,7 +8,7 @@ import com.roland.android.data_remote.utils.Converters.convertToAccountDetails
 import com.roland.android.data_remote.utils.Converters.convertToRequestTokenResponse
 import com.roland.android.data_remote.utils.Converters.convertToResponse
 import com.roland.android.data_remote.utils.Converters.convertToSessionIdResponse
-import com.roland.android.data_repository.auth.AuthUtil
+import com.roland.android.data_repository.data_source.remote.AuthUtil
 import com.roland.android.domain.entity.UseCaseException
 import com.roland.android.domain.entity.auth_response.AccessToken
 import com.roland.android.domain.entity.auth_response.AccessTokenResponse

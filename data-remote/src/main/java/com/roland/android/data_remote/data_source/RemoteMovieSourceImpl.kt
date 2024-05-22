@@ -27,7 +27,7 @@ import com.roland.android.data_remote.utils.Converters.convertFromWatchlistMedia
 import com.roland.android.data_remote.utils.Converters.convertToGenreList
 import com.roland.android.data_remote.utils.Converters.convertToMovieDetails
 import com.roland.android.data_remote.utils.Converters.convertToResponse
-import com.roland.android.data_repository.data_source.RemoteMovieSource
+import com.roland.android.data_repository.data_source.remote.RemoteMovieSource
 import com.roland.android.domain.entity.Genre
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.entity.MovieDetails

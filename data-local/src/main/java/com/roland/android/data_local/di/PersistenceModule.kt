@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.roland.android.data_local.data_source.LocalAuthDataSourceImpl
+import com.roland.android.data_local.data_source.SettingsDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,5 +22,10 @@ class PersistenceModule {
 	fun provideLocalAuthDataSourceImpl(
 		@ApplicationContext context: Context
 	) = LocalAuthDataSourceImpl(context.dataStore)
+
+	@Provides
+	fun provideSettingsDataSourceImpl(
+		@ApplicationContext context: Context
+	) = SettingsDataSourceImpl(context.dataStore)
 
 }

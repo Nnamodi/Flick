@@ -2,8 +2,8 @@ package com.roland.android.data_repository
 
 import com.roland.android.data_repository.SampleTestData.movieCast
 import com.roland.android.data_repository.SampleTestData.movieCredits
-import com.roland.android.data_repository.data_source.RemoteCastSource
-import com.roland.android.data_repository.media_repository.CastRepositoryImpl
+import com.roland.android.data_repository.data_source.remote.RemoteCastSource
+import com.roland.android.data_repository.repository.CastRepositoryImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf

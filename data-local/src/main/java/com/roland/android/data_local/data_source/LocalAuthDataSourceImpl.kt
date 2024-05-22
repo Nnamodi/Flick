@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.roland.android.data_repository.auth.LocalAuthDataSource
+import com.roland.android.data_repository.data_source.local.LocalAuthDataSource
 import com.roland.android.domain.entity.auth_response.AccessToken
 import com.roland.android.domain.entity.auth_response.AccountDetails
 import com.roland.android.domain.entity.auth_response.SessionId

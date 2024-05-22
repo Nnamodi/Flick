@@ -1,4 +1,4 @@
-package com.roland.android.data_repository.data_source
+package com.roland.android.data_repository.data_source.remote
 
 import androidx.paging.PagingData
 import com.roland.android.domain.entity.Genre
