@@ -3,6 +3,8 @@ package com.roland.android.flick.state
 import android.net.Uri
 import com.roland.android.domain.entity.auth_response.AccountDetails
 import com.roland.android.domain.entity.auth_response.Response
+import com.roland.android.domain.repository.AutoStreamOptions
+import com.roland.android.domain.repository.ThemeOptions
 import com.roland.android.domain.usecase.Collection
 import com.roland.android.flick.models.AccountModel
 import com.roland.android.flick.models.CastDetailsModel
@@ -83,4 +85,10 @@ data class AuthUiState(
 	val accountData: State<AccountModel>? = null,
 	val intentData: Uri? = null,
 	val activityResumed: Boolean = false
+)
+
+data class SettingsUiState(
+	val theme: ThemeOptions = ThemeOptions.Dark,
+	val autoReloadData: Boolean = true,
+	val autoStreamTrailers: AutoStreamOptions = AutoStreamOptions.Always
 )

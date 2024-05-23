@@ -12,10 +12,10 @@ import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.usecase.Category
 import com.roland.android.flick.R
 import com.roland.android.flick.state.MovieListUiState
-import com.roland.android.flick.ui.components.MovieListTopBar
 import com.roland.android.flick.ui.components.MovieLists
 import com.roland.android.flick.ui.components.Snackbar
 import com.roland.android.flick.ui.components.SnackbarDuration
+import com.roland.android.flick.ui.components.TopBar
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScaffold
 import com.roland.android.flick.ui.screens.CommonScreen
@@ -37,7 +37,7 @@ fun MovieListScreen(
 
 	CommonScaffold(
 		topBar = {
-			MovieListTopBar(
+			TopBar(
 				title = stringResource(category.getName()),
 				navigateUp = navigate
 			)

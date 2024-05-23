@@ -19,6 +19,7 @@ import androidx.compose.material.icons.rounded.Category
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -146,7 +147,7 @@ fun CategorySelectionTopBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieListTopBar(
+fun TopBar(
 	title: String,
 	categoryScreen: Boolean = false,
 	openSelectionSheet: () -> Unit = {},
@@ -165,7 +166,10 @@ fun MovieListTopBar(
 					Icon(Icons.Rounded.FilterList, stringResource(R.string.select_categories))
 				}
 			}
-		}
+		},
+		colors = TopAppBarDefaults.topAppBarColors(
+			actionIconContentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 1f)
+		)
 	)
 }
 
@@ -254,13 +258,21 @@ fun MovieDetailsTopBar(navigateUp: (Screens) -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccountTopBar() {
+fun AccountTopBar(navigate: (Screens) -> Unit) {
 	TopAppBar(
 		title = {
 			Text(
 				text = stringResource(R.string.my_account),
 				fontWeight = FontWeight.Bold
 			)
-		}
+		},
+		actions = {
+			IconButton(onClick = { navigate(Screens.SettingsScreen) }) {
+				Icon(Icons.Rounded.Settings, stringResource(R.string.settings))
+			}
+		},
+		colors = TopAppBarDefaults.topAppBarColors(
+			actionIconContentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 1f)
+		)
 	)
 }

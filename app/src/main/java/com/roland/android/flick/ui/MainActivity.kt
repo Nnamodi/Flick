@@ -9,6 +9,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -22,12 +23,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.roland.android.domain.repository.ThemeOptions
 import com.roland.android.flick.R
 import com.roland.android.flick.ui.components.NavBar
 import com.roland.android.flick.ui.navigation.AppRoute
 import com.roland.android.flick.ui.navigation.AppRoute.MovieDetailsScreen
 import com.roland.android.flick.ui.navigation.NavActions
 import com.roland.android.flick.ui.screens.auth.AuthViewModel
+import com.roland.android.flick.ui.screens.settings.SettingsViewModel
 import com.roland.android.flick.ui.theme.FlickTheme
 import com.roland.android.flick.utils.Constants.NavigationRailWidth
 import com.roland.android.flick.utils.WindowType
@@ -37,6 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 	private val authViewModel: AuthViewModel by viewModels()
+	private val settingsViewModel: SettingsViewModel by viewModels()
 
 	@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +55,13 @@ class MainActivity : ComponentActivity() {
 		)
 		super.onCreate(savedInstanceState)
 		setContent {
-			FlickTheme(darkTheme = true) {
+			val theme = when (settingsViewModel.settingsUiState.theme) {
+				ThemeOptions.Dark -> true
+				ThemeOptions.Light -> false
+				ThemeOptions.FollowSystem -> isSystemInDarkTheme()
+			}
+
+			FlickTheme(darkTheme = theme) {
 				val navController = rememberNavController()
 				val navActions = NavActions(navController)
 				var inFullScreen by rememberSaveable { mutableStateOf(false) }

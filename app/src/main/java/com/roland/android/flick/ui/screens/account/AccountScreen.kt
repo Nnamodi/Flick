@@ -63,7 +63,7 @@ fun AccountScreen(
 	val windowSize = rememberWindowSize()
 
 	CommonScaffold(
-		topBar = { AccountTopBar() }
+		topBar = { AccountTopBar(navigate) }
 	) { paddingValues ->
 		Column(
 			modifier = Modifier

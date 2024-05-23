@@ -20,6 +20,8 @@ import com.roland.android.flick.ui.screens.list.MovieListScreen
 import com.roland.android.flick.ui.screens.list.MovieListViewModel
 import com.roland.android.flick.ui.screens.search.SearchScreen
 import com.roland.android.flick.ui.screens.search.SearchViewModel
+import com.roland.android.flick.ui.screens.settings.SettingsScreen
+import com.roland.android.flick.ui.screens.settings.SettingsViewModel
 import com.roland.android.flick.utils.AnimationDirection
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.animatedComposable
@@ -36,6 +38,7 @@ fun AppRoute(
 	searchViewModel: SearchViewModel = hiltViewModel(),
 	categorySelectionViewModel: CategorySelectionViewModel = hiltViewModel(),
 	movieDetailsViewModel: MovieDetailsViewModel = hiltViewModel(),
+	settingsViewModel: SettingsViewModel = hiltViewModel(),
 	inFullScreen: (Boolean) -> Unit,
 ) {
 	NavHost(
@@ -101,6 +104,13 @@ fun AppRoute(
 				isMovie = isMovie,
 				request = movieDetailsViewModel::detailsRequest,
 				action = movieDetailsViewModel::detailsAction,
+				navigate = navActions::navigate
+			)
+		}
+		animatedComposable(AppRoute.SettingsScreen.route) {
+			SettingsScreen(
+				uiState = settingsViewModel.settingsUiState,
+				actions = settingsViewModel::settingsActions,
 				navigate = navActions::navigate
 			)
 		}

@@ -2,6 +2,8 @@ package com.roland.android.flick.utils
 
 import com.roland.android.domain.entity.Result
 import com.roland.android.domain.entity.auth_response.Response
+import com.roland.android.domain.repository.AutoStreamOptions
+import com.roland.android.domain.repository.ThemeOptions
 import com.roland.android.domain.usecase.AccountUseCase
 import com.roland.android.domain.usecase.AuthUseCase
 import com.roland.android.domain.usecase.GetCastDetailsUseCase
@@ -19,6 +21,7 @@ import com.roland.android.domain.usecase.GetTvShowUseCase
 import com.roland.android.domain.usecase.GetTvShowsByGenreUseCase
 import com.roland.android.domain.usecase.GetUpcomingMoviesUseCase
 import com.roland.android.domain.usecase.MediaUtilUseCase
+import com.roland.android.domain.usecase.SettingsUseCase
 import com.roland.android.flick.models.AccountModel
 import com.roland.android.flick.models.CastDetailsModel
 import com.roland.android.flick.models.CategorySelectionModel
@@ -447,6 +450,46 @@ class ResponseConverter @Inject constructor() {
 						result.data.response.success
 					)
 				)
+			}
+		}
+	}
+
+	/** Settings **/
+	fun convertThemeResponse(
+		result: Result<SettingsUseCase.Response>
+	): State<ThemeOptions> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(result.data.theme)
+			}
+		}
+	}
+
+	fun convertAutoReloadResponse(
+		result: Result<SettingsUseCase.Response>
+	): State<Boolean> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(result.data.autoReloadData)
+			}
+		}
+	}
+
+	fun convertAutoStreamResponse(
+		result: Result<SettingsUseCase.Response>
+	): State<AutoStreamOptions> {
+		return when (result) {
+			is Result.Error -> {
+				State.Error(result.exception.localizedMessage.orEmpty())
+			}
+			is Result.Success -> {
+				State.Success(result.data.autoStreamTrailers)
 			}
 		}
 	}

@@ -40,10 +40,10 @@ import com.roland.android.flick.models.SampleData.genreList
 import com.roland.android.flick.models.SampleData.trendingMovies
 import com.roland.android.flick.state.CategorySelectionUiState
 import com.roland.android.flick.state.State
-import com.roland.android.flick.ui.components.MovieListTopBar
 import com.roland.android.flick.ui.components.MovieLists
 import com.roland.android.flick.ui.components.Snackbar
 import com.roland.android.flick.ui.components.SnackbarDuration
+import com.roland.android.flick.ui.components.TopBar
 import com.roland.android.flick.ui.navigation.Screens
 import com.roland.android.flick.ui.screens.CommonScaffold
 import com.roland.android.flick.ui.screens.CommonScreen
@@ -151,7 +151,7 @@ private fun CategorySelectionScreenTopBar(
 		enter = slideInVertically(tween(300)) { -it },
 		exit = slideOutVertically(tween(400)) { -it },
 	) {
-		MovieListTopBar(
+		TopBar(
 			title = stringResource(selectedCollection.getName()),
 			categoryScreen = true,
 			openSelectionSheet = openSelectionSheet,
