@@ -13,6 +13,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -121,6 +125,7 @@ fun <T1: Any, T2: Any, T3: Any>CommonScreen(
 	successScreen: @Composable (T1, T2, T3) -> Unit
 ) {
 	val layoutDirection = LocalLayoutDirection.current
+	var dataLoaded by rememberSaveable { mutableStateOf(false) }
 
 	Box(
 		Modifier.padding(
@@ -129,16 +134,24 @@ fun <T1: Any, T2: Any, T3: Any>CommonScreen(
 		)
 	) {
 		when {
-			(state1 == null) && (state2 == null) && (state3 == null) -> {
+			!dataLoaded && ((state1 == null) || (state2 == null) || (state3 == null)) -> {
 				loadingScreen(null)
 			}
-			(state1 is State.Error) && (state2 is State.Error) && (state3 is State.Error) -> {
+			!dataLoaded && state1 is State.Error -> {
 				loadingScreen(state1.errorMessage.refine())
+			}
+			!dataLoaded && state2 is State.Error -> {
+				loadingScreen(state2.errorMessage.refine())
+			}
+			!dataLoaded && state3 is State.Error -> {
+				loadingScreen(state3.errorMessage.refine())
 			}
 			(state1 is State.Success) && (state2 is State.Success) && (state3 is State.Success) -> {
 				successScreen(state1.data, state2.data, state3.data)
+				dataLoaded = true; return
 			}
 		}
+		dataLoaded = false
 	}
 }
 

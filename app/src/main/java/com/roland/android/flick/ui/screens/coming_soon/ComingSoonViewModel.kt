@@ -7,9 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.GetUpcomingMoviesUseCase
 import com.roland.android.flick.state.ComingSoonUiState
+import com.roland.android.flick.state.State
+import com.roland.android.flick.state.autoReloadData
 import com.roland.android.flick.utils.Constants.MOVIES
 import com.roland.android.flick.utils.Constants.SERIES
 import com.roland.android.flick.utils.ResponseConverter
+import com.roland.android.flick.utils.network.NetworkConnectivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -20,11 +23,13 @@ import javax.inject.Inject
 @HiltViewModel
 class ComingSoonViewModel @Inject constructor(
 	private val upcomingMoviesUseCase: GetUpcomingMoviesUseCase,
+	private val networkConnectivity: NetworkConnectivity,
 	private val converter: ResponseConverter
 ) : ViewModel() {
 
 	private val _comingSoonUiState = MutableStateFlow(ComingSoonUiState())
 	var comingSoonUiState by mutableStateOf(_comingSoonUiState.value); private set
+	private var shouldAutoReloadData by mutableStateOf(true)
 
 	init {
 		loadComingSoonData()
@@ -32,6 +37,19 @@ class ComingSoonViewModel @Inject constructor(
 		viewModelScope.launch {
 			_comingSoonUiState.collect {
 				comingSoonUiState = it
+			}
+		}
+		viewModelScope.launch {
+			autoReloadData.collect {
+				shouldAutoReloadData = it
+			}
+		}
+		viewModelScope.launch {
+			networkConnectivity.observe().collect {
+				if (!shouldAutoReloadData ||
+					(it == NetworkConnectivity.Status.Offline) ||
+					(comingSoonUiState.movieData !is State.Error)) return@collect
+				retry()
 			}
 		}
 	}

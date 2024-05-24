@@ -10,13 +10,15 @@ import com.roland.android.domain.usecase.AccountUseCase
 import com.roland.android.domain.usecase.MediaActions
 import com.roland.android.domain.usecase.MediaCategory
 import com.roland.android.domain.usecase.MediaUtilUseCase
-import com.roland.android.flick.models.updatedMediaCategory
 import com.roland.android.flick.models.accountSessionId
+import com.roland.android.flick.models.updatedMediaCategory
 import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.state.AccountUiState
 import com.roland.android.flick.state.State
+import com.roland.android.flick.state.autoReloadData
 import com.roland.android.flick.utils.MediaUtil
 import com.roland.android.flick.utils.ResponseConverter
+import com.roland.android.flick.utils.network.NetworkConnectivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -29,6 +31,7 @@ import javax.inject.Inject
 class AccountViewModel @Inject constructor(
 	private val accountUseCase: AccountUseCase,
 	private val mediaUtilUseCase: MediaUtilUseCase,
+	private val networkConnectivity: NetworkConnectivity,
 	private val converter: ResponseConverter,
 	private val mediaUtil: MediaUtil
 ) : ViewModel() {
@@ -38,6 +41,7 @@ class AccountViewModel @Inject constructor(
 	private var sessionId by mutableStateOf("")
 	private var userId by mutableIntStateOf(0)
 	var userLoggedIn by mutableStateOf(false); private set
+	private var shouldAutoReloadData by mutableStateOf(true)
 
 	init {
 		viewModelScope.launch {
@@ -68,6 +72,21 @@ class AccountViewModel @Inject constructor(
 					MediaCategory.Favorited -> fetchFavoritedMedia()
 					MediaCategory.Rated -> fetchRatedMedia()
 				}
+			}
+		}
+		viewModelScope.launch {
+			autoReloadData.collect {
+				shouldAutoReloadData = it
+			}
+		}
+		viewModelScope.launch {
+			networkConnectivity.observe().collect {
+				if (!shouldAutoReloadData ||
+					(it == NetworkConnectivity.Status.Offline) ||
+					((accountUiState.favoritedMedia !is State.Error) &&
+					(accountUiState.watchlistedMedia !is State.Error) &&
+					(accountUiState.ratedMedia !is State.Error))) return@collect
+				reloadMedia()
 			}
 		}
 	}

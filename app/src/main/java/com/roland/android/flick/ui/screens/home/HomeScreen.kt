@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -241,6 +242,11 @@ fun HomeScreen(
 				duration = SnackbarDuration.Indefinite
 			)
 		}
+	}
+
+	LaunchedEffect(Unit) {
+		if (movies is State.Error && shows is State.Error) return@LaunchedEffect
+		errorMessage.value = null
 	}
 }
 

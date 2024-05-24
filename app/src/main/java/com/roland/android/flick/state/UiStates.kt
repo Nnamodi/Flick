@@ -28,6 +28,7 @@ import com.roland.android.flick.models.TvShowsModel
 import com.roland.android.flick.models.WatchlistedMediaModel
 import com.roland.android.flick.ui.screens.search.SearchCategory
 import com.roland.android.flick.utils.Constants.MOVIES
+import kotlinx.coroutines.flow.MutableStateFlow
 
 data class HomeUiState(
 	val movies: State<MoviesModel>? = null,
@@ -92,3 +93,5 @@ data class SettingsUiState(
 	val autoReloadData: Boolean = true,
 	val autoStreamTrailers: AutoStreamOptions = AutoStreamOptions.Always
 )
+
+val autoReloadData = MutableStateFlow(true)

@@ -11,6 +11,7 @@ import com.roland.android.domain.usecase.SettingsRequest
 import com.roland.android.domain.usecase.SettingsUseCase
 import com.roland.android.flick.state.SettingsUiState
 import com.roland.android.flick.state.State
+import com.roland.android.flick.state.autoReloadData
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,6 +78,7 @@ class SettingsViewModel @Inject constructor(
 				.collect { response ->
 					if (response !is State.Success) return@collect
 					_settingsUiState.update { it.copy(autoReloadData = response.data) }
+					autoReloadData.value = response.data
 				}
 		}
 	}

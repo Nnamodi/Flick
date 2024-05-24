@@ -14,7 +14,9 @@ import com.roland.android.domain.usecase.GetTvShowsByGenreUseCase
 import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.HomeUiState
 import com.roland.android.flick.state.State
+import com.roland.android.flick.state.autoReloadData
 import com.roland.android.flick.utils.ResponseConverter
+import com.roland.android.flick.utils.network.NetworkConnectivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -30,12 +32,14 @@ class HomeViewModel @Inject constructor(
 	private val tvShowsUseCase: GetTvShowUseCase,
 	private val tvShowByGenreUseCase: GetTvShowsByGenreUseCase,
 	private val tvShowByRegionUseCase: GetTvShowByRegionUseCase,
+	private val networkConnectivity: NetworkConnectivity,
 	private val converter: ResponseConverter,
 ) : ViewModel() {
 
 	private val _homeUiState = MutableStateFlow(HomeUiState())
 	var homeUiState by mutableStateOf(_homeUiState.value); private set
 	private var accountId by mutableStateOf("")
+	private var shouldAutoReloadData by mutableStateOf(true)
 
 	init {
 		loadMovies()
@@ -59,6 +63,20 @@ class HomeViewModel @Inject constructor(
 		viewModelScope.launch {
 			_homeUiState.collect {
 				homeUiState = it
+			}
+		}
+		viewModelScope.launch {
+			autoReloadData.collect {
+				shouldAutoReloadData = it
+			}
+		}
+		viewModelScope.launch {
+			networkConnectivity.observe().collect {
+				if (!shouldAutoReloadData ||
+					(it == NetworkConnectivity.Status.Offline) ||
+					((homeUiState.movies !is State.Error) &&
+					(homeUiState.tvShows !is State.Error))) return@collect
+				retry()
 			}
 		}
 	}

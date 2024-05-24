@@ -193,6 +193,11 @@ fun ComingSoonScreen(
 		}
 	}
 
+	LaunchedEffect(Unit) {
+		if (movieData is State.Error) return@LaunchedEffect
+		errorMessage.value = null
+	}
+
 	if (expanded) {
 		BackHandler { itemExpanded(false) }
 	}

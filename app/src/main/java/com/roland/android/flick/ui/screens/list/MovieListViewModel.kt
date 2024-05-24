@@ -20,7 +20,9 @@ import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.MovieListUiState
 import com.roland.android.flick.state.State
+import com.roland.android.flick.state.autoReloadData
 import com.roland.android.flick.utils.ResponseConverter
+import com.roland.android.flick.utils.network.NetworkConnectivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -31,6 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
 	private val movieListUseCase: GetMovieListUseCase,
+	private val networkConnectivity: NetworkConnectivity,
 	private val converter: ResponseConverter
 ) : ViewModel() {
 
@@ -40,6 +43,7 @@ class MovieListViewModel @Inject constructor(
 	private var accountId by mutableStateOf("")
 	private var userId by mutableIntStateOf(0)
 	private var sessionId by mutableStateOf("")
+	private var shouldAutoReloadData by mutableStateOf(true)
 
 	init {
 		viewModelScope.launch {
@@ -68,6 +72,19 @@ class MovieListViewModel @Inject constructor(
 				movieListUiState = it
 			}
 		}
+		viewModelScope.launch {
+			autoReloadData.collect {
+				shouldAutoReloadData = it
+			}
+		}
+		viewModelScope.launch {
+			networkConnectivity.observe().collect { status ->
+				if (!shouldAutoReloadData ||
+					(status == NetworkConnectivity.Status.Offline) ||
+					(movieListUiState.movieData !is State.Error)) return@collect
+				lastCategoryFetched?.name?.let { retry(it) }
+			}
+		}
 	}
 
 	fun movieListActions(action: MovieListActions) {
@@ -78,7 +95,8 @@ class MovieListViewModel @Inject constructor(
 	}
 
 	private fun loadMovieList(category: Category) {
-		if (category == lastCategoryFetched) return
+		if (category == lastCategoryFetched && movieListUiState.movieData !is State.Error) return
+		lastCategoryFetched = category
 		_movieListUiState.value = MovieListUiState()
 		viewModelScope.launch {
 			movieListUseCase.execute(
@@ -92,7 +110,6 @@ class MovieListViewModel @Inject constructor(
 				.map { converter.convertMovieListData(it) }
 				.collect { data ->
 					_movieListUiState.update { it.copy(movieData = data) }
-					if (data is State.Success) lastCategoryFetched = category
 				}
 		}
 	}

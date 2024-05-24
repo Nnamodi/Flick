@@ -22,8 +22,10 @@ import com.roland.android.flick.models.updatedMediaCategory
 import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.state.MovieDetailsUiState
 import com.roland.android.flick.state.State
+import com.roland.android.flick.state.autoReloadData
 import com.roland.android.flick.utils.MediaUtil
 import com.roland.android.flick.utils.ResponseConverter
+import com.roland.android.flick.utils.network.NetworkConnectivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -38,6 +40,7 @@ class MovieDetailsViewModel @Inject constructor(
 	private val seasonDetailsUseCase: GetSeasonDetailsUseCase,
 	private val castDetailsUseCase: GetCastDetailsUseCase,
 	private val mediaUtilUseCase: MediaUtilUseCase,
+	private val networkConnectivity: NetworkConnectivity,
 	private val mediaUtil: MediaUtil,
 	private val converter: ResponseConverter
 ) : ViewModel() {
@@ -51,6 +54,8 @@ class MovieDetailsViewModel @Inject constructor(
 	private var lastMovieIdFetched by mutableStateOf<Int?>(null)
 	private var lastSeriesIdFetched by mutableStateOf<Int?>(null)
 	private var lastCastIdFetched by mutableStateOf<Int?>(null)
+
+	private var shouldAutoReloadData by mutableStateOf(true)
 
 	init {
 		viewModelScope.launch {
@@ -71,6 +76,21 @@ class MovieDetailsViewModel @Inject constructor(
 			_movieDetailsUiState.collect {
 				movieDetailsUiState = it
 				Log.i("MovieDetailsInfo", "Fetched item details: $it")
+			}
+		}
+		viewModelScope.launch {
+			autoReloadData.collect {
+				shouldAutoReloadData = it
+			}
+		}
+		viewModelScope.launch {
+			networkConnectivity.observe().collect {
+				if (!shouldAutoReloadData ||
+					(it == NetworkConnectivity.Status.Offline) ||
+					((movieDetailsUiState.movieDetails !is State.Error) &&
+					(movieDetailsUiState.tvShowDetails !is State.Error) &&
+					(movieDetailsUiState.castDetails !is State.Error))) return@collect
+				retryLastRequest()
 			}
 		}
 	}

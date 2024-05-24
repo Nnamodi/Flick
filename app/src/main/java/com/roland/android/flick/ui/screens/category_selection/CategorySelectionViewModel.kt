@@ -8,7 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.Collection
 import com.roland.android.domain.usecase.GetMoviesAndShowByGenreUseCase
 import com.roland.android.flick.state.CategorySelectionUiState
+import com.roland.android.flick.state.State
+import com.roland.android.flick.state.autoReloadData
 import com.roland.android.flick.utils.ResponseConverter
+import com.roland.android.flick.utils.network.NetworkConnectivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -19,11 +22,13 @@ import javax.inject.Inject
 @HiltViewModel
 class CategorySelectionViewModel @Inject constructor(
 	private val moviesAndShowByGenreUseCase: GetMoviesAndShowByGenreUseCase,
+	private val networkConnectivity: NetworkConnectivity,
 	private val converter: ResponseConverter
 ) : ViewModel() {
 
 	private val _categorySelectionUiState = MutableStateFlow(CategorySelectionUiState())
 	var categorySelectionUiState by mutableStateOf(_categorySelectionUiState.value); private set
+	private var shouldAutoReloadData by mutableStateOf(true)
 
 	init {
 		loadGenres()
@@ -31,6 +36,19 @@ class CategorySelectionViewModel @Inject constructor(
 		viewModelScope.launch {
 			_categorySelectionUiState.collect {
 				categorySelectionUiState = it
+			}
+		}
+		viewModelScope.launch {
+			autoReloadData.collect {
+				shouldAutoReloadData = it
+			}
+		}
+		viewModelScope.launch {
+			networkConnectivity.observe().collect {
+				if (!shouldAutoReloadData ||
+					(it == NetworkConnectivity.Status.Offline) ||
+					(categorySelectionUiState.movieData !is State.Error)) return@collect
+				retry()
 			}
 		}
 	}

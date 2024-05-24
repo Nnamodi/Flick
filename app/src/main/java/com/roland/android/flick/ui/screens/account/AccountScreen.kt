@@ -145,7 +145,7 @@ private fun MediaRows(
 	fetchGenres: (Array<List<Genre>>) -> Unit,
 	action: (AccountActions) -> Unit,
 	onError: (String?) -> Unit,
-	onCancelResult: (String) -> Unit,
+	onCancelResult: (String?) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
 	val (_, favoritedMedia, watchlistedMedia, ratedMedia, response) = uiState
@@ -173,7 +173,7 @@ private fun MediaRows(
 					action(AccountActions.UnFavoriteMedia(mediaId, mediaType))
 				},
 				onCancelled = onCancelResult,
-				onError = onCancelResult
+				onLoadError = onError
 			) { seeMore(if (it == MOVIES) FAVORITED_MOVIES else FAVORITED_SERIES) }
 
 			HorizontalPosters(
@@ -186,7 +186,7 @@ private fun MediaRows(
 					action(AccountActions.RemoveFromWatchlist(mediaId, mediaType))
 				},
 				onCancelled = onCancelResult,
-				onError = onCancelResult
+				onLoadError = onError
 			) { seeMore(if (it == MOVIES) WATCHLISTED_MOVIES else WATCHLISTED_SERIES) }
 
 			HorizontalPosters(
@@ -200,7 +200,7 @@ private fun MediaRows(
 					action(AccountActions.DeleteMediaRating(mediaId, mediaType))
 				},
 				onCancelled = onCancelResult,
-				onError = onCancelResult
+				onLoadError = onError
 			) { seeMore(if (it == MOVIES) RATED_MOVIES else RATED_SERIES) }
 
 			Spacer(

@@ -235,7 +235,7 @@ fun HorizontalPosters(
 	onMovieClick: (Movie) -> Unit,
 	onCancel: (Int, String) -> Unit,
 	onCancelled: (String) -> Unit,
-	onError: (String) -> Unit,
+	onLoadError: (String?) -> Unit,
 	seeMore: (String) -> Unit
 ) {
 	val pagerState = rememberPagerState { 2 }
@@ -268,6 +268,7 @@ fun HorizontalPosters(
 				requestDone = response != null,
 				showUserRating = showUserRating,
 				onMovieClick = onMovieClick,
+				onError = onLoadError,
 				onCancel = onCancel
 			)
 		}
@@ -276,10 +277,10 @@ fun HorizontalPosters(
 			if (loading) return@LaunchedEffect
 			when {
 				errorMessage != null -> {
-					onError(errorMessage.refine())
+					onCancelled(errorMessage.refine())
 				}
 				requestResult?.success == false -> {
-					onError(requestResult.statusMessage)
+					onCancelled(requestResult.statusMessage)
 				}
 				requestResult?.success == true -> {
 					onCancelled(context.getString(R.string.media_removed))
@@ -299,6 +300,7 @@ private fun PostersPager(
 	requestDone: Boolean = false,
 	showUserRating: Boolean = false,
 	onMovieClick: (Movie) -> Unit,
+	onError: (String?) -> Unit = {},
 	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
 	HorizontalPager(
@@ -313,6 +315,7 @@ private fun PostersPager(
 				requestDone = requestDone,
 				showUserRating = showUserRating,
 				onMovieClick = onMovieClick,
+				onError = onError,
 				onCancel = onCancel
 			)
 
@@ -323,6 +326,7 @@ private fun PostersPager(
 				requestDone = requestDone,
 				showUserRating = showUserRating,
 				onMovieClick = onMovieClick,
+				onError = onError,
 				onCancel = onCancel
 			)
 		}
@@ -337,6 +341,7 @@ private fun MovieListPage(
 	requestDone: Boolean = false,
 	showUserRating: Boolean = false,
 	onMovieClick: (Movie) -> Unit,
+	onError: (String?) -> Unit = {},
 	onCancel: (Int, String) -> Unit = { _, _ -> }
 ) {
 	val listState = rememberLazyListState()
@@ -372,7 +377,7 @@ private fun MovieListPage(
 			}
 		}
 		item {
-			movieList.loadStateUi(PosterType.Small)
+			movieList.loadStateUi(PosterType.Small) { onError(it) }
 			movieList.appendStateUi()
 		}
 	}
