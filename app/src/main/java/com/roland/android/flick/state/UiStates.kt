@@ -59,6 +59,7 @@ data class MovieDetailsUiState(
 	val castDetails: State<CastDetailsModel>? = null,
 	val selectedSeasonNumber: Int = 1,
 	val userIsLoggedIn: Boolean = false,
+	val autoStreamTrailer: Boolean = true,
 	val response: State<Response>? = null
 )
 
@@ -91,7 +92,8 @@ data class AuthUiState(
 data class SettingsUiState(
 	val theme: ThemeOptions = ThemeOptions.Dark,
 	val autoReloadData: Boolean = true,
-	val autoStreamTrailers: AutoStreamOptions = AutoStreamOptions.Always
+	val autoStreamOption: AutoStreamOptions = AutoStreamOptions.Always
 )
 
 val autoReloadData = MutableStateFlow(true)
+val autoStreamTrailersOption = MutableStateFlow(AutoStreamOptions.Always)

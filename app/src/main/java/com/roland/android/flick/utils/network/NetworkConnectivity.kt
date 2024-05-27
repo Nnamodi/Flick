@@ -7,7 +7,7 @@ interface NetworkConnectivity {
 	fun observe(): Flow<Status>
 
 	enum class Status {
-		Online, Offline
+		Online, OnWifi, Offline
 	}
 
 }

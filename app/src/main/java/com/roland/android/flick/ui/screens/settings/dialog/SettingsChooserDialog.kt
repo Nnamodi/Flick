@@ -25,6 +25,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.roland.android.domain.repository.AutoStreamOptions
+import com.roland.android.domain.repository.AutoStreamOptions.Always
+import com.roland.android.domain.repository.AutoStreamOptions.Never
+import com.roland.android.domain.repository.AutoStreamOptions.Wifi
 import com.roland.android.domain.repository.ThemeOptions
 import com.roland.android.domain.repository.ThemeOptions.Dark
 import com.roland.android.domain.repository.ThemeOptions.FollowSystem
@@ -51,6 +55,34 @@ fun ThemesChooserDialog(
 					selected = selectedTheme == theme,
 					onSelect = {
 						onSelected(SettingsActions.ToggleTheme(theme))
+						closeDialog()
+					}
+				)
+			}
+		},
+		closeDialog = closeDialog
+	)
+}
+
+@Composable
+fun AutoStreamChooserDialog(
+	selectedOption: AutoStreamOptions,
+	onSelected: (SettingsActions) -> Unit,
+	closeDialog: () -> Unit
+) {
+	ChooserDialog(
+		title = stringResource(R.string.choose_stream_option),
+		content = {
+			AutoStreamOptions.values().forEach { option ->
+				Option(
+					option = when (option) {
+						Always -> stringResource(R.string.always)
+						Wifi -> stringResource(R.string.wifi)
+						Never -> stringResource(R.string.never)
+					},
+					selected = selectedOption == option,
+					onSelect = {
+						onSelected(SettingsActions.SetAutoStreamTrailers(option))
 						closeDialog()
 					}
 				)

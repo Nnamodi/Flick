@@ -12,7 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIos
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconButtonDefaults.iconButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -72,6 +72,7 @@ fun VideoPlayer(
 	trailerKey: String?,
 	thumbnail: String,
 	modifier: Modifier = Modifier,
+	autoPlay: Boolean,
 	enabled: Boolean = true,
 	navigateUp: (Screens) -> Unit
 ) {
@@ -79,13 +80,14 @@ fun VideoPlayer(
 		Player(
 			videoKey = trailerKey,
 			modifier = modifier.fillMaxWidth(),
+			autoPlay = autoPlay,
 			thumbnail = thumbnail
 		)
 		IconButton(
 			onClick = { navigateUp(Screens.Back) },
 			modifier = Modifier.padding(start = 2.dp, top = 46.dp),
 			enabled = enabled,
-			colors = IconButtonDefaults.iconButtonColors(containerColor = Color.Black.copy(alpha = 0.5f))
+			colors = iconButtonColors(containerColor = Color.Black.copy(alpha = 0.5f))
 		) {
 			Icon(
 				imageVector = Icons.Rounded.ArrowBackIos,

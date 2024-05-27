@@ -34,6 +34,7 @@ import com.roland.android.flick.R
 import com.roland.android.flick.state.SettingsUiState
 import com.roland.android.flick.ui.components.TopBar
 import com.roland.android.flick.ui.navigation.Screens
+import com.roland.android.flick.ui.screens.settings.dialog.AutoStreamChooserDialog
 import com.roland.android.flick.ui.screens.settings.dialog.ThemesChooserDialog
 import com.roland.android.flick.ui.theme.FlickTheme
 
@@ -44,6 +45,7 @@ fun SettingsScreen(
 	navigate: (Screens) -> Unit
 ) {
 	val openThemeDialog = remember { mutableStateOf(false) }
+	val openAutoStreamDialog = remember { mutableStateOf(false) }
 
 	Scaffold(
 		topBar = {
@@ -85,12 +87,12 @@ fun SettingsScreen(
 				)
 				OptionBox(
 					label = stringResource(R.string.auto_play_trailers),
-					subLabel = when (uiState.autoStreamTrailers) {
+					subLabel = when (uiState.autoStreamOption) {
 						Always -> stringResource(R.string.always)
 						Wifi -> stringResource(R.string.wifi)
 						Never -> stringResource(R.string.never)
 					},
-					onClick = {}
+					onClick = { openAutoStreamDialog.value = true }
 				)
 			}
 		}
@@ -101,6 +103,14 @@ fun SettingsScreen(
 			selectedTheme = uiState.theme,
 			onSelected = actions,
 			closeDialog = { openThemeDialog.value = false }
+		)
+	}
+
+	if (openAutoStreamDialog.value) {
+		AutoStreamChooserDialog(
+			selectedOption = uiState.autoStreamOption,
+			onSelected = actions,
+			closeDialog = { openAutoStreamDialog.value = false }
 		)
 	}
 }

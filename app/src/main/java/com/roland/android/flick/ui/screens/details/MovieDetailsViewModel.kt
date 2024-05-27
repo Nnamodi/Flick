@@ -9,6 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.roland.android.domain.repository.AutoStreamOptions.Always
+import com.roland.android.domain.repository.AutoStreamOptions.Wifi
 import com.roland.android.domain.usecase.GetCastDetailsUseCase
 import com.roland.android.domain.usecase.GetMovieDetailsUseCase
 import com.roland.android.domain.usecase.GetSeasonDetailsUseCase
@@ -23,9 +25,11 @@ import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.state.MovieDetailsUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.state.autoReloadData
+import com.roland.android.flick.state.autoStreamTrailersOption
 import com.roland.android.flick.utils.MediaUtil
 import com.roland.android.flick.utils.ResponseConverter
 import com.roland.android.flick.utils.network.NetworkConnectivity
+import com.roland.android.flick.utils.network.NetworkConnectivity.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -56,6 +60,7 @@ class MovieDetailsViewModel @Inject constructor(
 	private var lastCastIdFetched by mutableStateOf<Int?>(null)
 
 	private var shouldAutoReloadData by mutableStateOf(true)
+	private var autoStreamOption by mutableStateOf(Always)
 
 	init {
 		viewModelScope.launch {
@@ -79,14 +84,25 @@ class MovieDetailsViewModel @Inject constructor(
 			}
 		}
 		viewModelScope.launch {
+			autoStreamTrailersOption.collect {
+				autoStreamOption = it
+			}
+		}
+		viewModelScope.launch {
 			autoReloadData.collect {
 				shouldAutoReloadData = it
 			}
 		}
 		viewModelScope.launch {
-			networkConnectivity.observe().collect {
-				if (!shouldAutoReloadData ||
-					(it == NetworkConnectivity.Status.Offline) ||
+			networkConnectivity.observe().collect { status ->
+				val autoStreamTrailer = when {
+					autoStreamOption == Always -> true
+					(autoStreamOption == Wifi) && (status == Status.OnWifi) -> true
+					else -> false
+				}
+				_movieDetailsUiState.update { it.copy(autoStreamTrailer = autoStreamTrailer) }
+
+				if (!shouldAutoReloadData || (status == Status.Offline) ||
 					((movieDetailsUiState.movieDetails !is State.Error) &&
 					(movieDetailsUiState.tvShowDetails !is State.Error) &&
 					(movieDetailsUiState.castDetails !is State.Error))) return@collect

@@ -233,6 +233,7 @@ private fun MoviesDetails(
 			trailerKey = movie.details.videos.getTrailerKey(),
 			thumbnail = movie.details.backdropPath,
 			modifier = Modifier.height(screenHeight * videoHeightDivisor),
+			autoPlay = uiState.autoStreamTrailer,
 			navigateUp = navigate
 		)
 		Details(
@@ -284,6 +285,7 @@ private fun ShowDetails(
 				trailerKey = show.details.videos.getTrailerKey(),
 				thumbnail = show.details.backdropPath,
 				modifier = Modifier.height(screenHeight * videoHeightDivisor),
+				autoPlay = uiState.autoStreamTrailer,
 				enabled = !openSeasonSelectionSheet.value,
 				navigateUp = navigate
 			)

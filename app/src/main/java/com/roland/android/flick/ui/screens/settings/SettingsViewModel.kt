@@ -12,6 +12,7 @@ import com.roland.android.domain.usecase.SettingsUseCase
 import com.roland.android.flick.state.SettingsUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.state.autoReloadData
+import com.roland.android.flick.state.autoStreamTrailersOption
 import com.roland.android.flick.utils.ResponseConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,7 +95,8 @@ class SettingsViewModel @Inject constructor(
 				.map { converter.convertAutoStreamResponse(it) }
 				.collect { response ->
 					if (response !is State.Success) return@collect
-					_settingsUiState.update { it.copy(autoStreamTrailers = response.data) }
+					_settingsUiState.update { it.copy(autoStreamOption = response.data) }
+					autoStreamTrailersOption.value = response.data
 				}
 		}
 	}

@@ -38,6 +38,16 @@ class NetworkConnectivityImpl @Inject constructor(context: Context) : NetworkCon
 					super.onUnavailable()
 					launch { send(NetworkConnectivity.Status.Offline) }
 				}
+
+				override fun onCapabilitiesChanged(
+					network: Network,
+					networkCapabilities: NetworkCapabilities,
+				) {
+					super.onCapabilitiesChanged(network, networkCapabilities)
+					val isUnmetered = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+					val status = if (isUnmetered) NetworkConnectivity.Status.OnWifi else NetworkConnectivity.Status.Online
+					launch { send(status) }
+				}
 			}
 
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
