@@ -17,11 +17,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,6 +38,7 @@ import com.roland.android.domain.usecase.Category.WATCHLISTED_MOVIES
 import com.roland.android.domain.usecase.Category.WATCHLISTED_SERIES
 import com.roland.android.flick.R
 import com.roland.android.flick.state.AccountUiState
+import com.roland.android.flick.state.State
 import com.roland.android.flick.ui.components.AccountTopBar
 import com.roland.android.flick.ui.components.HorizontalPosters
 import com.roland.android.flick.ui.components.Snackbar
@@ -81,11 +84,19 @@ fun AccountScreen(
 					modifier = Modifier.size(60.dp),
 					tint = Color.Blue
 				)
-				Text(
-					text = uiState.accountDetails.username,
-					modifier = Modifier.padding(start = 20.dp),
-					style = MaterialTheme.typography.headlineSmall
-				)
+				Column(Modifier.padding(start = 20.dp)) {
+					Text(
+						text = uiState.accountDetails.name ?: uiState.accountDetails.username,
+						style = MaterialTheme.typography.headlineSmall
+					)
+					uiState.accountDetails.name?.let {
+						Text(
+							text = uiState.accountDetails.username,
+							modifier = Modifier.alpha(0.5f),
+							style = MaterialTheme.typography.bodyLarge
+						)
+					}
+				}
 			}
 			MediaRows(
 				uiState = uiState,
@@ -129,10 +140,15 @@ fun AccountScreen(
 				duration = SnackbarDuration.Indefinite
 			)
 		}
+
+		LaunchedEffect(Unit) {
+			if (uiState.watchlistedMedia is State.Error) return@LaunchedEffect
+			loadingErrorMessage.value = null
+		}
 	}
 
 	DisposableEffect(Unit) {
-		// prevents snackbar from popping again when navigating back to composable
+		// prevents snackbar from popping again when navigating back to this screen
 		onDispose { action(null) }
 	}
 }

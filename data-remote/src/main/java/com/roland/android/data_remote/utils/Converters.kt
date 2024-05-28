@@ -220,7 +220,7 @@ object Converters {
 	fun convertToAccountDetails(accountDetailsModel: AccountDetailsModel) = AccountDetails(
 		accountDetailsModel.id,
 		convertToAvatar(accountDetailsModel.avatar),
-		accountDetailsModel.name,
+		accountDetailsModel.name.takeIf { it.isNotEmpty() },
 		accountDetailsModel.username
 	)
 
@@ -277,7 +277,7 @@ object Converters {
 		castModel.id,
 		castModel.name,
 		castModel.profilePath,
-		castModel.character,
+		castModel.roles.getOrNull(0)?.character ?: castModel.character,
 		castModel.castId,
 		castModel.creditId,
 		castModel.order

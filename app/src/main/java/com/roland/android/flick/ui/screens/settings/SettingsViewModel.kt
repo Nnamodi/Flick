@@ -9,6 +9,7 @@ import com.roland.android.domain.repository.AutoStreamOptions
 import com.roland.android.domain.repository.ThemeOptions
 import com.roland.android.domain.usecase.SettingsRequest
 import com.roland.android.domain.usecase.SettingsUseCase
+import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.state.SettingsUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.state.autoReloadData
@@ -36,6 +37,11 @@ class SettingsViewModel @Inject constructor(
 		setAutoDataReload(null)
 		setAutoStreamTrailer(null)
 
+		viewModelScope.launch {
+			userAccountDetails.collect { user ->
+				_settingsUiState.update { it.copy(userIsLoggedIn = user?.id != 0) }
+			}
+		}
 		viewModelScope.launch {
 			_settingsUiState.collect {
 				settingsUiState = it

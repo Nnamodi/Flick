@@ -49,7 +49,8 @@ fun NavGraphBuilder.startScreensRoute(
 			} else {
 				SignUpScreen(
 					uiState = authViewModel.authUiState,
-					authAction = authViewModel::authActions
+					authAction = authViewModel::authActions,
+					navigate = navActions::navigate
 				)
 			}
 		}

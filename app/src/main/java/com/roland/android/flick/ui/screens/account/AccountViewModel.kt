@@ -46,10 +46,10 @@ class AccountViewModel @Inject constructor(
 	init {
 		viewModelScope.launch {
 			userAccountDetails.collect { account ->
+				userLoggedIn = account?.id != 0
 				if (account == null) return@collect
 				userId = account.id
 				_accountUiState.update { it.copy(accountDetails = account) }
-				userLoggedIn = account.id != 0
 				if (!userLoggedIn) return@collect
 				reloadMedia()
 			}

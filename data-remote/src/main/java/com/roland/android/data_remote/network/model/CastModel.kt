@@ -16,5 +16,12 @@ data class CastModel(
 	@Json(name = "credit_id")
 	val creditId: String = "",
 	@Json(name = "order")
-	val order: Int = 0
+	val order: Int = 0,
+	@Json(name = "roles")
+	val roles: List<Roles> = emptyList()
+)
+
+data class Roles(
+	@Json(name = "character")
+	val character: String = ""
 )

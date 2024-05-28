@@ -3,7 +3,7 @@ package com.roland.android.domain.entity.auth_response
 data class AccountDetails(
 	val id: Int = 0,
 	val avatar: Avatar = Avatar(),
-	val name: String = "",
+	val name: String? = null,
 	val username: String = ""
 )
 

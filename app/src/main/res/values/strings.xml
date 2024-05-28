@@ -119,6 +119,8 @@
     <string name="option_selected">Selected %s</string>
     <string name="choose_theme">Choose Theme</string>
     <string name="choose_stream_option">Choose Stream Option</string>
+    <string name="account_settings">Account Settings</string>
+    <string name="edit_profile">Edit Your Profile</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

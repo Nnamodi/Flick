@@ -110,7 +110,7 @@ fun AppRoute(
 		animatedComposable(AppRoute.SettingsScreen.route) {
 			SettingsScreen(
 				uiState = settingsViewModel.settingsUiState,
-				actions = settingsViewModel::settingsActions,
+				action = settingsViewModel::settingsActions,
 				navigate = navActions::navigate
 			)
 		}

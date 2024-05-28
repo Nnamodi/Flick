@@ -65,7 +65,7 @@ data class SeriesModel(
 	val voteCount: Int = 0,
 	@Json(name = "videos")
 	val videos: VideoListModel = VideoListModel(),
-	@Json(name = "credits")
+	@Json(name = "aggregate_credits")
 	val credits: MovieCreditsModel = MovieCreditsModel()
 )
 

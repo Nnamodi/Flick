@@ -70,11 +70,8 @@ class MovieDetailsViewModel @Inject constructor(
 		}
 		viewModelScope.launch {
 			userAccountDetails.collect { user ->
-				user?.let {
-					accountId = user.id
-					if (user.id == 0) return@let
-					_movieDetailsUiState.update { it.copy(userIsLoggedIn = true) }
-				}
+				_movieDetailsUiState.update { it.copy(userIsLoggedIn = user?.id != 0) }
+				user?.let { accountId = user.id }
 			}
 		}
 		viewModelScope.launch {

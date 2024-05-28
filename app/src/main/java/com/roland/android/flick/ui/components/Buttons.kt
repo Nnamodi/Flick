@@ -22,18 +22,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.ArrowDropUp
-import androidx.compose.material.icons.rounded.Cancel
-import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -66,7 +60,6 @@ import com.roland.android.flick.utils.Constants.YOUTUBE_VIDEO_BASE_URL
 import com.roland.android.flick.utils.WindowType
 import com.roland.android.flick.utils.bounceClickable
 import com.roland.android.flick.utils.rememberWindowSize
-import kotlinx.coroutines.delay
 
 @Composable
 fun ToggleButton(
@@ -275,70 +268,6 @@ private fun CustomDropDownItem(
 			contentDescription = null,
 			modifier = Modifier.alpha(if (selected) 1f else 0f) // makes the icon present but invisible so the whole space is clickable
 		)
-	}
-}
-
-@Composable
-fun SignUpButton(
-	loading: Boolean,
-	failed: Boolean,
-	completed: Boolean,
-	modifier: Modifier = Modifier,
-	onClick: () -> Unit
-) {
-	val requestFailed = rememberSaveable(failed) { mutableStateOf(failed) }
-
-	Column(modifier) {
-		when {
-			completed -> {
-				Icon(
-					imageVector = Icons.Rounded.CheckCircle,
-					contentDescription = null,
-					modifier = Modifier.size(50.dp),
-					tint = Color.Green
-				)
-			}
-			requestFailed.value -> {
-				Icon(
-					imageVector = Icons.Rounded.Cancel,
-					contentDescription = null,
-					modifier = Modifier.size(50.dp),
-					tint = Color.Red
-				)
-			}
-			else -> {
-				Button(
-					onClick = onClick,
-					modifier = Modifier.fillMaxWidth(),
-					enabled = !loading
-				) {
-					if (loading) {
-						CircularProgressIndicator(
-							modifier = Modifier.size(20.dp),
-							strokeWidth = 2.dp
-						)
-					} else {
-						Icon(
-							painter = painterResource(R.drawable.app_logo),
-							contentDescription = null,
-							modifier = Modifier
-								.padding(end = 20.dp)
-								.scale(0.9f)
-						)
-						Text(
-							text = stringResource(R.string.sign_up),
-							style = MaterialTheme.typography.titleMedium
-						)
-					}
-				}
-			}
-		}
-	}
-
-	LaunchedEffect(failed) {
-		if (!requestFailed.value) return@LaunchedEffect
-		delay(2000)
-		requestFailed.value = false
 	}
 }
 
