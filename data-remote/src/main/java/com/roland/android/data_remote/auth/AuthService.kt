@@ -39,7 +39,7 @@ interface AuthService {
 		@Query("session_id") sessionId: String
 	): AccountDetailsModel
 
-	@DELETE("/3/authentication/session/convert/4")
+	@DELETE("/3/authentication/session")
 	suspend fun deleteSession(
 		@Body sessionId: SessionIdModel
 	): SessionIdResponseModel

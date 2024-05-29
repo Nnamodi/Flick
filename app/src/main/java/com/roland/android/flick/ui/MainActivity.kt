@@ -103,10 +103,12 @@ class MainActivity : ComponentActivity() {
 	override fun onResume() {
 		super.onResume()
 		authViewModel.onActivityResumed(true)
+		settingsViewModel.onActivityResumed(true)
 	}
 
 	override fun onPause() {
 		super.onPause()
 		authViewModel.onActivityResumed(false)
+		settingsViewModel.onActivityResumed(false)
 	}
 }

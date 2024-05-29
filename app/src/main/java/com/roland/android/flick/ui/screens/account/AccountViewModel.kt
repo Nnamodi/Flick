@@ -11,6 +11,7 @@ import com.roland.android.domain.usecase.MediaActions
 import com.roland.android.domain.usecase.MediaCategory
 import com.roland.android.domain.usecase.MediaUtilUseCase
 import com.roland.android.flick.models.accountSessionId
+import com.roland.android.flick.models.updateAccountDetails
 import com.roland.android.flick.models.updatedMediaCategory
 import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.state.AccountUiState
@@ -42,8 +43,14 @@ class AccountViewModel @Inject constructor(
 	private var userId by mutableIntStateOf(0)
 	var userLoggedIn by mutableStateOf(false); private set
 	private var shouldAutoReloadData by mutableStateOf(true)
+	private var shouldUpdateAccountDetails by mutableStateOf(false)
 
 	init {
+		viewModelScope.launch {
+			updateAccountDetails.collect {
+				shouldUpdateAccountDetails = it
+			}
+		}
 		viewModelScope.launch {
 			userAccountDetails.collect { account ->
 				userLoggedIn = account?.id != 0
@@ -197,6 +204,9 @@ class AccountViewModel @Inject constructor(
 	}
 
 	private fun reloadMedia() {
+		if (shouldUpdateAccountDetails) {
+			updateAccountDetails.value = false; return
+		}
 		_accountUiState.update { it.copy(watchlistedMedia = null, favoritedMedia = null, ratedMedia = null) }
 		fetchWatchlistMedia(); fetchFavoritedMedia(); fetchRatedMedia()
 	}

@@ -11,4 +11,6 @@ sealed class SettingsActions {
 
 	data class SetAutoStreamTrailers(val autoStream: AutoStreamOptions) : SettingsActions()
 
+	object Logout : SettingsActions()
+
 }

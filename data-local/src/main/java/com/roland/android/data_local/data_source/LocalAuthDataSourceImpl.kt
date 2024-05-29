@@ -51,11 +51,11 @@ class LocalAuthDataSourceImpl @Inject constructor(
 	}
 
 	override fun getAccountDetails(): Flow<AccountDetails> {
-		return dataStore.data.map {
+		return dataStore.data.map { preferences ->
 			AccountDetails(
-				id = it[USER_ID_KEY] ?: 0,
-				name = it[ACCOUNT_NAME_KEY] ?: "",
-				username = it[USERNAME_KEY] ?: "· · ·",
+				id = preferences[USER_ID_KEY] ?: 0,
+				name = preferences[ACCOUNT_NAME_KEY].takeIf { it?.isNotEmpty() == true },
+				username = preferences[USERNAME_KEY] ?: "· · ·",
 			)
 		}
 	}
@@ -63,7 +63,7 @@ class LocalAuthDataSourceImpl @Inject constructor(
 	override suspend fun saveAccountDetails(accountDetails: AccountDetails) {
 		dataStore.edit {
 			it[USER_ID_KEY] = accountDetails.id
-			it[ACCOUNT_NAME_KEY] = accountDetails.name
+			it[ACCOUNT_NAME_KEY] = accountDetails.name ?: ""
 			it[USERNAME_KEY] = accountDetails.username
 		}
 	}

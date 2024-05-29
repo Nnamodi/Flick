@@ -43,12 +43,7 @@ class AuthUseCase @Inject constructor(
 				}
 			}
 			Logout -> {
-				combine(
-					authRepository.deleteSession(request.sessionId!!),
-					authRepository.logout(request.accessToken!!)
-				) { sessionId, response ->
-					Response(sessionIdResponse = sessionId, response = response)
-				}
+				authRepository.logout().map { Response(response = it) }
 			}
 		}
 	}
@@ -67,7 +62,7 @@ class AuthUseCase @Inject constructor(
 		val sessionIdResponse: SessionIdResponse? = null,
 		val accountDetails: AccountDetails? = null,
 		val accountId: String? = null,
-		val response: com.roland.android.domain.entity.auth_response.Response? = null,
+		val response: com.roland.android.domain.entity.auth_response.Response? = null
 	) : UseCase.Response
 
 }

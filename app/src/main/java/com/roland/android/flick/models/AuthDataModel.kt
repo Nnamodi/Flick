@@ -15,6 +15,7 @@ val accountSessionId = MutableStateFlow<String?>(null)
 val userAccountId = MutableStateFlow("")
 val userAccountDetails = MutableStateFlow<AccountDetails?>(null)
 val updatedMediaCategory = MutableStateFlow<MediaCategory?>(null)
+val updateAccountDetails = MutableStateFlow(false)
 
 data class TokenModel(
 	val requestTokenResponse: RequestTokenResponse? = null,

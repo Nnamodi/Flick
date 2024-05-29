@@ -8,11 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.entity.auth_response.AccessToken
 import com.roland.android.domain.entity.auth_response.RequestToken
-import com.roland.android.domain.entity.auth_response.SessionId
 import com.roland.android.domain.usecase.AuthRequest
 import com.roland.android.domain.usecase.AuthUseCase
 import com.roland.android.flick.models.TokenModel
 import com.roland.android.flick.models.accountSessionId
+import com.roland.android.flick.models.updateAccountDetails
 import com.roland.android.flick.models.userAccountDetails
 import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.AuthUiState
@@ -34,10 +34,17 @@ class AuthViewModel @Inject constructor(
 
 	private val _authUiState = MutableStateFlow(AuthUiState())
 	var authUiState by mutableStateOf(_authUiState.value); private set
+	private var sessionId by mutableStateOf<String?>(null)
 
 	init {
 		requestAccessToken(null)
 
+		viewModelScope.launch {
+			updateAccountDetails.collect { shouldUpdate ->
+				if (!shouldUpdate) return@collect
+				getAccountDetails(sessionId)
+			}
+		}
 		viewModelScope.launch {
 			_authUiState.collectLatest {
 				authUiState = it
@@ -58,7 +65,6 @@ class AuthViewModel @Inject constructor(
 			AuthActions.GenerateRequest -> generateRequest()
 			AuthActions.AuthorizationCancelled -> tokenAuthorizationCancelled()
 			is AuthActions.RequestAccessToken -> requestAccessToken(action.requestToken)
-			is AuthActions.Logout -> logout(action.sessionId, action.accessToken)
 		}
 	}
 
@@ -112,9 +118,8 @@ class AuthViewModel @Inject constructor(
 				.collect { data ->
 					if (data !is State.Success) return@collect
 					accountSessionId.value = data.data.sessionIdResponse?.sessionId
-					val sessionId = data.data.sessionIdResponse?.sessionId
-						.takeIf { accessToken != null }
-					getAccountDetails(sessionId)
+					sessionId = data.data.sessionIdResponse?.sessionId
+					getAccountDetails(sessionId.takeIf { accessToken != null })
 				}
 		}
 	}
@@ -133,22 +138,6 @@ class AuthViewModel @Inject constructor(
 					if (data.data.accountId == null) return@collect
 					userAccountId.value = data.data.accountId
 					userAccountDetails.value = data.data.accountDetails
-				}
-		}
-	}
-
-	private fun logout(sessionId: SessionId, accessToken: AccessToken) {
-		viewModelScope.launch {
-			authUseCase.execute(
-				AuthUseCase.Request(
-					sessionId = sessionId,
-					accessToken = accessToken,
-					authRequest = AuthRequest.Logout
-				)
-			)
-				.map { converter.convertResponseData(it) }
-				.collect { data ->
-					_authUiState.update { it.copy(responseData = data) }
 				}
 		}
 	}

@@ -62,9 +62,11 @@ class MovieListViewModel @Inject constructor(
 			}
 		}
 		viewModelScope.launch {
-			updatedMediaCategory.collect {
+			updatedMediaCategory.collect { _ ->
 				val accountMediaCategories = setOf(WATCHLISTED_MOVIES, WATCHLISTED_SERIES, FAVORITED_MOVIES, FAVORITED_SERIES, RATED_MOVIES, RATED_SERIES)
-				if (lastCategoryFetched in accountMediaCategories) _movieListUiState.value = MovieListUiState()
+				if (lastCategoryFetched in accountMediaCategories) {
+					lastCategoryFetched?.let { loadMovieList(category = it, refresh = true) }
+				}
 			}
 		}
 		viewModelScope.launch {
@@ -82,7 +84,7 @@ class MovieListViewModel @Inject constructor(
 				if (!shouldAutoReloadData ||
 					(status == NetworkConnectivity.Status.Offline) ||
 					(movieListUiState.movieData !is State.Error)) return@collect
-				lastCategoryFetched?.name?.let { retry(it) }
+				lastCategoryFetched?.let { retry(it.name) }
 			}
 		}
 	}
@@ -94,8 +96,9 @@ class MovieListViewModel @Inject constructor(
 		}
 	}
 
-	private fun loadMovieList(category: Category) {
-		if (category == lastCategoryFetched && movieListUiState.movieData !is State.Error) return
+	private fun loadMovieList(category: Category, refresh: Boolean = false) {
+		if ((category == lastCategoryFetched) && !refresh &&
+			(movieListUiState.movieData !is State.Error)) return
 		lastCategoryFetched = category
 		_movieListUiState.value = MovieListUiState()
 		viewModelScope.launch {

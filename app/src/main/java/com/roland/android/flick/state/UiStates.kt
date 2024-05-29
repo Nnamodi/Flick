@@ -93,7 +93,9 @@ data class SettingsUiState(
 	val theme: ThemeOptions = ThemeOptions.Dark,
 	val autoReloadData: Boolean = true,
 	val autoStreamOption: AutoStreamOptions = AutoStreamOptions.Always,
-	val userIsLoggedIn: Boolean = false
+	val userIsLoggedIn: Boolean = false,
+	val logoutResponse: State<ResponseModel>? = null,
+	val activityResumed: Boolean = false
 )
 
 val autoReloadData = MutableStateFlow(true)

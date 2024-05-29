@@ -11,14 +11,18 @@ import com.roland.android.domain.entity.auth_response.Response
 import com.roland.android.domain.entity.auth_response.SessionId
 import com.roland.android.domain.entity.auth_response.SessionIdResponse
 import com.roland.android.domain.repository.AuthRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
 	private val authUtil: AuthUtil,
-	private val localAuthDataSource: LocalAuthDataSource
+	private val localAuthDataSource: LocalAuthDataSource,
+	private val coroutineScope: CoroutineScope
 ) : AuthRepository {
 
 	override fun generateRequestToken(): Flow<RequestTokenResponse> = authUtil.generateRequestToken()
@@ -69,20 +73,16 @@ class AuthRepositoryImpl @Inject constructor(
 		}
 	}
 
-	override fun deleteSession(sessionId: SessionId): Flow<SessionIdResponse> {
-		return authUtil.deleteSession(sessionId)
-			.onEach {
-				localAuthDataSource.saveAccountId("")
-				localAuthDataSource.saveSessionId(SessionId(it.sessionId))
+	override fun logout(): Flow<Response> {
+		coroutineScope.launch {
+			localAuthDataSource.apply {
+				saveAccessToken(AccessToken())
+				saveAccountDetails(AccountDetails())
+				saveAccountId("")
+				saveSessionId(SessionId(""))
 			}
-	}
-
-	override fun logout(accessToken: AccessToken): Flow<Response> {
-		return authUtil.logout(accessToken)
-			.onEach {
-				localAuthDataSource.saveAccessToken(AccessToken())
-				localAuthDataSource.saveAccountDetails(AccountDetails())
-			}
+		}
+		return flowOf(Response(statusMessage = "Logged out successfully", success = true))
 	}
 
 }
