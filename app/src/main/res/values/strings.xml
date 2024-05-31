@@ -122,6 +122,7 @@
     <string name="account_settings">Account Settings</string>
     <string name="edit_profile">Edit Your Profile</string>
     <string name="logout">LOGOUT</string>
+    <string name="no_trailer_available">No trailer available yet!</string>
 
     <plurals name="number_of_seasons">
         <item quantity="one">%d Season</item>

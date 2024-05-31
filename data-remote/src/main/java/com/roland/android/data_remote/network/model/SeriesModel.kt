@@ -10,7 +10,7 @@ data class SeriesModel(
 	@Json(name = "overview")
 	val overview: String = "",
 	@Json(name = "backdrop_path")
-	val backdropPath: String = "",
+	val backdropPath: String? = null,
 	@Json(name = "adult")
 	val adult: Boolean = false,
 	@Json(name = "created_by")
@@ -44,7 +44,7 @@ data class SeriesModel(
 	@Json(name = "popularity")
 	val popularity: Double = 0.0,
 	@Json(name = "poster_path")
-	val posterPath: String = "",
+	val posterPath: String? = null,
 	@Json(name = "production_companies")
 	val productionCompanies: List<ProductionCompanyModel> = emptyList(),
 	@Json(name = "production_countries")

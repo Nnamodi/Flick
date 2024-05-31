@@ -1,24 +1,27 @@
 package com.roland.android.flick.utils
 
 import android.util.Log
+import androidx.lifecycle.Lifecycle
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants.PlayerState
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.loadOrCueVideo
 
 class PlayerListener(
 	private val videoKey: String?,
 	private val autoPlay: Boolean = false,
 	private val canPlay: Boolean = false,
+	private val lifecycle: Lifecycle? = null,
 	private val playerIsReady: () -> Unit = {}
 ) : AbstractYouTubePlayerListener() {
 	override fun onReady(youTubePlayer: YouTubePlayer) {
 		super.onReady(youTubePlayer)
-		youTubePlayer.apply {
-			if (autoPlay) {
-				loadVideo(videoId = videoKey ?: "", startSeconds = 0f)
-			} else {
-				cueVideo(videoId = videoKey ?: "", startSeconds = 0f)
-			}
+		if (videoKey == null) return
+		if (autoPlay) {
+			if (lifecycle == null) return
+			youTubePlayer.loadOrCueVideo(lifecycle, videoKey, 0f)
+		} else {
+			youTubePlayer.cueVideo(videoId = videoKey, startSeconds = 0f)
 		}
 		Log.i("VideoPlayerInfo", "Player ready")
 	}

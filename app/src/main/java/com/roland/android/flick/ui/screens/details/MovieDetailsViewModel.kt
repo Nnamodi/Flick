@@ -61,6 +61,7 @@ class MovieDetailsViewModel @Inject constructor(
 
 	private var shouldAutoReloadData by mutableStateOf(true)
 	private var autoStreamOption by mutableStateOf(Always)
+	private var networkStatus by mutableStateOf(Status.Offline)
 
 	init {
 		viewModelScope.launch {
@@ -83,6 +84,7 @@ class MovieDetailsViewModel @Inject constructor(
 		viewModelScope.launch {
 			autoStreamTrailersOption.collect {
 				autoStreamOption = it
+				setAutoStreamOption()
 			}
 		}
 		viewModelScope.launch {
@@ -92,12 +94,8 @@ class MovieDetailsViewModel @Inject constructor(
 		}
 		viewModelScope.launch {
 			networkConnectivity.observe().collect { status ->
-				val autoStreamTrailer = when {
-					autoStreamOption == Always -> true
-					(autoStreamOption == Wifi) && (status == Status.OnWifi) -> true
-					else -> false
-				}
-				_movieDetailsUiState.update { it.copy(autoStreamTrailer = autoStreamTrailer) }
+				networkStatus = status
+				setAutoStreamOption()
 
 				if (!shouldAutoReloadData || (status == Status.Offline) ||
 					((movieDetailsUiState.movieDetails !is State.Error) &&
@@ -106,6 +104,15 @@ class MovieDetailsViewModel @Inject constructor(
 				retryLastRequest()
 			}
 		}
+	}
+
+	private fun setAutoStreamOption() {
+		val autoStreamTrailer = when {
+			autoStreamOption == Always -> true
+			(autoStreamOption == Wifi) && (networkStatus == Status.OnWifi) -> true
+			else -> false
+		}
+		_movieDetailsUiState.update { it.copy(autoStreamTrailer = autoStreamTrailer) }
 	}
 
 	fun detailsRequest(request: DetailsRequest) {

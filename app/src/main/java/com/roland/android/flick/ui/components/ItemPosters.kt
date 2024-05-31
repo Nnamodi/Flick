@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -107,6 +109,7 @@ fun ItemBackdropPoster(
 @Composable
 fun VideoThumbnail(
 	thumbnail: String,
+	trailerAvailable: Boolean,
 	modifier: Modifier = Modifier
 ) {
 	Box(modifier, Alignment.Center) {
@@ -118,12 +121,30 @@ fun VideoThumbnail(
 				.drawBehind { drawRect(Color.Black) },
 			contentScale = ContentScale.Crop
 		)
-		CircularProgressIndicator(
-			modifier = Modifier
-				.clip(CircleShape)
-				.background(Color.Black.copy(alpha = 0.5f))
-				.padding(4.dp)
-		)
+		if (trailerAvailable) {
+			CircularProgressIndicator(
+				modifier = Modifier
+					.clip(CircleShape)
+					.background(Color.Black.copy(alpha = 0.5f))
+					.padding(4.dp)
+			)
+		} else {
+			val clicked = rememberSaveable { mutableStateOf(false) }
+			Box(
+				Modifier
+					.bounceClickable { clicked.value = !clicked.value }
+					.clip(CircleShape)
+					.background(Color.Black.copy(alpha = 0.8f))
+					.padding(4.dp)
+					.animateContentSize()
+			) {
+				if (clicked.value) {
+					Text(stringResource(R.string.no_trailer_available), Modifier.padding(8.dp), Color.White)
+				} else {
+					Icon(Icons.Rounded.Error, null, Modifier.size(40.dp), Color.White)
+				}
+			}
+		}
 	}
 }
 

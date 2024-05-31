@@ -60,15 +60,12 @@ class SettingsViewModel @Inject constructor(
 	}
 
 	fun settingsActions(action: SettingsActions?) {
-		if (action == null) {
-			_settingsUiState.update { it.copy(logoutResponse = null) }
-			return
-		}
 		when (action) {
 			is SettingsActions.ToggleTheme -> toggleTheme(action.theme)
 			SettingsActions.ToggleAutoDataReload -> setAutoDataReload(!settingsUiState.autoReloadData)
 			is SettingsActions.SetAutoStreamTrailers -> setAutoStreamTrailer(action.autoStream)
 			SettingsActions.Logout -> logout()
+			null -> _settingsUiState.update { it.copy(logoutResponse = null) }
 		}
 	}
 

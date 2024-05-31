@@ -14,9 +14,9 @@ data class MovieDetailsModel(
 	@Json(name = "genres")
 	val genres: List<GenreModel> = emptyList(),
 	@Json(name = "backdrop_path")
-	val backdropPath: String = "",
+	val backdropPath: String? = null,
 	@Json(name = "poster_path")
-	val posterPath: String = "",
+	val posterPath: String? = null,
 	@Json(name = "original_language")
 	val language: String = "",
 	@Json(name = "popularity")

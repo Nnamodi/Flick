@@ -118,7 +118,8 @@ private fun Player(
 				view.addYouTubePlayerListener(
 					PlayerListener(
 						videoKey, autoPlay, canPlayVideo.value,
-						playerIsReady = { playerIsReady.value = true }
+						lifecycle = lifecycleOwner.lifecycle,
+						playerIsReady = { videoKey?.let { playerIsReady.value = true } }
 					)
 				)
 				view
@@ -138,6 +139,7 @@ private fun Player(
 		if (!playerIsReady.value) {
 			VideoThumbnail(
 				thumbnail = thumbnail,
+				trailerAvailable = videoKey != null,
 				modifier = Modifier.fillMaxSize()
 			)
 		}
