@@ -7,9 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.roland.android.domain.usecase.AccountUseCase
-import com.roland.android.domain.usecase.MediaActions
 import com.roland.android.domain.usecase.MediaCategory
-import com.roland.android.domain.usecase.MediaUtilUseCase
 import com.roland.android.flick.models.accountSessionId
 import com.roland.android.flick.models.updateAccountDetails
 import com.roland.android.flick.models.updatedMediaCategory
@@ -31,7 +29,6 @@ import javax.inject.Inject
 @HiltViewModel
 class AccountViewModel @Inject constructor(
 	private val accountUseCase: AccountUseCase,
-	private val mediaUtilUseCase: MediaUtilUseCase,
 	private val networkConnectivity: NetworkConnectivity,
 	private val converter: ResponseConverter,
 	private val mediaUtil: MediaUtil
@@ -173,33 +170,18 @@ class AccountViewModel @Inject constructor(
 					}
 				)
 			}
-			is AccountActions.DeleteMediaRating -> deleteMediaRating(
-				mediaId = action.mediaId,
-				mediaType = action.mediaType
-			)
+			is AccountActions.DeleteMediaRating -> {
+				mediaUtil.deleteMediaRating(
+					sessionId = sessionId,
+					mediaId = action.mediaId,
+					mediaType = action.mediaType,
+					result = { data ->
+						_accountUiState.update { it.copy(response = data) }
+					}
+				)
+			}
 			AccountActions.ReloadMedia -> reloadMedia()
 			null -> _accountUiState.update { it.copy(response = null) }
-		}
-	}
-
-	private fun deleteMediaRating(
-		mediaId: Int,
-		mediaType: String
-	) {
-		viewModelScope.launch {
-			mediaUtilUseCase.execute(
-				MediaUtilUseCase.Request(
-					mediaType = mediaType,
-					sessionId = sessionId,
-					mediaActions = MediaActions.DeleteRating(mediaId)
-				)
-			)
-				.map { converter.convertResponse(it) }
-				.collect { data ->
-					_accountUiState.update { it.copy(response = data) }
-					if (data !is State.Success) return@collect
-					updatedMediaCategory.value = MediaCategory.Favorited
-				}
 		}
 	}
 

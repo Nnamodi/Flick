@@ -76,6 +76,9 @@ import com.roland.android.flick.utils.getPoster
 import com.roland.android.flick.utils.painterPlaceholder
 import com.roland.android.flick.utils.rememberWindowSize
 
+typealias MediaId = Int
+typealias MediaType = String
+
 @Composable
 fun ExpandedComingSoonPoster(
 	movie: Movie,
@@ -207,17 +210,30 @@ fun LargeItemPoster(
 fun MediumItemPoster(
 	movie: Movie,
 	modifier: Modifier = Modifier,
-	onClick: (Movie) -> Unit
+	isCancellable: Boolean,
+	requestDone: Boolean,
+	onClick: (Movie) -> Unit,
+	onCancel: (MediaId, MediaType) -> Unit
 ) {
-	Poster(
-		model = MOVIE_IMAGE_BASE_URL_W342 + movie.posterPath,
-		contentDescription = movie.title ?: movie.tvName,
-		voteAverage = movie.voteAverage,
-		modifier = modifier
-			.padding(6.dp)
-			.size(POSTER_WIDTH_MEDIUM, POSTER_HEIGHT_MEDIUM),
-		posterType = PosterType.Medium
-	) { onClick(movie) }
+	if (isCancellable) {
+		CancellableItemPoster(
+			movie = movie,
+			requestDone = requestDone,
+			posterType = PosterType.Medium,
+			onClick = onClick,
+			onCancel = onCancel
+		)
+	} else {
+		Poster(
+			model = MOVIE_IMAGE_BASE_URL_W342 + movie.posterPath,
+			contentDescription = movie.title ?: movie.tvName,
+			voteAverage = movie.voteAverage,
+			modifier = modifier
+				.padding(6.dp)
+				.size(POSTER_WIDTH_MEDIUM, POSTER_HEIGHT_MEDIUM),
+			posterType = PosterType.Medium
+		) { onClick(movie) }
+	}
 }
 
 @Composable
@@ -241,17 +257,18 @@ fun CancellableItemPoster(
 	movie: Movie,
 	modifier: Modifier = Modifier,
 	requestDone: Boolean,
-	showUserRating: Boolean,
+	showUserRating: Boolean = false,
+	posterType: PosterType = Small,
 	onClick: (Movie) -> Unit,
-	onCancel: (Int, String) -> Unit
+	onCancel: (MediaId, MediaType) -> Unit
 ) {
 	val requestLoading = rememberSaveable { mutableStateOf(false) }
 	val actionHandled = rememberSaveable(requestDone) { mutableStateOf(requestDone) }
+	val paddingModifier = if (posterType == Small) modifier.padding(end = 12.dp) else modifier.padding(6.dp)
 
 	Column(
-		modifier = modifier
-			.padding(end = 12.dp)
-			.width(POSTER_WIDTH_SMALL)
+		modifier = paddingModifier
+			.width(if (posterType == Small) POSTER_WIDTH_SMALL else POSTER_WIDTH_MEDIUM)
 			.bounceClickable { onClick(movie) }
 			.clip(MaterialTheme.shapes.large)
 			.background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)),
@@ -259,7 +276,7 @@ fun CancellableItemPoster(
 	) {
 		Box(
 			modifier = Modifier
-				.height(POSTER_HEIGHT_SMALL)
+				.height(if (posterType == Small) POSTER_HEIGHT_SMALL else POSTER_HEIGHT_MEDIUM)
 				.clip(MaterialTheme.shapes.large)
 		) {
 			val mediaType = if (movie.title == null) SERIES else MOVIES
@@ -371,6 +388,7 @@ private fun Poster(
 						.clip(RoundedCornerShape(topEnd = 12.dp))
 						.background(Color.Black.copy(alpha = 0.65f))
 						.padding(10.dp),
+					color = Color.White,
 					fontSize = 22.sp,
 					fontWeight = FontWeight.Bold
 				)

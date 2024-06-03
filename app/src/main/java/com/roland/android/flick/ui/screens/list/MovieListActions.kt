@@ -8,4 +8,9 @@ sealed class MovieListActions {
 
 	data class LoadMovieList(val category: Category) : MovieListActions()
 
+	data class RemoveFromList(
+		val mediaId: Int,
+		val mediaType: String,
+	) : MovieListActions()
+
 }

@@ -69,4 +69,27 @@ class MediaUtil @Inject constructor(
 		}
 	}
 
+	fun deleteMediaRating(
+		sessionId: String,
+		mediaId: Int,
+		mediaType: String,
+		result: (State<Response>) -> Unit
+	) {
+		coroutineScope.launch {
+			mediaUtilUseCase.execute(
+				MediaUtilUseCase.Request(
+					mediaType = mediaType,
+					sessionId = sessionId,
+					mediaActions = MediaActions.DeleteRating(mediaId)
+				)
+			)
+				.map { converter.convertResponse(it) }
+				.collect { data ->
+					result(data)
+					if (data !is State.Success) return@collect
+					updatedMediaCategory.value = MediaCategory.Rated
+				}
+		}
+	}
+
 }

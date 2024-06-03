@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.roland.android.domain.entity.auth_response.Response
 import com.roland.android.domain.usecase.Category
 import com.roland.android.domain.usecase.Category.FAVORITED_MOVIES
 import com.roland.android.domain.usecase.Category.FAVORITED_SERIES
@@ -21,6 +22,7 @@ import com.roland.android.flick.models.userAccountId
 import com.roland.android.flick.state.MovieListUiState
 import com.roland.android.flick.state.State
 import com.roland.android.flick.state.autoReloadData
+import com.roland.android.flick.utils.MediaUtil
 import com.roland.android.flick.utils.ResponseConverter
 import com.roland.android.flick.utils.network.NetworkConnectivity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
 	private val movieListUseCase: GetMovieListUseCase,
+	private val mediaUtil: MediaUtil,
 	private val networkConnectivity: NetworkConnectivity,
 	private val converter: ResponseConverter
 ) : ViewModel() {
@@ -44,6 +47,7 @@ class MovieListViewModel @Inject constructor(
 	private var userId by mutableIntStateOf(0)
 	private var sessionId by mutableStateOf("")
 	private var shouldAutoReloadData by mutableStateOf(true)
+	private val accountMediaCategories = setOf(WATCHLISTED_MOVIES, WATCHLISTED_SERIES, FAVORITED_MOVIES, FAVORITED_SERIES, RATED_MOVIES, RATED_SERIES)
 
 	init {
 		viewModelScope.launch {
@@ -62,11 +66,12 @@ class MovieListViewModel @Inject constructor(
 			}
 		}
 		viewModelScope.launch {
-			updatedMediaCategory.collect { _ ->
-				val accountMediaCategories = setOf(WATCHLISTED_MOVIES, WATCHLISTED_SERIES, FAVORITED_MOVIES, FAVORITED_SERIES, RATED_MOVIES, RATED_SERIES)
+			updatedMediaCategory.collect { category ->
+				if (category == null) return@collect
 				if (lastCategoryFetched in accountMediaCategories) {
 					lastCategoryFetched?.let { loadMovieList(category = it, refresh = true) }
 				}
+				updatedMediaCategory.value = null
 			}
 		}
 		viewModelScope.launch {
@@ -89,10 +94,12 @@ class MovieListViewModel @Inject constructor(
 		}
 	}
 
-	fun movieListActions(action: MovieListActions) {
+	fun movieListActions(action: MovieListActions?) {
 		when (action) {
 			is MovieListActions.LoadMovieList -> loadMovieList(action.category)
 			is MovieListActions.Retry -> retry(action.categoryName)
+			is MovieListActions.RemoveFromList -> removeFromList(action.mediaId, action.mediaType)
+			null -> _movieListUiState.update { it.copy(response = null) }
 		}
 	}
 
@@ -100,7 +107,7 @@ class MovieListViewModel @Inject constructor(
 		if ((category == lastCategoryFetched) && !refresh &&
 			(movieListUiState.movieData !is State.Error)) return
 		lastCategoryFetched = category
-		_movieListUiState.value = MovieListUiState()
+		_movieListUiState.value = MovieListUiState(isCancellable = category in accountMediaCategories)
 		viewModelScope.launch {
 			movieListUseCase.execute(
 				GetMovieListUseCase.Request(
@@ -114,6 +121,43 @@ class MovieListViewModel @Inject constructor(
 				.collect { data ->
 					_movieListUiState.update { it.copy(movieData = data) }
 				}
+		}
+	}
+
+	private fun removeFromList(mediaId: Int, mediaType: String) {
+		val updateResponse: (State<Response>) -> Unit = { response ->
+			_movieListUiState.update { it.copy(response = response) }
+		}
+		when (lastCategoryFetched) {
+			in setOf(WATCHLISTED_MOVIES, WATCHLISTED_SERIES) -> {
+				mediaUtil.watchlistMedia(
+					accountId = userId,
+					sessionId = sessionId,
+					mediaId = mediaId,
+					mediaType = mediaType,
+					watchlist = false,
+					result = { updateResponse(it) }
+				)
+			}
+			in setOf(FAVORITED_MOVIES, FAVORITED_SERIES) -> {
+				mediaUtil.favoriteMedia(
+					accountId = userId,
+					sessionId = sessionId,
+					mediaId = mediaId,
+					mediaType = mediaType,
+					favorite = false,
+					result = { updateResponse(it) }
+				)
+			}
+			in setOf(RATED_MOVIES, RATED_SERIES) -> {
+				mediaUtil.deleteMediaRating(
+					sessionId = sessionId,
+					mediaId = mediaId,
+					mediaType = mediaType,
+					result = { updateResponse(it) }
+				)
+			}
+			else -> {}
 		}
 	}
 

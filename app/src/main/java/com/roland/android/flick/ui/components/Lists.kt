@@ -89,8 +89,11 @@ fun MovieLists(
 	paddingValues: PaddingValues = PaddingValues(0.dp),
 	scrollState: LazyGridState,
 	searchQueryEntered: Boolean = true,
+	isCancellable: Boolean = false,
+	cancelRequestDone: Boolean = false,
 	movies: LazyPagingItems<Movie>,
 	onItemClick: (Movie) -> Unit,
+	onCancel: (MediaId, MediaType) -> Unit = { _, _ -> },
 	error: @Composable (String?) -> Unit
 ) {
 	val showEmptyList = remember { mutableStateOf(false) }
@@ -115,7 +118,10 @@ fun MovieLists(
 			movies[index]?.let { movie ->
 				MediumItemPoster(
 					movie = movie,
-					onClick = onItemClick
+					isCancellable = isCancellable,
+					requestDone = cancelRequestDone,
+					onClick = onItemClick,
+					onCancel = onCancel
 				)
 			}
 		}
