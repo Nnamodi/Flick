@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.screens.details
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,7 +75,8 @@ fun SeasonDetails(
 			AssistChip(
 				onClick = openSeasonSelectionSheet,
 				label = {
-					Text(stringResource(R.string.season_number, selectedSeasonNumber))
+					val seasonNameRes = if (selectedSeasonNumber == 0) R.string.specials else R.string.season_number
+					Text(stringResource(seasonNameRes, selectedSeasonNumber))
 				},
 				modifier = Modifier.padding(6.dp),
 				trailingIcon = {
@@ -98,6 +100,7 @@ fun SeasonDetails(
 			val lazyListState = rememberLazyListState()
 
 			LazyRow(
+				modifier = Modifier.animateContentSize(),
 				state = lazyListState,
 				contentPadding = PaddingValues(
 					start = Constants.PADDING_WIDTH,

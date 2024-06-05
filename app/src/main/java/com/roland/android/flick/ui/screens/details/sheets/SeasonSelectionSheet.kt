@@ -46,6 +46,7 @@ fun SeasonSelectionSheet(
 	seriesId: Int,
 	selectedSeasonNumber: Int,
 	numberOfSeasons: Int,
+	specialSeasonAvailable: Boolean,
 	onSeasonSelected: (DetailsRequest) -> Unit,
 	closeSheet: () -> Unit
 ) {
@@ -69,7 +70,8 @@ fun SeasonSelectionSheet(
 				contentPadding = PaddingValues(top = 100.dp),
 				reverseLayout = true
 			) {
-				val seasons = (1..numberOfSeasons).toList()
+				val startSeason = if (specialSeasonAvailable) 0 else 1
+				val seasons = (startSeason..numberOfSeasons).toList()
 
 				items(numberOfSeasons) { index ->
 					SeasonOption(
@@ -110,9 +112,10 @@ private fun SeasonOption(
 	onSeasonSelected: (DetailsRequest) -> Unit,
 ) {
 	val optionIsSelected = seasonNumber == selectedSeasonNumber
+	val seasonNameRes = if (seasonNumber == 0) R.string.specials else R.string.season_number
 
 	Text(
-		text = stringResource(R.string.season_number, seasonNumber),
+		text = stringResource(seasonNameRes, seasonNumber),
 		modifier = Modifier
 			.fillMaxWidth()
 			.bounceClickable(
@@ -147,6 +150,7 @@ private fun SeasonSelectionSheetPreview() {
 				seriesId = 156465,
 				selectedSeasonNumber = 3,
 				numberOfSeasons = 14,
+				specialSeasonAvailable = false,
 				onSeasonSelected = {}
 			) { openSheet.value = false }
 		}

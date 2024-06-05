@@ -315,7 +315,8 @@ private fun ShowDetails(
 			showSheet = openSeasonSelectionSheet.value,
 			seriesId = show.details.id,
 			selectedSeasonNumber = uiState.selectedSeasonNumber,
-			numberOfSeasons = show.details.numberOfSeasons,
+			numberOfSeasons = show.details.seasons.size,
+			specialSeasonAvailable = show.details.seasons.size > show.details.numberOfSeasons,
 			onSeasonSelected = request,
 			closeSheet = { openSeasonSelectionSheet.value = false }
 		)
