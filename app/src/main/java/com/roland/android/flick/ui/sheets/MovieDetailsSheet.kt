@@ -150,6 +150,7 @@ private fun MovieDetailsSheetVisuals(
 			is State.Success -> response.data.statusMessage
 		}
 	}
+	LaunchedEffect(Unit) { detailsAction(null) }
 }
 
 @Preview

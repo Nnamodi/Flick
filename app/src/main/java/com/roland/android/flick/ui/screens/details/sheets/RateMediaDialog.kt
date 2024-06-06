@@ -78,6 +78,7 @@ fun RateMediaDialog(
 			MediaRatingBar(
 				rateValue = rateValue,
 				rateValueChanged = rateValueChanged,
+				requestLoading = requestLoading.value,
 				onRateValueChange = { rateValue = it; rateValueChanged = true }
 			)
 			Text(
@@ -123,6 +124,7 @@ fun RateMediaDialog(
 private fun MediaRatingBar(
 	rateValue: Int,
 	rateValueChanged: Boolean,
+	requestLoading: Boolean,
 	onRateValueChange: (Int) -> Unit
 ) {
 	Row(
@@ -144,7 +146,7 @@ private fun MediaRatingBar(
 				contentDescription = null,
 				modifier = Modifier
 					.size(40.dp)
-					.bounceClickable {
+					.bounceClickable(!requestLoading) {
 						val newValue = when {
 							!rateValueChanged && (rateValue == starIndex - 1) -> rateValue
 							!rateValueChanged && (rateValue == starIndex) -> rateValue

@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.screens.settings
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -83,11 +84,10 @@ fun SettingsScreen(
 			modifier = Modifier
 				.fillMaxSize()
 				.padding(paddingValues)
-				.verticalScroll(rememberScrollState())
-				.animateContentSize(),
+				.verticalScroll(rememberScrollState()),
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
-			if (userIsLoggedIn) {
+			AnimatedVisibility(userIsLoggedIn) {
 				val launchUrl: (String) -> Unit = {
 					chromeTabUtils.launchUrl(it); customTabOpened = true
 				}
@@ -138,7 +138,7 @@ fun SettingsScreen(
 				)
 			}
 
-			if (userIsLoggedIn) {
+			AnimatedVisibility(userIsLoggedIn) {
 				Spacer(Modifier.weight(1f))
 				LogoutButton(
 					loading = isLoading,
