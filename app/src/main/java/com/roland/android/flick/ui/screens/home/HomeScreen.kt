@@ -4,20 +4,16 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -31,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.roland.android.domain.entity.Movie
 import com.roland.android.domain.usecase.Category
@@ -95,9 +92,9 @@ import com.roland.android.flick.utils.WindowType.Portrait
 import com.roland.android.flick.utils.animatePagerItem
 import com.roland.android.flick.utils.dynamicPageWidth
 import com.roland.android.flick.utils.rememberWindowSize
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
 	uiState: HomeUiState,
@@ -105,11 +102,12 @@ fun HomeScreen(
 	navigate: (Screens) -> Unit
 ) {
 	val (movies, moviesByGenre, moviesByRegion, shows, showsByGenre, showsByRegion, selectedCategory) = uiState
-	val scope = rememberCoroutineScope()
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
-	val scrollState = rememberScrollState()
 	val windowSize = rememberWindowSize()
+	val onMovieClick: (Movie) -> Unit = {
+		clickedMovieItem.value = it
+	}
 	val seeMore: (Category) -> Unit = {
 		navigate(Screens.MovieListScreen(it.name))
 	}
@@ -121,103 +119,134 @@ fun HomeScreen(
 			movies, moviesByGenre, moviesByRegion,
 			shows, showsByGenre, showsByRegion,
 			paddingValues, loadingScreen = { error ->
-				HomeLoadingUi(paddingValues, scrollState, isLoading = error == null)
+				HomeLoadingUi(paddingValues, isLoading = error == null)
 				errorMessage.value = error
 			}
 		) { movieData1, movieData2, movieData3, showData1, showData2, showData3 ->
-			val trendingMovies = (if (selectedCategory == MOVIES)
-				movieData1.trending else showData1.trending
-			).collectAsLazyPagingItems()
-			val moviesPagerState = rememberPagerState { 20 }
-			val seriesPagerState = rememberPagerState { 20 }
-			val pagerState = if (selectedCategory == MOVIES) moviesPagerState else seriesPagerState
-			val paddingTargetValue = remember(pagerState.currentPage) {
-				derivedStateOf {
-					if (pagerState.currentPage == 0) PADDING_WIDTH else 40.dp
-				}
-			}
-			val startPaddingValue by animateDpAsState(
-				targetValue = paddingTargetValue.value,
-				label = "padding width value"
-			)
-
-			Column(
-				modifier = Modifier
-					.padding(bottom = paddingValues.calculateBottomPadding())
-					.verticalScroll(scrollState),
+			LazyColumn(
+				modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()),
+				contentPadding = PaddingValues(
+					top = paddingValues.calculateTopPadding(),
+					bottom = 50.dp + (if (windowSize.width == Portrait) NavigationBarHeight else 0.dp)
+				),
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
-				Spacer(Modifier.height(paddingValues.calculateTopPadding()))
-				ToggleButton(
-					selectedOption = selectedCategory,
-					modifier = Modifier.padding(bottom = 6.dp),
-					onClick = action
-				)
-				Row(
-					modifier = Modifier
-						.fillMaxWidth()
-						.padding(PADDING_WIDTH),
-					horizontalArrangement = Arrangement.Start
-				) {
-					Header(stringResource(R.string.trending))
-				}
-				HorizontalPager(
-					state = pagerState,
-					contentPadding = PaddingValues(
-						start = startPaddingValue,
-						end = PADDING_WIDTH
-					),
-					modifier = Modifier
-						.fillMaxWidth()
-						.padding(bottom = 16.dp),
-					pageSpacing = 14.dp,
-					flingBehavior = PagerDefaults.flingBehavior(
-						state = pagerState,
-						pagerSnapDistance = PagerSnapDistance.atMost(20)
-					),
-					pageSize = PageSize.Fixed(dynamicPageWidth(POSTER_WIDTH_LARGE))
-				) { page ->
-					if (trendingMovies.itemCount > 0) {
-						trendingMovies[page]?.let { movie ->
-							LargeItemPoster(
-								movie = movie,
-								itemPage = page,
-								pagerState = pagerState,
-								onClick = {
-									if (page != pagerState.currentPage) scope.launch {
-										pagerState.animateScrollToPage(
-											page = page,
-											animationSpec = tween(durationMillis = 1000)
-										)
-									}
-									clickedMovieItem.value = it
-								}
-							)
-						}
-					}
-					trendingMovies.loadStateUi(
-						posterType = PosterType.Large,
-						largeBoxItemModifier = Modifier.animatePagerItem(page, pagerState),
-						error = { errorMessage.value = it }
+				item {
+					ToggleButton(
+						selectedOption = selectedCategory,
+						modifier = Modifier.padding(bottom = 6.dp),
+						onClick = action
 					)
 				}
 
-				MediaRows(
-					movieData1 = movieData1,
-					showData1 = showData1,
-					movieData2 = movieData2,
-					showData2 = showData2,
-					movieData3 = movieData3,
-					showData3 = showData3,
-					userIsLoggedIn = uiState.userIsLoggedIn,
-					selectedCategory = selectedCategory,
-					onMovieClick = { clickedMovieItem.value = it },
-					seeMore = seeMore
-				)
+				item {
+					TrendingMedia(
+						trendingMovies = movieData1.trending,
+						trendingShows = showData1.trending,
+						selectedCategory = selectedCategory,
+						onMovieClick = onMovieClick,
+						onError = { errorMessage.value = it }
+					)
+				}
 
-				Spacer(Modifier.height(
-					50.dp + (if (windowSize.width == Portrait) NavigationBarHeight else 0.dp)
-				))
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
+						header = stringResource(if (selectedCategory == MOVIES) R.string.in_theatres else R.string.new_releases),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
+				}
+
+				item {
+					val recommendations = if (selectedCategory == MOVIES) movieData3.recommendations else showData3.recommendations
+					if (uiState.userIsLoggedIn && recommendations.collectAsLazyPagingItems().itemSnapshotList.isNotEmpty()) {
+						HorizontalPosters(
+							pagingData = recommendations,
+							header = stringResource(if (selectedCategory == MOVIES) R.string.movies_for_you else R.string.series_for_you),
+							onMovieClick = onMovieClick
+						) { seeMore(if (selectedCategory == MOVIES) MOVIES_FOR_YOU else SERIES_FOR_YOU) }
+					}
+				}
+
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData1.topRated else showData1.topRated,
+						header = stringResource(R.string.top_rated),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) TOP_RATED_MOVIES else TOP_RATED_SERIES) }
+				}
+
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
+						header = stringResource(R.string.anime),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) ANIME else ANIME_SERIES) }
+				}
+
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData2.comedy else showData2.comedy,
+						header = stringResource(R.string.comedy),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) COMEDY_MOVIES else COMEDY_SERIES) }
+				}
+
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData2.romedy else showData2.romedy,
+						header = stringResource(R.string.romedy),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) ROMEDY_MOVIES else ROMEDY_SERIES) }
+				}
+
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData2.sciFi else showData2.sciFi,
+						header = stringResource(R.string.sci_fi),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) SCI_FI_MOVIES else SCI_FI_SERIES) }
+				}
+
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData2.warStory else showData2.warStory,
+						header = stringResource(R.string.war_story),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) WAR_STORY_MOVIES else WAR_STORY_SERIES) }
+				}
+
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData3.nollywood else showData3.nollywood,
+						header = stringResource(R.string.nollywood),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) NOLLYWOOD_MOVIES else NOLLYWOOD_SERIES) }
+				}
+
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData3.korean else showData3.kDrama,
+						header = stringResource(if (selectedCategory == MOVIES) R.string.korean else R.string.k_drama),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) KOREAN_MOVIES else K_DRAMA) }
+				}
+
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData3.bollywood else showData3.bollywood,
+						header = stringResource(R.string.bollywood),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) BOLLYWOOD_MOVIES else BOLLYWOOD_SERIES) }
+				}
+
+				item {
+					HorizontalPosters(
+						pagingData = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
+						header = stringResource(R.string.most_popular),
+						onMovieClick = onMovieClick
+					) { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
+				}
 			}
 
 			if (clickedMovieItem.value != null) {
@@ -251,92 +280,77 @@ fun HomeScreen(
 }
 
 @Composable
-private fun MediaRows(
-	movieData1: MoviesModel,
-	showData1: TvShowsModel,
-	movieData2: MoviesByGenreModel,
-	showData2: TvShowsByGenreModel,
-	movieData3: MoviesByRegionModel,
-	showData3: TvShowsByRegionModel,
-	userIsLoggedIn: Boolean,
+@OptIn(ExperimentalFoundationApi::class)
+private fun TrendingMedia(
+	trendingMovies: MutableStateFlow<PagingData<Movie>>,
+	trendingShows: MutableStateFlow<PagingData<Movie>>,
 	selectedCategory: String,
 	onMovieClick: (Movie) -> Unit,
-	seeMore: (Category) -> Unit
+	onError: (String?) -> Unit
 ) {
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData1.nowPlaying else showData1.airingToday,
-		header = stringResource(if (selectedCategory == MOVIES) R.string.in_theatres else R.string.new_releases),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) IN_THEATRES else NEW_RELEASES) }
-
-	val recommendations = if (selectedCategory == MOVIES) movieData3.recommendations else showData3.recommendations
-	if (userIsLoggedIn && recommendations.collectAsLazyPagingItems().itemSnapshotList.isNotEmpty()) {
-		HorizontalPosters(
-			pagingData = recommendations,
-			header = stringResource(if (selectedCategory == MOVIES) R.string.movies_for_you else R.string.series_for_you),
-			onMovieClick = onMovieClick
-		) { seeMore(if (selectedCategory == MOVIES) MOVIES_FOR_YOU else SERIES_FOR_YOU) }
+	val scope = rememberCoroutineScope()
+	val trendingMedia = (if (selectedCategory == MOVIES) trendingMovies else trendingShows).collectAsLazyPagingItems()
+	val moviesPagerState = rememberPagerState { 20 }
+	val seriesPagerState = rememberPagerState { 20 }
+	val pagerState = if (selectedCategory == MOVIES) moviesPagerState else seriesPagerState
+	val paddingTargetValue = remember(pagerState.currentPage) {
+		derivedStateOf {
+			if (pagerState.currentPage == 0) PADDING_WIDTH else 40.dp
+		}
 	}
+	val startPaddingValue by animateDpAsState(
+		targetValue = paddingTargetValue.value,
+		label = "padding width value"
+	)
 
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData1.topRated else showData1.topRated,
-		header = stringResource(R.string.top_rated),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) TOP_RATED_MOVIES else TOP_RATED_SERIES) }
-
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData2.anime else showData2.anime,
-		header = stringResource(R.string.anime),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) ANIME else ANIME_SERIES) }
-
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData2.comedy else showData2.comedy,
-		header = stringResource(R.string.comedy),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) COMEDY_MOVIES else COMEDY_SERIES) }
-
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData2.romedy else showData2.romedy,
-		header = stringResource(R.string.romedy),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) ROMEDY_MOVIES else ROMEDY_SERIES) }
-
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData2.sciFi else showData2.sciFi,
-		header = stringResource(R.string.sci_fi),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) SCI_FI_MOVIES else SCI_FI_SERIES) }
-
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData2.warStory else showData2.warStory,
-		header = stringResource(R.string.war_story),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) WAR_STORY_MOVIES else WAR_STORY_SERIES) }
-
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData3.nollywood else showData3.nollywood,
-		header = stringResource(R.string.nollywood),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) NOLLYWOOD_MOVIES else NOLLYWOOD_SERIES) }
-
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData3.korean else showData3.kDrama,
-		header = stringResource(if (selectedCategory == MOVIES) R.string.korean else R.string.k_drama),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) KOREAN_MOVIES else K_DRAMA) }
-
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData3.bollywood else showData3.bollywood,
-		header = stringResource(R.string.bollywood),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) BOLLYWOOD_MOVIES else BOLLYWOOD_SERIES) }
-
-	HorizontalPosters(
-		pagingData = if (selectedCategory == MOVIES) movieData1.popular else showData1.popular,
-		header = stringResource(R.string.most_popular),
-		onMovieClick = onMovieClick
-	) { seeMore(if (selectedCategory == MOVIES) POPULAR_MOVIES else POPULAR_SERIES) }
+	Row(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(PADDING_WIDTH),
+		horizontalArrangement = Arrangement.Start
+	) {
+		Header(stringResource(R.string.trending))
+	}
+	HorizontalPager(
+		state = pagerState,
+		contentPadding = PaddingValues(
+			start = startPaddingValue,
+			end = PADDING_WIDTH
+		),
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(bottom = 16.dp),
+		pageSpacing = 14.dp,
+		flingBehavior = PagerDefaults.flingBehavior(
+			state = pagerState,
+			pagerSnapDistance = PagerSnapDistance.atMost(20)
+		),
+		pageSize = PageSize.Fixed(dynamicPageWidth(POSTER_WIDTH_LARGE))
+	) { page ->
+		if (trendingMedia.itemCount > 0) {
+			trendingMedia[page]?.let { movie ->
+				LargeItemPoster(
+					movie = movie,
+					itemPage = page,
+					pagerState = pagerState,
+					onClick = {
+						if (page != pagerState.currentPage) scope.launch {
+							pagerState.animateScrollToPage(
+								page = page,
+								animationSpec = tween(durationMillis = 1000)
+							)
+						}
+						onMovieClick(it)
+					}
+				)
+			}
+		}
+		trendingMedia.loadStateUi(
+			posterType = PosterType.Large,
+			largeBoxItemModifier = Modifier.animatePagerItem(page, pagerState),
+			error = { onError(it) }
+		)
+	}
 }
 
 @Preview

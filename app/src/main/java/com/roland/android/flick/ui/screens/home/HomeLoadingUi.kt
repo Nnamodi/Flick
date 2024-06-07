@@ -1,6 +1,5 @@
 package com.roland.android.flick.ui.screens.home
 
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,13 +30,12 @@ import com.roland.android.flick.utils.RowItems
 @Composable
 fun HomeLoadingUi(
 	paddingValues: PaddingValues,
-	scrollState: ScrollState,
 	isLoading: Boolean
 ) {
 	Column(
 		modifier = Modifier
 			.padding(bottom = paddingValues.calculateBottomPadding())
-			.verticalScroll(scrollState),
+			.verticalScroll(rememberScrollState()),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		Spacer(Modifier.height(paddingValues.calculateTopPadding()))
@@ -81,7 +79,6 @@ fun HomeLoadingUiPreview() {
 	FlickTheme {
 		HomeLoadingUi(
 			paddingValues = PaddingValues(0.dp),
-			scrollState = rememberScrollState(),
 			isLoading = true
 		)
 	}
