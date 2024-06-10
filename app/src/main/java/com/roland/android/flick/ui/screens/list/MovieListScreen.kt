@@ -34,7 +34,7 @@ fun MovieListScreen(
 	action: (MovieListActions?) -> Unit,
 	navigate: (Screens) -> Unit
 ) {
-	val (movieData, isCancellable, response) = uiState
+	val (movieData, isCancellable, isRatedMedia, response) = uiState
 	val clickedMovieItem = remember { mutableStateOf<Movie?>(null) }
 	val errorMessage = rememberSaveable { mutableStateOf<String?>(null) }
 	val actionResponseMessage = remember { mutableStateOf<String?>(null) }
@@ -62,6 +62,7 @@ fun MovieListScreen(
 				paddingValues = paddingValues,
 				scrollState = scrollState,
 				isCancellable = isCancellable,
+				showUserRating = isRatedMedia,
 				cancelRequestDone = response != null,
 				movies = movies,
 				onItemClick = { clickedMovieItem.value = it },

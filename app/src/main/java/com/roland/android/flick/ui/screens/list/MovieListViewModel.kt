@@ -47,7 +47,10 @@ class MovieListViewModel @Inject constructor(
 	private var userId by mutableIntStateOf(0)
 	private var sessionId by mutableStateOf("")
 	private var shouldAutoReloadData by mutableStateOf(true)
-	private val accountMediaCategories = setOf(WATCHLISTED_MOVIES, WATCHLISTED_SERIES, FAVORITED_MOVIES, FAVORITED_SERIES, RATED_MOVIES, RATED_SERIES)
+	private val watchlistedMedia = setOf(WATCHLISTED_MOVIES, WATCHLISTED_SERIES)
+	private val favoritedMedia = setOf(FAVORITED_MOVIES, FAVORITED_SERIES)
+	private val ratedMedia = setOf(RATED_MOVIES, RATED_SERIES)
+	private val accountMediaCategories = watchlistedMedia + favoritedMedia + ratedMedia
 
 	init {
 		viewModelScope.launch {
@@ -107,7 +110,10 @@ class MovieListViewModel @Inject constructor(
 		if ((category == lastCategoryFetched) && !refresh &&
 			(movieListUiState.movieData !is State.Error)) return
 		lastCategoryFetched = category
-		_movieListUiState.value = MovieListUiState(isCancellable = category in accountMediaCategories)
+		_movieListUiState.value = MovieListUiState(
+			isCancellable = category in accountMediaCategories,
+			isRatedMedia = category in ratedMedia
+		)
 		viewModelScope.launch {
 			movieListUseCase.execute(
 				GetMovieListUseCase.Request(
@@ -129,7 +135,7 @@ class MovieListViewModel @Inject constructor(
 			_movieListUiState.update { it.copy(response = response) }
 		}
 		when (lastCategoryFetched) {
-			in setOf(WATCHLISTED_MOVIES, WATCHLISTED_SERIES) -> {
+			in watchlistedMedia -> {
 				mediaUtil.watchlistMedia(
 					accountId = userId,
 					sessionId = sessionId,
@@ -139,7 +145,7 @@ class MovieListViewModel @Inject constructor(
 					result = { updateResponse(it) }
 				)
 			}
-			in setOf(FAVORITED_MOVIES, FAVORITED_SERIES) -> {
+			in favoritedMedia -> {
 				mediaUtil.favoriteMedia(
 					accountId = userId,
 					sessionId = sessionId,
@@ -149,7 +155,7 @@ class MovieListViewModel @Inject constructor(
 					result = { updateResponse(it) }
 				)
 			}
-			in setOf(RATED_MOVIES, RATED_SERIES) -> {
+			in ratedMedia -> {
 				mediaUtil.deleteMediaRating(
 					sessionId = sessionId,
 					mediaId = mediaId,
@@ -163,7 +169,6 @@ class MovieListViewModel @Inject constructor(
 
 	private fun retry(categoryName: String) {
 		val category = Category.valueOf(categoryName)
-		_movieListUiState.value = MovieListUiState()
 		loadMovieList(category)
 	}
 

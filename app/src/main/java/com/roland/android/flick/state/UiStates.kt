@@ -66,6 +66,7 @@ data class MovieDetailsUiState(
 data class MovieListUiState(
 	val movieData: State<MovieListModel>? = null,
 	val isCancellable: Boolean = false,
+	val isRatedMedia: Boolean = false,
 	val response: State<Response>? = null
 )
 

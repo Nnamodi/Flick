@@ -90,6 +90,7 @@ fun MovieLists(
 	scrollState: LazyGridState,
 	searchQueryEntered: Boolean = true,
 	isCancellable: Boolean = false,
+	showUserRating: Boolean = false,
 	cancelRequestDone: Boolean = false,
 	movies: LazyPagingItems<Movie>,
 	onItemClick: (Movie) -> Unit,
@@ -119,6 +120,7 @@ fun MovieLists(
 				MediumItemPoster(
 					movie = movie,
 					isCancellable = isCancellable,
+					showUserRating = showUserRating,
 					requestDone = cancelRequestDone,
 					onClick = onItemClick,
 					onCancel = onCancel

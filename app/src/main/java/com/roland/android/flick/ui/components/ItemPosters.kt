@@ -211,6 +211,7 @@ fun MediumItemPoster(
 	movie: Movie,
 	modifier: Modifier = Modifier,
 	isCancellable: Boolean,
+	showUserRating: Boolean,
 	requestDone: Boolean,
 	onClick: (Movie) -> Unit,
 	onCancel: (MediaId, MediaType) -> Unit
@@ -219,6 +220,7 @@ fun MediumItemPoster(
 		CancellableItemPoster(
 			movie = movie,
 			requestDone = requestDone,
+			showUserRating = showUserRating,
 			posterType = PosterType.Medium,
 			onClick = onClick,
 			onCancel = onCancel

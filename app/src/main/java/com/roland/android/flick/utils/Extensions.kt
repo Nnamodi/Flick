@@ -140,6 +140,7 @@ object Extensions {
 		"timeout" in this -> "Connection Timeout"
 		"ConnectException" in this -> "Connection Interrupted"
 		"Unable to resolve host" in this -> "Connection Interrupted"
+		"connection abort" in this -> "Connection Interrupted"
 		else -> this
 	}
 
