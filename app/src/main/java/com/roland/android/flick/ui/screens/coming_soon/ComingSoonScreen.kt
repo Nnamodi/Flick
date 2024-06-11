@@ -86,7 +86,12 @@ fun ComingSoonScreen(
 		CommonScreen(
 			movieData, paddingValues,
 			loadingScreen = { error ->
-				ComingSoonLoadingUi(scrollState, isLoading = error == null)
+				ComingSoonLoadingUi(
+					expanded = expanded,
+					topPadding = paddingValues.calculateTopPadding(),
+					scrollState = scrollState,
+					isLoading = error == null
+				)
 				errorMessage.value = error
 			}
 		) { movieData ->
@@ -185,7 +190,7 @@ fun ComingSoonScreen(
 			Snackbar(
 				message = errorMessage.value!!,
 				paddingValues = paddingValues,
-				modifier = Modifier.padding(bottom = if (windowSize.width == Portrait) NavigationBarHeight else 0.dp),
+				modifier = Modifier.padding(bottom = if (windowSize.width == Portrait && !expanded) NavigationBarHeight else 0.dp),
 				actionLabel = stringResource(R.string.retry),
 				action = { action(ComingSoonActions.Retry) },
 				duration = SnackbarDuration.Indefinite

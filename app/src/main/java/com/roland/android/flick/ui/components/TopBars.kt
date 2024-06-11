@@ -150,6 +150,7 @@ fun CategorySelectionTopBar(
 fun TopBar(
 	title: String,
 	categoryScreen: Boolean = false,
+	enableFilterIcon: Boolean = true,
 	openSelectionSheet: () -> Unit = {},
 	navigateUp: (Screens) -> Unit
 ) {
@@ -162,7 +163,10 @@ fun TopBar(
 		},
 		actions = {
 			if (categoryScreen) {
-				IconButton(onClick = openSelectionSheet) {
+				IconButton(
+					onClick = openSelectionSheet,
+					enabled = enableFilterIcon
+				) {
 					Icon(Icons.Rounded.FilterList, stringResource(R.string.select_categories))
 				}
 			}

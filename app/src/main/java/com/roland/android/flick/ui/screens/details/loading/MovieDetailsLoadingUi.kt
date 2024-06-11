@@ -98,9 +98,9 @@ fun MovieDetailsLoadingUi(
 				Spacer(Modifier.height(14.dp))
 				repeat(4) {
 					Spacer(Modifier
-						.padding(vertical = 2.dp)
+						.padding(vertical = 4.dp)
 						.fillMaxWidth()
-						.height(16.dp)
+						.height(14.dp)
 						.shimmerModifier(isLoading)
 					)
 				}

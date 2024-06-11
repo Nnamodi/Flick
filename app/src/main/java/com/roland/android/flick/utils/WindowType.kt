@@ -1,5 +1,6 @@
 package com.roland.android.flick.utils
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -49,6 +50,7 @@ private fun getScreenHeight(height: Int): WindowType = when {
 	else -> WindowType.Landscape
 }
 
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
 fun Modifier.dynamicPageSize(
 	portraitWidth: Dp,
 	portraitHeight: Dp

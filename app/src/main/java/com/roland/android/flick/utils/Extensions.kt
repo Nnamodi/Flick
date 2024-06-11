@@ -140,8 +140,8 @@ object Extensions {
 		"timeout" in this -> "Connection Timeout"
 		"ConnectException" in this -> "Connection Interrupted"
 		"Unable to resolve host" in this -> "Connection Interrupted"
-		"connection abort" in this -> "Connection Interrupted"
-		else -> this
+		"SSLHandshakeException" in this -> "Connection Lost"
+		else -> "Oops... Something broke"
 	}
 
 	fun PagingData<Movie>.refactor(): MutableStateFlow<PagingData<Movie>> {

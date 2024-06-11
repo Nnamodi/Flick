@@ -73,6 +73,7 @@ fun CategorySelectionScreen(
 		topBar = {
 			CategorySelectionScreenTopBar(
 				selectionSheetClosed = !(showSheet.value && dataLoadedSuccessfully.value),
+				enableFilterIcon = dataLoadedSuccessfully.value,
 				selectedCollection = selectedCollection,
 				openSelectionSheet = { if (errorMessage.value == null) showSheet.value = true },
 				navigateUp = navigate
@@ -142,6 +143,7 @@ fun CategorySelectionScreen(
 @Composable
 private fun CategorySelectionScreenTopBar(
 	selectionSheetClosed: Boolean,
+	enableFilterIcon: Boolean,
 	selectedCollection: Collection,
 	openSelectionSheet: () -> Unit,
 	navigateUp: (Screens) -> Unit
@@ -154,6 +156,7 @@ private fun CategorySelectionScreenTopBar(
 		TopBar(
 			title = stringResource(selectedCollection.getName()),
 			categoryScreen = true,
+			enableFilterIcon = enableFilterIcon,
 			openSelectionSheet = openSelectionSheet,
 			navigateUp = navigateUp
 		)
@@ -187,7 +190,7 @@ private fun CategorySelectionSheetLoadingUi(
 			)
 			Text(
 				text = errorMessage,
-				modifier = Modifier.padding(vertical = 30.dp),
+				modifier = Modifier.padding(horizontal = 20.dp, vertical = 30.dp),
 				style = MaterialTheme.typography.titleLarge
 			)
 			Button(onClick = { retry(CategorySelectionActions.Retry) }) {

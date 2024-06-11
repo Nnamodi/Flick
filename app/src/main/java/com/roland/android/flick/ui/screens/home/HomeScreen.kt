@@ -1,5 +1,6 @@
 package com.roland.android.flick.ui.screens.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -159,7 +160,11 @@ fun HomeScreen(
 
 				item {
 					val recommendations = if (selectedCategory == MOVIES) movieData3.recommendations else showData3.recommendations
-					if (uiState.userIsLoggedIn && recommendations.collectAsLazyPagingItems().itemSnapshotList.isNotEmpty()) {
+					val mediaIsNotEmpty = recommendations.collectAsLazyPagingItems().itemSnapshotList.isNotEmpty()
+					val visible by rememberSaveable(uiState.userIsLoggedIn, mediaIsNotEmpty) {
+						mutableStateOf(uiState.userIsLoggedIn && mediaIsNotEmpty)
+					}
+					AnimatedVisibility(visible) {
 						HorizontalPosters(
 							pagingData = recommendations,
 							header = stringResource(if (selectedCategory == MOVIES) R.string.movies_for_you else R.string.series_for_you),

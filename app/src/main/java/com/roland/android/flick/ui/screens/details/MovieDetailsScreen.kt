@@ -375,7 +375,7 @@ private fun Details(
 		series?.let {
 			SeasonDetails(
 				seasonUiState = seasonDetails,
-				numberOfSeasons = it.numberOfSeasons,
+				numberOfSeasons = it.seasons.size,
 				selectedSeasonNumber = selectedSeasonNumber!!,
 				openSeasonSelectionSheet = openSeasonSelectionSheet
 			)
