@@ -169,7 +169,7 @@ class MovieListViewModel @Inject constructor(
 
 	private fun retry(categoryName: String) {
 		val category = Category.valueOf(categoryName)
-		loadMovieList(category)
+		loadMovieList(category = category, refresh = true)
 	}
 
 }

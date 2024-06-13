@@ -71,6 +71,7 @@ fun AccountScreen(
 	}
 	val onCancelResult: (String?) -> Unit = {
 		actionResponseMessage.value = it
+		action(null) // nullify response so it doesn't trigger snackbar again due to recomposition
 	}
 	val onLoadError: (String?) -> Unit = {
 		loadingErrorMessage.value = it

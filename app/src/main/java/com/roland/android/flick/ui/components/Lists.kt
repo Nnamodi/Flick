@@ -358,6 +358,7 @@ private fun MovieListPage(
 	} else {
 		min(20, movieList.itemCount)
 	}
+	if (movieList.loadState.refresh is LoadState.Error) movieList.retry()
 
 	LazyRow(
 		state = listState,
